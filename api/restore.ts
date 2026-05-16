@@ -39,7 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const restorationPrompt = `A professionally restored, high-quality photograph. ${description} The image is perfectly sharp, with vibrant natural colors, no damage, scratches, fading, or artifacts. Photorealistic, 8K quality, clean print.`;
 
     const genRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
