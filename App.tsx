@@ -312,9 +312,14 @@ function App() {
                 </div>
 
                 {mode === AppMode.PERSONAL && (
-                  <ConfigPanel 
-                    config={photoConfig} 
-                    onChange={setPhotoConfig} 
+                  <ConfigPanel
+                    config={photoConfig}
+                    onChange={setPhotoConfig}
+                    imageFlags={{
+                      hasFaces: faceImage !== null,
+                      hasProducts: productImages.some(img => img !== null),
+                      hasLogo: logoImage !== null,
+                    }}
                   />
                 )}
 

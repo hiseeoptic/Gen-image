@@ -31,13 +31,13 @@ export interface PhotoConfig {
 
   // Photography Style (New)
   photographyStyle: string;
-  
+  photographyStyleCategory: 'special' | 'standard';
+
   // Technical & Vibe
   lighting: string;
   cameraAngle: string;
-  aspectRatio: string; 
-  style: string;
-  
+  aspectRatio: string;
+
   // Face & Quality
   quality: string;        
   expression: string;     
@@ -61,11 +61,12 @@ export const DEFAULT_CONFIG: PhotoConfig = {
   pose: 'Standing naturally, confident posture', 
   photographyStyle: 'Front-facing studio portrait, symmetrical face, clean neutral background', // Default style
   
+  photographyStyleCategory: 'standard',
+
   lighting: 'Soft Studio',
   cameraAngle: 'Eye Level',
-  aspectRatio: '9:16', 
-  style: 'Cinematic',
-  
+  aspectRatio: '9:16',
+
   quality: 'Photorealistic 8K',
   expression: 'Friendly', 
   faceEnhancements: [], 

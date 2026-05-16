@@ -1,11 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { PhotoConfig, CategoryItem, OptionItem } from '../types';
-import { Settings2, Sun, Shirt, MapPin, Palette, Users, Smile, Camera, Upload, Trash2, Zap, Sparkles, Monitor, Smartphone, Square, Accessibility, ScanFace, Wand2 } from 'lucide-react';
-import { fileToGenerativePart } from '../services/openaiService';
+import { Settings2, Sun, Shirt, MapPin, Palette, Users, Smile, Camera, Upload, Trash2, Zap, Sparkles, Monitor, Smartphone, Square, Accessibility, ScanFace, Wand2, Copy } from 'lucide-react';
+import { fileToGenerativePart, buildPrompt } from '../services/openaiService';
 
 interface ConfigPanelProps {
   config: PhotoConfig;
   onChange: (newConfig: PhotoConfig) => void;
+  imageFlags?: { hasFaces: boolean; hasProducts: boolean; hasLogo: boolean };
 }
 
 // --- DATA DEFINITIONS ---
@@ -76,11 +77,6 @@ const POSE_CATEGORIES: CategoryItem[] = [
     id: 'sitting',
     label: 'Dáng Ngồi (Văn phòng/Cafe)',
     options: [
-      { id: 'sit_ceo', label: 'Ngồi ghế giám đốc', value: 'Sitting comfortably in a high-back leather executive chair, hands on armrests' },
-      { id: 'sit_desk_working', label: 'Ngồi làm việc (Laptop)', value: 'Sitting at a desk, typing on a laptop, focused expression' },
-      { id: 'sit_coffee', label: 'Ngồi cafe chill', value: 'Sitting at a cafe table, holding a coffee cup, relaxed posture' },
-      { id: 'lean_desk', label: 'Dựa hông vào bàn', value: 'Leaning hip against the edge of a desk, arms crossed or holding a document' },
-      { id: 'sit_legs_crossed', label: 'Ngồi vắt chân', value: 'Sitting in an armchair, legs crossed elegantly, holding a book or tablet' },
       { id: 'sit_ceo', label: 'Ngồi ghế giám đốc', value: 'Sitting comfortably in a high-back leather executive chair, hands on armrests' },
       { id: 'sit_desk_working', label: 'Ngồi làm việc (Laptop)', value: 'Sitting at a desk, typing on a laptop, focused expression' },
       { id: 'sit_coffee', label: 'Ngồi cafe chill', value: 'Sitting at a cafe table, holding a coffee cup, relaxed posture' },
@@ -466,11 +462,19 @@ const ANGLE_OPTIONS = [
   { id: 'eye', label: 'Ngang mắt', value: 'Eye level' },
 ];
 
-export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) => {
+export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange, imageFlags }) => {
   const outfitInputRef = useRef<HTMLInputElement>(null);
   const [activePoseTab, setActivePoseTab] = useState('standing');
   // State for outfit gender selection, defaults based on subjectType
   const [outfitGender, setOutfitGender] = useState<string>(config.subjectType === 'MALE' ? 'MALE' : 'FEMALE');
+
+  const previewPrompt = buildPrompt(config, imageFlags ?? { hasFaces: config.source === 'UPLOAD', hasProducts: false, hasLogo: false });
+  const [copied, setCopied] = React.useState(false);
+  const handleCopy = () => {
+    navigator.clipboard.writeText(previewPrompt);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const updateConfig = (key: keyof PhotoConfig, value: any) => {
     onChange({ ...config, [key]: value });
@@ -639,6 +643,9 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) =>
           <div className="space-y-3">
             <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
               <MapPin size={14} /> Bối cảnh
+              {config.photographyStyleCategory === 'special' && (
+                <span className="text-[10px] text-yellow-400/70 italic ml-1">(Ít hiệu lực với style đặc biệt)</span>
+              )}
             </label>
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               {CONTEXT_CATEGORIES.map(cat => (
@@ -684,7 +691,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) =>
               {SPECIAL_STYLES.map(opt => (
                 <button
                     key={opt.id}
-                    onClick={() => updateConfig('photographyStyle', opt.value)}
+                    onClick={() => onChange({ ...config, photographyStyle: opt.value, photographyStyleCategory: 'special' })}
                     className={`p-2 rounded-md text-left text-xs transition-all border ${
                       config.photographyStyle === opt.value ? 'bg-yellow-600 border-yellow-500 text-white' : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
                     }`}
@@ -698,7 +705,7 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) =>
               {STANDARD_STYLES.map(opt => (
                 <button
                     key={opt.id}
-                    onClick={() => updateConfig('photographyStyle', opt.value)}
+                    onClick={() => onChange({ ...config, photographyStyle: opt.value, photographyStyleCategory: 'standard' })}
                     className={`p-2 rounded-md text-left text-xs transition-all border ${
                       config.photographyStyle === opt.value ? 'bg-purple-600 border-purple-500 text-white' : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
                     }`}
@@ -714,6 +721,9 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) =>
       <div className="space-y-3 pt-4 border-t border-slate-800">
         <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
           <Accessibility size={14} /> Tạo Dáng
+          {config.photographyStyleCategory === 'special' && (
+            <span className="text-[10px] text-yellow-400/70 italic ml-1">(Ít hiệu lực với style đặc biệt)</span>
+          )}
         </label>
         <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
           {POSE_CATEGORIES.map(cat => (
@@ -842,6 +852,28 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange }) =>
               className="w-full h-20 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none resize-none"
             />
           </div>
+      </div>
+
+      {/* PROMPT PREVIEW */}
+      <div className="space-y-3 pt-4 border-t border-slate-800">
+        <label className="text-sm font-medium text-yellow-300 flex items-center gap-2 uppercase tracking-wider">
+          <Wand2 size={14} /> Xem trước Prompt (để copy)
+        </label>
+        <div className="relative bg-slate-950 border border-slate-700 rounded-lg p-3">
+          <pre className="text-xs text-slate-300 whitespace-pre-wrap font-mono leading-relaxed max-h-[180px] overflow-y-auto pr-8 custom-scrollbar">
+            {previewPrompt}
+          </pre>
+          <button
+            onClick={handleCopy}
+            className="absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 transition-colors p-1.5 rounded text-xs text-slate-300 flex items-center gap-1"
+          >
+            <Copy size={12} />
+            {copied ? 'Đã copy!' : 'Copy'}
+          </button>
+        </div>
+        <p className="text-[10px] text-slate-500">
+          * Prompt thực tế sẽ tự động đính kèm ảnh khuôn mặt / sản phẩm / logo khi bạn tải lên.
+        </p>
       </div>
     </div>
   );
