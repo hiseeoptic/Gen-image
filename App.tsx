@@ -239,7 +239,7 @@ function App() {
           </div>
           <div className="flex items-center gap-4">
              <span className="text-xs text-slate-500 border border-slate-800 rounded-full px-3 py-1">
-               Powered by OpenAI
+               Powered by Google Imagen 3
              </span>
           </div>
         </div>
@@ -335,7 +335,7 @@ function App() {
                   <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
                     <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
                       <Sparkles size={16} className="text-yellow-400" />
-                      Mẹo tối ưu (GPT Image)
+                      Mẹo tối ưu (Imagen 3)
                     </h3>
                     <ul className="space-y-3 text-sm text-slate-400">
                       {mode === AppMode.RESTORATION ? (
