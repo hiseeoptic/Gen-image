@@ -36,38 +36,25 @@ async function imagen3Generate(apiKey: string, prompt: string, aspectRatio: stri
   return b64;
 }
 
-async function geminiFlashGenerate(
-  apiKey: string,
-  prompt: string,
-  imageParts: { data: string; mimeType: string }[]
-): Promise<string> {
-  const parts: any[] = [{ text: prompt }];
-  for (const img of imageParts) {
-    parts.push({ inline_data: { mime_type: img.mimeType, data: img.data } });
-  }
+async function analyzeImages(apiKey: string, imageParts: { data: string; mimeType: string }[]): Promise<string> {
+  const parts: any[] = [
+    {
+      text: 'Describe the person(s) and/or product(s) in these reference images. For persons: describe facial features, skin tone, hair color and style, age range, eye color, face shape, and distinguishing characteristics. For products: describe shape, color, texture, and key visual details. Be concise and specific (3-4 sentences total).',
+    },
+    ...imageParts.map((img) => ({ inline_data: { mime_type: img.mimeType, data: img.data } })),
+  ];
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts }],
-        generationConfig: { responseModalities: ['IMAGE', 'TEXT'] },
-      }),
+      body: JSON.stringify({ contents: [{ parts }] }),
     }
   );
-  if (!res.ok) {
-    const err = await res.json();
-    throw new Error(err.error?.message || `Gemini Flash error ${res.status}`);
-  }
+  if (!res.ok) return '';
   const data = await res.json();
-  for (const part of data.candidates?.[0]?.content?.parts ?? []) {
-    if (part.inlineData?.mimeType?.startsWith('image/')) {
-      return part.inlineData.data;
-    }
-  }
-  throw new Error('No image returned from Gemini Flash');
+  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -81,7 +68,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!prompt) return res.status(400).json({ error: 'No prompt provided' });
 
     const hasInputImages = (faces?.length > 0) || (products?.length > 0) || logo || outfitImage;
-    let resultBase64: string;
+    let finalPrompt = prompt;
 
     if (hasInputImages) {
       const imageParts: { data: string; mimeType: string }[] = [];
@@ -89,11 +76,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (products) for (const p of products) imageParts.push({ data: p, mimeType: 'image/jpeg' });
       if (logo) imageParts.push({ data: logo, mimeType: 'image/png' });
       if (outfitImage) imageParts.push({ data: outfitImage, mimeType: 'image/jpeg' });
-      resultBase64 = await geminiFlashGenerate(apiKey, prompt, imageParts);
-    } else {
-      resultBase64 = await imagen3Generate(apiKey, prompt, aspectRatio);
+
+      const description = await analyzeImages(apiKey, imageParts);
+      if (description) {
+        finalPrompt = `${prompt}\n\nSUBJECT APPEARANCE (from uploaded reference photo): ${description}`;
+      }
     }
 
+    const resultBase64 = await imagen3Generate(apiKey, finalPrompt, aspectRatio);
     return res.status(200).json({ image: resultBase64 });
   } catch (error: any) {
     console.error('Generate error:', error);
