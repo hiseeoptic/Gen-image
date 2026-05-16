@@ -239,7 +239,7 @@ function App() {
           </div>
           <div className="flex items-center gap-4">
              <span className="text-xs text-slate-500 border border-slate-800 rounded-full px-3 py-1">
-               Imagen 3 + OpenAI gpt-image-1
+               Powered by OpenAI gpt-image-1
              </span>
           </div>
         </div>
@@ -347,7 +347,7 @@ function App() {
                         <>
                            <li className="flex gap-2"><span className="text-blue-400 font-bold">✦</span> Upload ảnh mặt → AI giữ nguyên khuôn mặt bạn (OpenAI).</li>
                            <li className="flex gap-2">✓ Ảnh mặt nên nhìn thẳng, rõ nét, không bị che.</li>
-                           <li className="flex gap-2">✓ Không upload ảnh → sáng tạo tự do (Imagen 3).</li>
+                           <li className="flex gap-2">✓ Không upload ảnh → sáng tạo tự do theo prompt.</li>
                            <li className="flex gap-2">✓ Mô tả chi tiết trang phục, bối cảnh trong ghi chú.</li>
                         </>
                       )}
