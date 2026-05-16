@@ -15,7 +15,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const prompt = 'You are a professional photo restorer. Restore this old, damaged, or blurry photo: remove scratches, tear marks, and noise; sharpen details; correct colors to be realistic and vibrant. Return the restored image while preserving the original composition and subjects exactly.';
 
     const apiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
