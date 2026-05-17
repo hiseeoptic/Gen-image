@@ -2,29 +2,43 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export const config = { maxDuration: 60 };
 
-async function geminiGenerateImage(
-  apiKey: string,
-  prompt: string,
-  inputImages?: { data: string; mimeType: string }[]
-): Promise<string> {
-  const parts: any[] = [];
-
-  if (inputImages && inputImages.length > 0) {
-    for (const img of inputImages) {
-      parts.push({ inline_data: { mime_type: img.mimeType, data: img.data } });
-    }
-  }
-  parts.push({ text: prompt });
+async function analyzeImages(apiKey: string, imageParts: { data: string; mimeType: string }[]): Promise<string> {
+  const parts: any[] = [
+    {
+      text: 'Describe the person(s) and/or product(s) in these reference images in detail. For persons: describe facial features, skin tone, hair color and style, age range, eye color, face shape, distinguishing features. For products: describe shape, color, texture, key visual details. Be specific (4-5 sentences).',
+    },
+    ...imageParts.map((img) => ({ inline_data: { mime_type: img.mimeType, data: img.data } })),
+  ];
 
   const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${apiKey}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ contents: [{ parts }] }),
+    }
+  );
+  if (!res.ok) return '';
+  const data = await res.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || '';
+}
+
+async function imagen3Generate(apiKey: string, prompt: string, aspectRatio: string): Promise<string> {
+  const arMap: Record<string, string> = { '1:1': '1:1', '16:9': '16:9', '9:16': '9:16' };
+  const ar = arMap[aspectRatio] || '9:16';
+
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts }],
-        generationConfig: {
-          responseModalities: ['IMAGE', 'TEXT'],
+        instances: [{ prompt }],
+        parameters: {
+          sampleCount: 1,
+          aspectRatio: ar,
+          safetyFilterLevel: 'block_only_high',
+          personGeneration: 'allow_adult',
         },
       }),
     }
@@ -32,16 +46,13 @@ async function geminiGenerateImage(
 
   if (!res.ok) {
     const err = await res.json();
-    throw new Error(err.error?.message || `Gemini error ${res.status}`);
+    throw new Error(err.error?.message || `Imagen 3 error ${res.status}`);
   }
 
   const data = await res.json();
-  const imagePart = data.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData);
-  if (!imagePart?.inlineData?.data) {
-    throw new Error('Gemini không trả về ảnh. Thử lại hoặc điều chỉnh prompt.');
-  }
-
-  return imagePart.inlineData.data;
+  const b64 = data.predictions?.[0]?.bytesBase64Encoded;
+  if (!b64) throw new Error('Imagen 3 không trả về ảnh');
+  return b64;
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -51,21 +62,26 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
 
   try {
-    const { prompt, faces, products, logo, outfitImage } = req.body;
+    const { prompt, faces, products, logo, outfitImage, aspectRatio } = req.body;
     if (!prompt) return res.status(400).json({ error: 'No prompt provided' });
 
+    // Step 1: if images uploaded, analyze them with Gemini Vision
     const inputImages: { data: string; mimeType: string }[] = [];
     if (faces) for (const f of faces) inputImages.push({ data: f, mimeType: 'image/jpeg' });
     if (products) for (const p of products) inputImages.push({ data: p, mimeType: 'image/jpeg' });
     if (logo) inputImages.push({ data: logo, mimeType: 'image/png' });
     if (outfitImage) inputImages.push({ data: outfitImage, mimeType: 'image/jpeg' });
 
-    const resultBase64 = await geminiGenerateImage(
-      apiKey,
-      prompt,
-      inputImages.length > 0 ? inputImages : undefined
-    );
+    let finalPrompt = prompt;
+    if (inputImages.length > 0) {
+      const description = await analyzeImages(apiKey, inputImages);
+      if (description) {
+        finalPrompt = `${prompt}\n\nSUBJECT APPEARANCE (match closely): ${description}`;
+      }
+    }
 
+    // Step 2: generate with Imagen 3
+    const resultBase64 = await imagen3Generate(apiKey, finalPrompt, aspectRatio);
     return res.status(200).json({ image: resultBase64 });
   } catch (error: any) {
     console.error('Generate error:', error);

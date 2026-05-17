@@ -239,7 +239,7 @@ function App() {
           </div>
           <div className="flex items-center gap-4">
              <span className="text-xs text-slate-500 border border-slate-800 rounded-full px-3 py-1">
-               Powered by Google Gemini
+               Powered by Google Imagen 3
              </span>
           </div>
         </div>
