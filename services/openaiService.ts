@@ -78,7 +78,7 @@ export function buildPrompt(config: PhotoConfig, ctx: PromptBuildContext = { has
       faceId,
       enhLine,
       config.quality,
-      ctx.hasProducts ? 'Include the provided product(s) naturally in the scene.' : '',
+      ctx.hasProducts ? 'PRODUCT INSTRUCTION: The uploaded product image shows the exact product that must appear in this photo. Show the product clearly, recognizably, and prominently. Faithfully reproduce the product\'s design and label.' : '',
       ctx.hasLogo ? 'Integrate the provided logo visibly but tastefully.' : '',
       config.additionalPrompt ? `Additional details: ${config.additionalPrompt}.` : '',
       'Photograph must look completely real and photographic.',
@@ -125,7 +125,7 @@ export function buildPrompt(config: PhotoConfig, ctx: PromptBuildContext = { has
 
   // 6. Products / logo
   if (ctx.hasProducts) {
-    parts.push('Include the provided product(s) naturally and prominently in the scene.');
+    parts.push('PRODUCT INSTRUCTION: The uploaded product image shows the exact product that must appear in this photo. Show the product clearly, recognizably, and prominently as described in the pose. The product\'s design, shape, and label must be faithfully reproduced — do not invent a generic product.');
   }
   if (ctx.hasLogo) {
     parts.push('Integrate the provided logo visibly but tastefully into the image.');

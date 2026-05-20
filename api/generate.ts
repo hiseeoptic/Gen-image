@@ -2,16 +2,29 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export const config = { maxDuration: 60 };
 
+interface LabeledImage {
+  data: string;
+  mimeType: string;
+  role: 'face' | 'product' | 'logo' | 'outfit';
+}
+
+const ROLE_LABELS: Record<LabeledImage['role'], string> = {
+  face: 'FACE REFERENCE IMAGE — This is the person who must appear in the generated photo. You MUST preserve this exact face identity, facial features, bone structure, skin tone, and overall appearance. Do not alter or replace this person\'s face:',
+  product: 'PRODUCT REFERENCE IMAGE — This is the exact product that must be included in the generated photo. The person should be holding, showcasing, or interacting with this specific product. Make the product clearly visible and recognizable:',
+  logo: 'LOGO REFERENCE IMAGE — Integrate this logo tastefully and visibly in the generated image:',
+  outfit: 'OUTFIT REFERENCE IMAGE — Match this clothing style in the generated image:',
+};
+
 async function geminiGenerateImage(
   apiKey: string,
   prompt: string,
-  inputImages?: { data: string; mimeType: string }[]
+  inputImages?: LabeledImage[]
 ): Promise<string> {
   const parts: any[] = [];
 
-  // Input images first (face reference, product, logo)
   if (inputImages && inputImages.length > 0) {
     for (const img of inputImages) {
+      parts.push({ text: ROLE_LABELS[img.role] });
       parts.push({ inline_data: { mime_type: img.mimeType, data: img.data } });
     }
   }
@@ -55,11 +68,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const { prompt, faces, products, logo, outfitImage } = req.body;
     if (!prompt) return res.status(400).json({ error: 'No prompt provided' });
 
-    const inputImages: { data: string; mimeType: string }[] = [];
-    if (faces) for (const f of faces) inputImages.push({ data: f, mimeType: 'image/jpeg' });
-    if (products) for (const p of products) inputImages.push({ data: p, mimeType: 'image/jpeg' });
-    if (logo) inputImages.push({ data: logo, mimeType: 'image/png' });
-    if (outfitImage) inputImages.push({ data: outfitImage, mimeType: 'image/jpeg' });
+    const inputImages: LabeledImage[] = [];
+    if (faces) for (const f of faces) inputImages.push({ data: f, mimeType: 'image/jpeg', role: 'face' });
+    if (products) for (const p of products) inputImages.push({ data: p, mimeType: 'image/jpeg', role: 'product' });
+    if (logo) inputImages.push({ data: logo, mimeType: 'image/png', role: 'logo' });
+    if (outfitImage) inputImages.push({ data: outfitImage, mimeType: 'image/jpeg', role: 'outfit' });
 
     const resultBase64 = await geminiGenerateImage(
       apiKey,

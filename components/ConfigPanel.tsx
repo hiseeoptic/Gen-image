@@ -118,7 +118,25 @@ const POSE_CATEGORIES: CategoryItem[] = [
       { id: 'walking_phone_text', label: 'Vừa đi vừa nhắn tin', value: 'Walking while checking phone messages, modern urban daily movement' },
       { id: 'entering_space', label: 'Bước vào không gian', value: 'Entering a room or space with natural stride, confident and purposeful movement' },
     ]
-  }
+  },
+  {
+    id: 'product_pose',
+    label: '📦 Cầm / Trưng bày Sản phẩm',
+    options: [
+      { id: 'hold_product_chest', label: 'Cầm trước ngực (2 tay)', value: 'Holding the product in front of chest with both hands, product label or front facing camera clearly, confident commercial pose' },
+      { id: 'hold_product_raise', label: 'Giơ sản phẩm ngang mặt', value: 'Holding the product raised up near face level with one hand, product prominently displayed beside the face, advertising style' },
+      { id: 'hold_product_one_hand', label: 'Cầm 1 tay thả lỏng', value: 'Holding the product casually in one hand at waist level, relaxed natural commercial pose, product clearly visible' },
+      { id: 'open_palm_product', label: 'Đặt trên lòng bàn tay', value: 'Product resting on open flat palm extended toward camera, gift-presenting gesture, close-up product reveal pose' },
+      { id: 'look_at_product', label: 'Nhìn vào sản phẩm', value: 'Looking at the product held in hands with curious or satisfied expression, natural discovery moment' },
+      { id: 'use_product', label: 'Đang dùng sản phẩm', value: 'Actively using or applying the product as if demonstrating it, natural usage moment, genuine interaction' },
+      { id: 'unbox_product', label: 'Mở hộp / Unboxing', value: 'Unboxing or opening the product packaging with excitement, moment of first reveal, lifestyle unboxing pose' },
+      { id: 'product_beside_face', label: 'Sản phẩm kề bên má', value: 'Holding product up beside cheek or ear with gentle smile, product and face both prominent, beauty/skincare style pose' },
+      { id: 'sit_product_table', label: 'Ngồi – Sản phẩm trên bàn', value: 'Seated with product placed on table in front, hands resting naturally, both person and product clearly visible' },
+      { id: 'point_at_product', label: 'Chỉ vào sản phẩm bên cạnh', value: 'Standing and pointing to or gesturing toward the product displayed beside them, presenter-style commercial pose' },
+      { id: 'hold_product_cross_arm', label: 'Khoanh tay – Sản phẩm ở tay', value: 'Arms loosely crossed, holding product in one hand naturally at side, confident brand ambassador pose' },
+      { id: 'smell_product', label: 'Ngửi / Cảm nhận sản phẩm', value: 'Eyes closed or half-closed, smelling or savoring the product with a blissful relaxed expression, perfume or food product pose' },
+    ]
+  },
 ];
 
 const FACE_ENHANCEMENT_OPTIONS: OptionItem[] = [
