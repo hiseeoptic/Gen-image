@@ -16,20 +16,20 @@ export interface PhotoConfig {
   source: GenerationSource;
   subjectType: SubjectType;
   customSubjectCount: string;
-  
+
   // Outfit
-  outfitCategory: string; 
-  outfitDetail: string;   
-  outfitImage: string | null; 
-  
+  outfitCategory: string;
+  outfitDetail: string;
+  outfitImage: string | null;
+
   // Context
-  contextCategory: string; 
-  contextDetail: string;   
+  contextCategory: string;
+  contextDetail: string;
 
   // Pose
   pose: string;
 
-  // Photography Style (New)
+  // Photography Style
   photographyStyle: string;
   photographyStyleCategory: 'special' | 'standard';
 
@@ -37,12 +37,13 @@ export interface PhotoConfig {
   lighting: string;
   cameraAngle: string;
   aspectRatio: string;
+  camera: string;
 
   // Face & Quality
-  quality: string;        
-  expression: string;     
-  faceEnhancements: string[]; 
-  
+  quality: string;
+  expression: string;
+  faceEnhancements: string[];
+
   additionalPrompt: string;
 }
 
@@ -50,34 +51,36 @@ export const DEFAULT_CONFIG: PhotoConfig = {
   source: 'UPLOAD',
   subjectType: 'FEMALE',
   customSubjectCount: '',
-  
-  outfitCategory: 'suit',
-  outfitDetail: 'classic_suit',
-  outfitImage: null,
-  
-  contextCategory: 'office',
-  contextDetail: 'ceo_desk',
 
-  pose: 'Standing naturally, confident posture', 
-  photographyStyle: 'Front-facing studio portrait, symmetrical face, clean neutral background', // Default style
-  
+  outfitCategory: 'suit',
+  outfitDetail: 'Sharp tailored female power suit, elegant and professional',
+
+  outfitImage: null,
+
+  contextCategory: 'studio_bg',
+  contextDetail: 'High-key studio photography, pure white infinity background, clean and commercial look',
+
+  pose: 'Standing naturally, confident posture',
+  photographyStyle: 'Front-facing studio portrait, symmetrical face, clean neutral background',
+
   photographyStyleCategory: 'standard',
 
-  lighting: 'Soft Studio',
-  cameraAngle: 'Eye Level',
+  lighting: 'Professional softbox studio lighting, beautifully even and flattering illumination, clean controlled shadows',
+  cameraAngle: 'Eye level',
   aspectRatio: '9:16',
+  camera: 'Shot on 85mm f/1.4 portrait lens, beautiful background blur, sharp subject',
 
-  quality: 'Photorealistic 8K',
-  expression: 'Friendly', 
-  faceEnhancements: [], 
-  
+  quality: 'Hyper-realistic photography, 8K ultra-high resolution, raw unprocessed photo quality, extreme skin and fabric detail',
+  expression: 'Friendly, slight smile, approachable, warm eyes',
+  faceEnhancements: [],
+
   additionalPrompt: '',
 };
 
 export interface OptionItem {
   id: string;
   label: string;
-  value: string; 
+  value: string;
 }
 
 export interface CategoryItem {
