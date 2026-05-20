@@ -37,12 +37,15 @@ export function buildPrompt(config: PhotoConfig, ctx: PromptBuildContext = { has
     if (config.customSubjectCount) subject += ` (${config.customSubjectCount})`;
   }
 
-  // Face identity instruction
+  // Face identity instruction — prioritise lock_face if selected, otherwise use reference phrasing
+  const hasLockFace = config.faceEnhancements?.includes('lock_face');
   const faceId = ctx.hasFaces
-    ? 'CRITICAL FACE IDENTITY: You must precisely match the uploaded reference face photo — preserve every facial feature, bone structure, skin tone, eye shape, nose, and complete identity. The person in the output must be unmistakably the same individual as in the reference.'
+    ? hasLockFace
+      ? 'CRITICAL FACE IDENTITY: Exactly preserve and precisely recreate every single facial feature from the uploaded reference photo — same face shape, bone structure, skin tone, eye shape, nose, lips, and complete identity. The person in the output must be unmistakably and identically the same individual as in the reference. Do not alter the face under any circumstance.'
+      : 'CRITICAL FACE IDENTITY: You must precisely match the uploaded reference face photo — preserve every facial feature, bone structure, skin tone, eye shape, nose, and complete identity. The person in the output must be unmistakably the same individual as in the reference.'
     : '';
 
-  // Face enhancement map (all new ids included)
+  // Face enhancement map
   const enhMap: Record<string, string> = {
     lock_face: 'CRITICAL — Exactly preserve ALL facial features from reference photo. Same face, same identity.',
     smooth_skin: 'flawlessly smooth natural skin texture, professional beauty retouching',
@@ -54,7 +57,9 @@ export function buildPrompt(config: PhotoConfig, ctx: PromptBuildContext = { has
     sharp_features: 'sharper defined facial features, refined jawline and cheekbones',
   };
 
-  const enh = config.faceEnhancements.map((id: string) => enhMap[id]).filter(Boolean);
+  // Filter out lock_face from visual enhancement list (it's handled separately in faceId)
+  const enhancementsToShow = (config.faceEnhancements || []).filter((id: string) => id !== 'lock_face');
+  const enh = enhancementsToShow.map((id: string) => enhMap[id]).filter(Boolean);
   const enhLine = enh.length > 0 ? `Facial enhancements applied: ${enh.join('; ')}.` : '';
 
   // Camera/lens line
@@ -65,8 +70,11 @@ export function buildPrompt(config: PhotoConfig, ctx: PromptBuildContext = { has
     const parts: string[] = [
       config.photographyStyle + '.',
       `The main subject is ${subject}.`,
+      config.subjectType !== 'PRODUCT' && config.outfitDetail
+        ? `Wearing: ${config.outfitDetail}.`
+        : '',
       config.subjectType !== 'PRODUCT' ? `Expression: ${config.expression}.` : '',
-      cameraLine ? `Camera: ${cameraLine}.` : '',
+      cameraLine ? `${cameraLine}.` : '',
       faceId,
       enhLine,
       config.quality,
