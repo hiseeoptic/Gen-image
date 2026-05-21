@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Briefcase, History, Wand2, RefreshCw, Layers, Box, User, Users, Package, ScanFace, Layers2 } from 'lucide-react';
+import { Sparkles, Briefcase, History, Wand2, RefreshCw, Layers, Box, User, Users, Package, ScanFace, Layers2, BookImage } from 'lucide-react';
 import { AppMode, PhotoConfig, DEFAULT_CONFIG } from './types';
 import { UploadArea } from './components/UploadArea';
 import { UploadedImage } from './components/MultiUploadArea';
@@ -8,6 +8,7 @@ import { Button } from './components/Button';
 import { ResultView } from './components/ResultView';
 import { ConfigPanel } from './components/ConfigPanel';
 import { PosterStudio } from './components/PosterStudio';
+import { StoryStudio } from './components/StoryStudio';
 import { restorePhoto, generatePersonalPhoto, fileToGenerativePart } from './services/openaiService';
 
 function App() {
@@ -282,6 +283,17 @@ function App() {
               <Layers2 size={18} />
               3. Tạo Poster
             </button>
+            <button
+              onClick={() => handleModeSwitch(AppMode.STORY)}
+              className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                mode === AppMode.STORY
+                  ? 'bg-gradient-to-r from-amber-600 to-yellow-500 text-white shadow-lg shadow-amber-900/50'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <BookImage size={18} />
+              4. Kể Chuyện AI
+            </button>
           </div>
         </div>
 
@@ -289,7 +301,9 @@ function App() {
 
           {mode === AppMode.POSTER && <PosterStudio />}
 
-          {mode !== AppMode.POSTER && (
+          {mode === AppMode.STORY && <StoryStudio />}
+
+          {(mode !== AppMode.POSTER && mode !== AppMode.STORY) && (
           <>
           <div className="text-center space-y-2 mb-8">
             <h2 className="text-3xl font-bold text-white">
@@ -396,6 +410,7 @@ function App() {
           )}
           </>
           )}
+
 
         </div>
       </main>

@@ -2,6 +2,7 @@ export enum AppMode {
   RESTORATION = 'RESTORATION',
   PERSONAL = 'PERSONAL',
   POSTER = 'POSTER',
+  STORY = 'STORY',
 }
 
 export type PosterStyle =
@@ -10,6 +11,36 @@ export type PosterStyle =
   | 'japanese_poster' | 'streetwear_hype' | 'luxury_skincare'
   | 'fitness_supplement' | 'bold_typography' | 'ai_futuristic'
   | 'neon_glow' | 'retro_vintage';
+
+export type StoryLayout = 'journey' | 'comparison' | 'multi_scene' | 'banner' | 'infographic';
+export type StoryStyle = 'gold_luxury' | 'cinematic_epic' | 'flat_minimal' | 'watercolor' | '3d_premium';
+export type StoryColorScheme = 'gold_white' | 'gold_dark' | 'full_color' | 'blue_gold' | 'earth_tones';
+
+export interface StoryConfig {
+  layout: StoryLayout;
+  style: StoryStyle;
+  colorScheme: StoryColorScheme;
+  // Text
+  headline: string;
+  subheadline: string;
+  quote: string;
+  bodyText: string;
+  // Journey layout
+  journeyStart: string;
+  journeyEnd: string;
+  journeyMilestones: string[];
+  // Comparison layout
+  leftLabel: string;
+  leftDescription: string;
+  rightLabel: string;
+  rightDescription: string;
+  // Multi-scene layout
+  sceneDescriptions: string[];
+  // Characters & Symbols
+  characters: string[];
+  symbols: string[];
+  additionalNotes: string;
+}
 
 export type PosterFormat =
   | 'instagram_post' | 'instagram_story' | 'facebook_ad'
