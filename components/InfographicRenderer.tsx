@@ -170,6 +170,49 @@ function getBadgeColors(sv: StyleVars, color: string) {
   return sv.badges[color] || sv.badges.pink;
 }
 
+function getIngredientEmoji(name: string): string {
+  const n = (name || '').toLowerCase();
+  if (n.includes('nấm') || n.includes('nam ')) return '🍄';
+  if (n.includes('thịt bò') || n.includes('thit bo') || n.includes('bò')) return '🥩';
+  if (n.includes('thịt heo') || n.includes('thit heo') || n.includes('heo')) return '🥓';
+  if (n.includes('tôm') || n.includes('tom shrimp')) return '🦐';
+  if (n.includes('mực') || n.includes('bạch tuộc')) return '🦑';
+  if (n.includes('cá') && !n.includes('cải')) return '🐟';
+  if (n.includes('trứng')) return '🥚';
+  if (n.includes('đậu hũ') || n.includes('đậu phụ') || n.includes('tofu') || n.includes('dau hu')) return '🫙';
+  if (n.includes('rau cải') || n.includes('cải') || n.includes('rau xanh') || n.includes('xà lách')) return '🥬';
+  if (n.includes('rau') && !n.includes('nước')) return '🌿';
+  if (n.includes('cà rốt') || n.includes('carrot')) return '🥕';
+  if (n.includes('bắp') || n.includes('ngô') || n.includes('corn')) return '🌽';
+  if (n.includes('khoai')) return '🥔';
+  if (n.includes('hành tây')) return '🧅';
+  if (n.includes('hành') || n.includes('hẹ')) return '🌱';
+  if (n.includes('tỏi') || n.includes('garlic')) return '🧄';
+  if (n.includes('gừng') || n.includes('ginger')) return '🫚';
+  if (n.includes('ớt') || n.includes('tiêu')) return '🌶️';
+  if (n.includes('chanh') || n.includes('lemon') || n.includes('lime')) return '🍋';
+  if (n.includes('cam') || n.includes('orange')) return '🍊';
+  if (n.includes('cà chua') || n.includes('tomato')) return '🍅';
+  if (n.includes('bơ ') || n.includes('avocado')) return '🥑';
+  if (n.includes('sữa') || n.includes('milk')) return '🥛';
+  if (n.includes('bơ') || n.includes('butter') || n.includes('cream')) return '🧈';
+  if (n.includes('nước dùng') || n.includes('nước')) return '💧';
+  if (n.includes('gia vị') || n.includes('muối') || n.includes('đường')) return '🧂';
+  if (n.includes('dầu ') || n.includes('oil')) return '🫙';
+  if (n.includes('mì') || n.includes('bún') || n.includes('phở') || n.includes('noodle')) return '🍜';
+  if (n.includes('cơm') || n.includes('rice')) return '🍚';
+  if (n.includes('trà') || n.includes('tea')) return '🍵';
+  if (n.includes('cà phê') || n.includes('coffee')) return '☕';
+  // Skincare / supplement
+  if (n.includes('vitamin c') || n.includes('ascorbic')) return '🍊';
+  if (n.includes('vitamin') || n.includes('omega') || n.includes('collagen')) return '✨';
+  if (n.includes('niacinamide') || n.includes('retinol') || n.includes('peptide')) return '🧬';
+  if (n.includes('hyaluronic') || n.includes('aloe') || n.includes('ceramide')) return '💧';
+  if (n.includes('chiết xuất') || n.includes('extract') || n.includes('essence')) return '🌿';
+  if (n.includes('serum') || n.includes('toner') || n.includes('moisturizer')) return '🧴';
+  return '🌿';
+}
+
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
 
 function Badges({ config, sv }: { config: InfographicConfig; sv: StyleVars }) {
@@ -212,27 +255,33 @@ function Ingredients({ config, sv }: { config: InfographicConfig; sv: StyleVars 
       }}>
         {config.leftSectionTitle || 'Nguyên Liệu'}
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {filled.map((ing, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Emoji bubble */}
             <div style={{
-              width: 50, height: 50, borderRadius: '50%', flexShrink: 0,
+              width: 58, height: 58, borderRadius: '50%', flexShrink: 0,
               background: getIngColor(sv.ingPalette, i),
-              border: `2px solid ${sv.ingBorder}`,
+              border: `2.5px solid ${sv.ingBorder}`,
+              boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: ing.amount ? 11 : 15, fontWeight: 800,
-              color: sv.sectionTitleColor, textAlign: 'center', padding: 2,
-              lineHeight: 1.1,
+              fontSize: 28, lineHeight: 1,
             }}>
-              {ing.amount || (i + 1)}
+              {getIngredientEmoji(ing.name)}
             </div>
+            {/* Text */}
             <div style={{ flex: 1, minWidth: 0 }}>
+              {ing.amount && (
+                <div style={{ fontSize: 11, fontWeight: 700, color: sv.subtitleColor, lineHeight: 1, marginBottom: 2 }}>
+                  {ing.amount}
+                </div>
+              )}
               <div style={{ fontSize: 13, fontWeight: 700, color: sv.textColor, lineHeight: 1.3 }}>
                 {ing.name}
               </div>
               {ing.note && (
                 <div style={{ fontSize: 11, color: sv.subtitleColor, marginTop: 1, lineHeight: 1.3 }}>
-                  {ing.note}
+                  ({ing.note})
                 </div>
               )}
             </div>
