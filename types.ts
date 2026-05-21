@@ -22,6 +22,7 @@ export type StoryColorScheme = 'gold_white' | 'gold_dark' | 'full_color' | 'blue
 export type InfographicType = 'recipe' | 'product_ingredients' | 'how_to_use' | 'product_brochure';
 export type InfographicStyle = 'soft_pastel' | 'clean_modern' | 'dark_luxury' | 'colorful_vibrant' | 'korean_minimal';
 export type InfographicLayout = 'classic_recipe' | 'hero_center' | 'left_hero' | 'top_hero' | 'grid_showcase';
+export type InfographicFormat = 'landscape' | 'square' | 'portrait' | 'story';
 
 export interface InfographicIngredient {
   amount: string;
@@ -44,6 +45,7 @@ export interface InfographicConfig {
   type: InfographicType;
   style: InfographicStyle;
   layout: InfographicLayout;
+  format: InfographicFormat;
   title: string;
   subtitle: string;
   heroDescription: string;

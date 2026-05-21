@@ -1,5 +1,15 @@
 import React, { forwardRef } from 'react';
-import type { InfographicConfig } from '../types';
+import type { InfographicConfig, InfographicFormat } from '../types';
+
+// ─── Format dimensions ────────────────────────────────────────────────────────
+
+interface FormatDim { w: number; h: number | null; pad: string; heroH: number; }
+const FORMAT_DIMS: Record<InfographicFormat, FormatDim> = {
+  landscape: { w: 1200, h: null,  pad: '52px 60px', heroH: 360 },
+  square:    { w: 1080, h: 1080,  pad: '44px 52px', heroH: 320 },
+  portrait:  { w: 1080, h: 1350,  pad: '44px 52px', heroH: 400 },
+  story:     { w: 1080, h: 1920,  pad: '56px 56px', heroH: 580 },
+};
 
 // ─── Style theme variables ────────────────────────────────────────────────────
 
@@ -834,6 +844,54 @@ function HeroImage({ heroImageUrl, sv, label }: { heroImageUrl: string | null; s
   );
 }
 
+// ─── Vertical layout (square / portrait / story) ─────────────────────────────
+
+function VerticalLayout({ config, sv, heroImageUrl, ingredientImages, dim }: {
+  config: InfographicConfig;
+  sv: StyleVars;
+  heroImageUrl: string | null;
+  ingredientImages?: (string | null)[];
+  dim: FormatDim;
+}) {
+  const isStory = dim.h === 1920;
+  return (
+    <div>
+      {/* Badges above hero */}
+      <Badges config={config} sv={sv} />
+
+      {/* Hero — full width, fixed height, cover crop */}
+      <div style={{
+        width: '100%', height: dim.heroH, borderRadius: 20, overflow: 'hidden',
+        background: sv.cardBg, border: `2px solid ${sv.cardBorder}`,
+        boxShadow: '0 12px 40px rgba(0,0,0,0.10)', marginBottom: 36,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}>
+        {heroImageUrl ? (
+          <img src={heroImageUrl} alt="Hero" crossOrigin="anonymous"
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        ) : (
+          <span style={{ fontSize: 80, color: sv.subtitleColor }}>🍲</span>
+        )}
+      </div>
+
+      {/* Ingredients + Steps */}
+      {isStory ? (
+        // Story: single column, full width each
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 36 }}>
+          <Ingredients config={config} sv={sv} ingredientImages={ingredientImages} />
+          <Steps config={config} sv={sv} />
+        </div>
+      ) : (
+        // Square / Portrait: 2-column side by side
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 36 }}>
+          <Ingredients config={config} sv={sv} ingredientImages={ingredientImages} />
+          <Steps config={config} sv={sv} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Layout variants ──────────────────────────────────────────────────────────
 
 interface LayoutProps {
@@ -912,9 +970,15 @@ interface Props {
 export const InfographicRenderer = forwardRef<HTMLDivElement, Props>(
   ({ config, heroImageUrl, ingredientImages }, ref) => {
     const sv = STYLES[config.style] || STYLES.soft_pastel;
+    const fmt = config.format || 'landscape';
+    const dim = FORMAT_DIMS[fmt];
+    const isVertical = fmt !== 'landscape';
 
     const renderLayout = () => {
       const props = { config, sv, heroImageUrl, ingredientImages };
+      if (isVertical) {
+        return <VerticalLayout {...props} dim={dim} />;
+      }
       switch (config.layout) {
         case 'hero_center':   return <HeroCenterLayout {...props} />;
         case 'left_hero':     return <LeftHeroLayout {...props} />;
@@ -928,10 +992,11 @@ export const InfographicRenderer = forwardRef<HTMLDivElement, Props>(
       <div
         ref={ref}
         style={{
-          width: 1200,
+          width: dim.w,
+          ...(dim.h ? { height: dim.h, overflow: 'hidden' } : {}),
           background: sv.bg,
           borderRadius: 28,
-          padding: '52px 60px',
+          padding: dim.pad,
           fontFamily: sv.titleFont,
           boxSizing: 'border-box',
           position: 'relative',
@@ -940,10 +1005,10 @@ export const InfographicRenderer = forwardRef<HTMLDivElement, Props>(
         {/* Title */}
         <div style={{
           textAlign: 'center',
-          fontSize: 62,
+          fontSize: isVertical ? 56 : 62,
           fontWeight: 900,
           color: sv.titleColor,
-          marginBottom: config.subtitle ? 6 : 28,
+          marginBottom: config.subtitle ? 6 : (isVertical ? 18 : 28),
           lineHeight: 1.15,
           letterSpacing: '-1.5px',
           fontFamily: sv.titleFont,
@@ -965,8 +1030,8 @@ export const InfographicRenderer = forwardRef<HTMLDivElement, Props>(
           </div>
         )}
 
-        {/* Badges */}
-        <Badges config={config} sv={sv} />
+        {/* Badges — landscape only; vertical layouts render badges internally */}
+        {!isVertical && <Badges config={config} sv={sv} />}
 
         {/* Layout */}
         {renderLayout()}

@@ -1,9 +1,16 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Download, RefreshCw, Plus, X, Check, ChevronDown, Zap, Sparkles, Image } from 'lucide-react';
 import {
-  InfographicConfig, InfographicType, InfographicStyle, InfographicLayout,
+  InfographicConfig, InfographicType, InfographicStyle, InfographicLayout, InfographicFormat,
   InfographicIngredient, InfographicStep, InfographicBadge,
 } from '../types';
+
+const FORMAT_OPTIONS: { id: InfographicFormat; label: string; ratio: string; icon: string; platforms: string }[] = [
+  { id: 'landscape', label: 'Landscape', ratio: '16:9', icon: '▬', platforms: 'YouTube · LinkedIn · Facebook Cover' },
+  { id: 'square',    label: 'Vuông',     ratio: '1:1',  icon: '■', platforms: 'Instagram Post · Facebook Post' },
+  { id: 'portrait',  label: 'Dọc',       ratio: '4:5',  icon: '▮', platforms: 'Instagram Portrait · Reels Cover' },
+  { id: 'story',     label: 'Story',     ratio: '9:16', icon: '▯', platforms: 'Story · TikTok · Reels' },
+];
 import {
   TYPE_TEMPLATES, STYLE_TEMPLATES, LAYOUT_TEMPLATES,
   getBadgePresets, generateHeroImage, generateAllIngredientIllustrations,
@@ -80,6 +87,7 @@ const DEFAULT_CONFIG: InfographicConfig = {
   type: 'recipe',
   style: 'soft_pastel',
   layout: 'classic_recipe',
+  format: 'landscape',
   title: '',
   subtitle: '',
   heroDescription: '',
@@ -202,10 +210,19 @@ export function InfographicStudio() {
         backgroundColor: null,
         logging: false,
       });
-      const link = document.createElement('a');
-      link.download = `infographic-${config.title.replace(/\s+/g, '-')}-${Date.now()}.png`;
-      link.href = canvas.toDataURL('image/png', 1.0);
-      link.click();
+      const filename = `infographic-${config.title.replace(/\s+/g, '-')}-${Date.now()}.png`;
+      // Use Blob URL so the browser saves directly to device storage
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      }, 'image/png', 1.0);
     } catch (err: any) {
       setError('Lỗi khi xuất ảnh: ' + (err.message || 'Thử lại nhé!'));
     } finally {
@@ -225,7 +242,7 @@ export function InfographicStudio() {
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
             <h3 className="text-xl font-bold text-white">{currentType.icon} Infographic sẵn sàng!</h3>
-            <p className="text-slate-400 text-sm mt-1">{config.title} · {currentStyle.label} · Text tiếng Việt chuẩn</p>
+            <p className="text-slate-400 text-sm mt-1">{config.title} · {currentStyle.label} · {FORMAT_OPTIONS.find(f => f.id === config.format)?.label} {FORMAT_OPTIONS.find(f => f.id === config.format)?.ratio}</p>
           </div>
           <div className="flex gap-3 flex-wrap">
             <button onClick={() => setHeroImageUrl(null)} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white transition-colors text-sm">
@@ -246,20 +263,20 @@ export function InfographicStudio() {
 
         {error && <div className="bg-red-500/10 border border-red-500/40 text-red-200 px-4 py-3 rounded-xl text-sm">⚠️ {error}</div>}
 
-        {/* Renderer — scaled to fit screen width, full 1200px internally */}
-        <div className="rounded-2xl overflow-auto border border-slate-700/60 bg-slate-900/30 shadow-2xl p-2">
-          <div style={{ minWidth: 320 }}>
-            <div style={{
-              transformOrigin: 'top left',
-              transform: 'scale(var(--infographic-scale, 1))',
-            }}>
-              <style>{`
-                @media (max-width: 1280px) { :root { --infographic-scale: calc((min(100vw, 1200px) - 32px) / 1200) } }
-              `}</style>
-              <InfographicRenderer ref={rendererRef} config={config} heroImageUrl={heroImageUrl} ingredientImages={ingredientImages} />
+        {/* Renderer — scaled to fit screen width */}
+        {(() => {
+          const fmtW = config.format !== 'landscape' ? 1080 : 1200;
+          return (
+            <div className="rounded-2xl overflow-auto border border-slate-700/60 bg-slate-900/30 shadow-2xl p-2">
+              <div style={{ minWidth: 320 }}>
+                <div style={{ transformOrigin: 'top left', transform: 'scale(var(--infographic-scale, 1))' }}>
+                  <style>{`:root { --infographic-scale: min(1, calc((100vw - 64px) / ${fmtW})) }`}</style>
+                  <InfographicRenderer ref={rendererRef} config={config} heroImageUrl={heroImageUrl} ingredientImages={ingredientImages} />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
+          );
+        })()}
 
         <div className="flex gap-3 justify-center pt-1">
           <button
@@ -501,10 +518,29 @@ export function InfographicStudio() {
 
             {showStylePanel && (
               <div className="px-5 pb-5 pt-2 border-t border-slate-800/60 space-y-5">
-                {/* Layout */}
+                {/* Format / Platform */}
                 <div>
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2.5">Bố cục</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2.5">Kích thước & Nền tảng</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {FORMAT_OPTIONS.map(f => (
+                      <button key={f.id} onClick={() => update('format', f.id)}
+                        className={`p-3 rounded-xl border text-center transition-all ${config.format === f.id ? 'border-amber-500 bg-amber-500/10 text-amber-200' : 'border-slate-700/60 bg-slate-800/30 text-slate-400 hover:border-slate-500'}`}>
+                        <div className="text-lg mb-1 leading-none">{f.icon}</div>
+                        <div className="text-xs font-bold">{f.label}</div>
+                        <div className="text-[10px] opacity-70 font-mono">{f.ratio}</div>
+                        <div className="text-[9px] text-slate-500 mt-0.5 leading-tight">{f.platforms}</div>
+                        {config.format === f.id && <Check size={10} className="mx-auto mt-1 text-amber-400" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Layout — landscape only */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2.5">
+                    Bố cục {config.format !== 'landscape' && <span className="text-slate-600 font-normal">(chỉ dùng với Landscape)</span>}
+                  </label>
+                  <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 ${config.format !== 'landscape' ? 'opacity-40 pointer-events-none' : ''}`}>
                     {(Object.entries(LAYOUT_TEMPLATES) as [InfographicLayout, typeof LAYOUT_TEMPLATES[InfographicLayout]][]).map(([id, tmpl]) => (
                       <button key={id} onClick={() => update('layout', id)}
                         className={`p-3 rounded-xl border text-center transition-all text-xs ${config.layout === id ? 'border-amber-500 bg-amber-500/10 text-amber-200' : 'border-slate-700/60 bg-slate-800/30 text-slate-400 hover:border-slate-500'}`}>
