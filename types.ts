@@ -1,6 +1,32 @@
 export enum AppMode {
   RESTORATION = 'RESTORATION',
   PERSONAL = 'PERSONAL',
+  POSTER = 'POSTER',
+}
+
+export type PosterStyle =
+  | 'minimal_luxury' | 'dark_premium' | 'cyberpunk' | 'cinematic'
+  | 'modern_ecommerce' | 'apple_minimal' | 'futuristic_tech'
+  | 'japanese_poster' | 'streetwear_hype' | 'luxury_skincare'
+  | 'fitness_supplement' | 'bold_typography' | 'ai_futuristic'
+  | 'neon_glow' | 'retro_vintage';
+
+export type PosterFormat =
+  | 'instagram_post' | 'instagram_story' | 'facebook_ad'
+  | 'shopee_banner' | 'tiktok_ad' | 'website_hero' | 'a4_poster';
+
+export type ProductCategory =
+  | 'auto' | 'skincare' | 'supplement' | 'perfume' | 'tech'
+  | 'fashion' | 'jewelry' | 'beverage' | 'food';
+
+export interface PosterConfig {
+  style: PosterStyle;
+  format: PosterFormat;
+  headline: string;
+  subheadline: string;
+  cta: string;
+  colorPreference: string;
+  productCategory: ProductCategory;
 }
 
 export interface GeneratedImage {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Briefcase, History, Wand2, RefreshCw, Layers, Box, User, Users, Package, ScanFace } from 'lucide-react';
+import { Sparkles, Briefcase, History, Wand2, RefreshCw, Layers, Box, User, Users, Package, ScanFace, Layers2 } from 'lucide-react';
 import { AppMode, PhotoConfig, DEFAULT_CONFIG } from './types';
 import { UploadArea } from './components/UploadArea';
 import { UploadedImage } from './components/MultiUploadArea';
@@ -7,6 +7,7 @@ import { SingleSlotUpload } from './components/SingleSlotUpload';
 import { Button } from './components/Button';
 import { ResultView } from './components/ResultView';
 import { ConfigPanel } from './components/ConfigPanel';
+import { PosterStudio } from './components/PosterStudio';
 import { restorePhoto, generatePersonalPhoto, fileToGenerativePart } from './services/openaiService';
 
 function App() {
@@ -251,8 +252,8 @@ function App() {
             <button
               onClick={() => handleModeSwitch(AppMode.PERSONAL)}
               className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                mode === AppMode.PERSONAL 
-                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/50' 
+                mode === AppMode.PERSONAL
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/50'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
@@ -262,24 +263,40 @@ function App() {
             <button
               onClick={() => handleModeSwitch(AppMode.RESTORATION)}
               className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                mode === AppMode.RESTORATION 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' 
+                mode === AppMode.RESTORATION
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
               <History size={18} />
               2. Phục chế ảnh cũ
             </button>
+            <button
+              onClick={() => handleModeSwitch(AppMode.POSTER)}
+              className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                mode === AppMode.POSTER
+                  ? 'bg-gradient-to-r from-rose-600 to-orange-600 text-white shadow-lg shadow-rose-900/50'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Layers2 size={18} />
+              3. Tạo Poster
+            </button>
           </div>
         </div>
 
         <div className="space-y-8">
+
+          {mode === AppMode.POSTER && <PosterStudio />}
+
+          {mode !== AppMode.POSTER && (
+          <>
           <div className="text-center space-y-2 mb-8">
             <h2 className="text-3xl font-bold text-white">
               {mode === AppMode.RESTORATION ? 'Phục chế ảnh cũ' : 'Studio Chân Dung AI'}
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              {mode === AppMode.RESTORATION 
+              {mode === AppMode.RESTORATION
                 ? 'Tải lên những tấm ảnh cũ, bị xước hoặc mờ. AI sẽ phục hồi độ sắc nét và màu sắc.'
                 : 'Tải lên 1 ảnh khuôn mặt rõ nét của bạn. AI sẽ tạo ra những bức ảnh chuyên nghiệp.'}
             </p>
@@ -368,7 +385,7 @@ function App() {
 
             </div>
           ) : (
-            <ResultView 
+            <ResultView
               originalImage={getPreviewImage() || ""}
               resultImage={resultUrl}
               onReset={() => {
@@ -376,6 +393,8 @@ function App() {
               }}
               mode={mode}
             />
+          )}
+          </>
           )}
 
         </div>
