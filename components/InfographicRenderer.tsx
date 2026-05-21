@@ -170,47 +170,473 @@ function getBadgeColors(sv: StyleVars, color: string) {
   return sv.badges[color] || sv.badges.pink;
 }
 
+// ─── Comprehensive ingredient → emoji library ─────────────────────────────────
+// Order matters: more specific keywords first, generic last.
+const ING_EMOJI_MAP: [string[], string][] = [
+  // ── MUSHROOMS ──────────────────────────────────────────────────────────────
+  [['nấm hương','nấm shiitake','shiitake'], '🍄'],
+  [['nấm kim châm','enoki'], '🍄'],
+  [['nấm đùi gà','king oyster','king trumpet'], '🍄'],
+  [['nấm bào ngư','oyster mushroom'], '🍄'],
+  [['nấm rơm','straw mushroom'], '🍄'],
+  [['nấm truffle','truffle'], '🍄'],
+  [['nấm mèo','wood ear','black fungus','mộc nhĩ'], '🍄'],
+  [['nấm linh chi','reishi'], '🍄'],
+  [['nấm'], '🍄'],
+
+  // ── BEEF & PORK ─────────────────────────────────────────────────────────────
+  [['thịt bò','bò lúc lắc','bít tết','steak','beef'], '🥩'],
+  [['sườn bò','xương bò'], '🦴'],
+  [['thịt heo','thịt lợn','ba chỉ','sườn heo','pork'], '🥓'],
+  [['giăm bông','ham','xúc xích','sausage'], '🌭'],
+  [['thịt xay','minced meat','ground meat'], '🥩'],
+  [['thịt','meat'], '🥩'],
+
+  // ── CHICKEN & POULTRY ───────────────────────────────────────────────────────
+  [['đùi gà','cánh gà','ức gà'], '🍗'],
+  [['thịt gà','gà','chicken','poultry'], '🍗'],
+  [['vịt','duck'], '🦆'],
+  [['ngỗng','goose'], '🦆'],
+
+  // ── EGGS ────────────────────────────────────────────────────────────────────
+  [['lòng đỏ trứng','egg yolk'], '🥚'],
+  [['lòng trắng trứng','egg white'], '🥚'],
+  [['trứng vịt lộn','balut'], '🥚'],
+  [['trứng','egg'], '🥚'],
+
+  // ── SEAFOOD ─────────────────────────────────────────────────────────────────
+  [['tôm hùm','lobster'], '🦞'],
+  [['tôm càng','crayfish'], '🦞'],
+  [['tôm','shrimp','prawn'], '🦐'],
+  [['cua','crab'], '🦀'],
+  [['ghẹ'], '🦀'],
+  [['mực ống','mực nang','mực','squid','calamari'], '🦑'],
+  [['bạch tuộc','octopus'], '🐙'],
+  [['hàu','oyster'], '🦪'],
+  [['sò','ngao','vẹm','clam','mussel','scallop'], '🦪'],
+  [['cá hồi','salmon'], '🐟'],
+  [['cá ngừ','tuna'], '🐟'],
+  [['cá tra','cá basa','cá lóc','cá chép','cá rô','cá thu'], '🐟'],
+  [['cá '], '🐟'],
+
+  // ── SOY & LEGUMES ───────────────────────────────────────────────────────────
+  [['đậu hũ','đậu phụ','tofu'], '🫙'],
+  [['đậu nành','soybean','soy'], '🫘'],
+  [['đậu lăng','lentil'], '🫘'],
+  [['đậu đỏ','red bean','kidney bean'], '🫘'],
+  [['đậu xanh','mung bean'], '🫘'],
+  [['đậu đen','black bean'], '🫘'],
+  [['đậu trắng','white bean','cannellini'], '🫘'],
+  [['đậu que','đậu đũa','green bean','string bean'], '🫛'],
+  [['đậu Hà Lan','snow pea','sugar snap','pea'], '🫛'],
+  [['đậu phộng','lạc','peanut'], '🥜'],
+  [['đậu'], '🫘'],
+
+  // ── LEAFY GREENS ────────────────────────────────────────────────────────────
+  [['cải thảo','bắp cải trắng','napa cabbage'], '🥬'],
+  [['bắp cải tím','bắp cải đỏ','red cabbage'], '🥬'],
+  [['bắp cải','cabbage'], '🥬'],
+  [['cải ngọt','bok choy','pak choi'], '🥬'],
+  [['cải bẹ','cải bẹ xanh','mustard green'], '🥬'],
+  [['rau cải','cải xanh'], '🥬'],
+  [['xà lách','lettuce','arugula'], '🥬'],
+  [['rau bina','spinach','chân vịt'], '🌿'],
+  [['rau muống','morning glory'], '🌿'],
+  [['rau mùi','ngò rí','coriander','cilantro'], '🌿'],
+  [['ngò gai','mùi tàu','sawtooth herb'], '🌿'],
+  [['tần ô','chrysanthemum greens'], '🌿'],
+  [['húng quế','basil'], '🌿'],
+  [['húng lủi','spearmint'], '🌿'],
+  [['bạc hà','mint'], '🌿'],
+  [['rau húng','herb'], '🌿'],
+  [['lá lốt'], '🍃'],
+  [['lá chanh','kaffir lime leaf'], '🍃'],
+  [['lá cà ri','curry leaf'], '🍃'],
+  [['lá bay','bay leaf'], '🍃'],
+  [['sả','lemongrass'], '🌿'],
+  [['hành lá','hành xanh','green onion','scallion'], '🌱'],
+  [['hẹ','chive'], '🌱'],
+  [['rau thơm','fresh herb','rau sống'], '🌿'],
+  [['rau xanh','rau'], '🌿'],
+
+  // ── ALLIUMS ─────────────────────────────────────────────────────────────────
+  [['hành tây','onion'], '🧅'],
+  [['hành tím','shallot'], '🧅'],
+  [['hành','scallion'], '🧅'],
+  [['tỏi tây','leek'], '🧄'],
+  [['tỏi','garlic'], '🧄'],
+
+  // ── ROOT VEGETABLES ─────────────────────────────────────────────────────────
+  [['gừng','ginger'], '🫚'],
+  [['nghệ','turmeric'], '🌿'],
+  [['cà rốt','carrot'], '🥕'],
+  [['củ cải trắng','daikon','radish'], '🥕'],
+  [['củ cải đỏ','beet','beetroot'], '🫙'],
+  [['khoai tây','potato'], '🥔'],
+  [['khoai lang','sweet potato'], '🍠'],
+  [['khoai môn','taro'], '🍠'],
+  [['khoai mỡ','yam'], '🍠'],
+  [['củ sắn','củ năng','water chestnut'], '🌰'],
+  [['củ đậu','jicama'], '🌰'],
+  [['măng','bamboo shoot'], '🎍'],
+  [['ngó sen','lotus root'], '🌺'],
+  [['khoai'], '🥔'],
+
+  // ── CRUCIFEROUS & OTHER VEGETABLES ─────────────────────────────────────────
+  [['súp lơ xanh','broccoli'], '🥦'],
+  [['súp lơ trắng','súp lơ','cauliflower'], '🥦'],
+  [['cải Brussels','brussels sprout'], '🥦'],
+  [['cần tây','celery'], '🌿'],
+  [['atisô','artichoke'], '🌺'],
+
+  // ── PEPPERS & TOMATOES ──────────────────────────────────────────────────────
+  [['ớt chuông','bell pepper','capsicum','paprika'], '🫑'],
+  [['ớt xanh','green chili'], '🌶️'],
+  [['ớt','chili','chile'], '🌶️'],
+  [['tiêu đen','tiêu trắng','black pepper','white pepper'], '🫙'],
+  [['cà chua bi','cherry tomato'], '🍅'],
+  [['cà chua','tomato'], '🍅'],
+  [['cà tím','eggplant','aubergine'], '🍆'],
+
+  // ── CUCURBITS ───────────────────────────────────────────────────────────────
+  [['bí đỏ','bí ngô','pumpkin','butternut squash'], '🎃'],
+  [['bí xanh','bí','zucchini','courgette'], '🥒'],
+  [['dưa leo','dưa chuột','cucumber'], '🥒'],
+
+  // ── CORN ────────────────────────────────────────────────────────────────────
+  [['bắp non','baby corn'], '🌽'],
+  [['bắp ngô','bắp','ngô','corn'], '🌽'],
+
+  // ── FRUITS ──────────────────────────────────────────────────────────────────
+  [['bơ','avocado'], '🥑'],
+  [['dừa','coconut'], '🥥'],
+  [['xoài','mango'], '🥭'],
+  [['dứa','thơm','khóm','pineapple'], '🍍'],
+  [['dưa hấu','watermelon'], '🍉'],
+  [['dưa lưới','cantaloupe','melon'], '🍈'],
+  [['chuối','banana'], '🍌'],
+  [['nho','grape','raisin'], '🍇'],
+  [['dâu tây','strawberry'], '🍓'],
+  [['việt quất','blueberry'], '🫐'],
+  [['cherry','anh đào'], '🍒'],
+  [['đào','peach'], '🍑'],
+  [['mận','plum','prune'], '🫐'],
+  [['lê','pear'], '🍐'],
+  [['táo xanh','táo đỏ','táo','apple'], '🍎'],
+  [['cam','orange'], '🍊'],
+  [['quýt','mandarin','tangerine'], '🍊'],
+  [['bưởi','grapefruit','pomelo'], '🍊'],
+  [['chanh dây','passion fruit'], '🟡'],
+  [['chanh vàng','lemon'], '🍋'],
+  [['chanh xanh','lime'], '🍋'],
+  [['chanh','citrus'], '🍋'],
+  [['kiwi'], '🥝'],
+  [['ổi','guava'], '🍐'],
+  [['vải','lychee'], '🍒'],
+  [['nhãn','longan'], '🍒'],
+  [['chôm chôm','rambutan'], '🍒'],
+  [['thanh long','dragon fruit','pitaya'], '🍓'],
+  [['mít','jackfruit'], '🍈'],
+  [['đu đủ','papaya'], '🍈'],
+  [['sapoche','sapodilla'], '🍂'],
+  [['sầu riêng','durian'], '🌵'],
+
+  // ── GRAINS & NOODLES ────────────────────────────────────────────────────────
+  [['gạo nếp','sticky rice','glutinous rice'], '🍙'],
+  [['gạo','rice'], '🌾'],
+  [['cơm','cooked rice'], '🍚'],
+  [['bún bò','bún riêu','bún bò huế'], '🍜'],
+  [['bún','rice noodle','vermicelli'], '🍜'],
+  [['phở','pho'], '🍜'],
+  [['hủ tiếu','hủ tíu'], '🍜'],
+  [['miến','glass noodle','cellophane noodle'], '🍜'],
+  [['mì xào','mì ăn liền','instant noodle','ramen'], '🍜'],
+  [['mì udon','udon'], '🍜'],
+  [['pasta','spaghetti','fettuccine','penne'], '🍝'],
+  [['mì','noodle'], '🍜'],
+  [['bánh phở','bánh cuốn'], '🍜'],
+  [['bánh mì','bread','sourdough','baguette'], '🍞'],
+  [['bánh quy','cracker','biscuit'], '🍘'],
+  [['ngũ cốc','oatmeal','oat','yến mạch'], '🌾'],
+  [['yến mạch','granola'], '🌾'],
+  [['quinoa','hạt diêm mạch'], '🌾'],
+  [['bột mì','flour'], '🌾'],
+  [['bột năng','bột bắp','tinh bột corn starch','starch'], '🌾'],
+  [['bột'], '🌾'],
+
+  // ── DAIRY ───────────────────────────────────────────────────────────────────
+  [['phô mai','cheese','parmesan','mozzarella'], '🧀'],
+  [['sữa chua','yogurt','yoghurt'], '🥛'],
+  [['whipping cream','heavy cream','kem tươi'], '🍦'],
+  [['bơ lạt','bơ nhạt','butter'], '🧈'],
+  [['bơ thực vật','margarine'], '🧈'],
+  [['sữa bò','sữa tươi','whole milk'], '🥛'],
+  [['sữa đặc','condensed milk'], '🥛'],
+  [['sữa dừa','coconut milk','nước cốt dừa'], '🥥'],
+  [['sữa hạnh nhân','almond milk'], '🥛'],
+  [['sữa yến mạch','oat milk'], '🥛'],
+  [['sữa','milk'], '🥛'],
+
+  // ── NUTS & SEEDS ────────────────────────────────────────────────────────────
+  [['đậu phộng rang','lạc rang','roasted peanut'], '🥜'],
+  [['đậu phộng','lạc','peanut'], '🥜'],
+  [['hạt điều','cashew'], '🌰'],
+  [['hạnh nhân','almond'], '🌰'],
+  [['óc chó','walnut'], '🌰'],
+  [['hạt dẻ','chestnut','hazelnut'], '🌰'],
+  [['hạt macadamia','macadamia'], '🌰'],
+  [['hạt pistachio','pistachio'], '🌰'],
+  [['hạt thông','pine nut'], '🌰'],
+  [['mè đen','mè trắng','vừng','sesame'], '🌰'],
+  [['hạt hướng dương','sunflower seed'], '🌻'],
+  [['hạt bí','pumpkin seed'], '🌰'],
+  [['hạt chia','chia seed'], '🌱'],
+  [['hạt lanh','flaxseed','linseed'], '🌱'],
+  [['hạt hemp','hemp seed'], '🌱'],
+
+  // ── OILS & FATS ─────────────────────────────────────────────────────────────
+  [['dầu oliu','olive oil'], '🫙'],
+  [['dầu dừa','coconut oil'], '🥥'],
+  [['dầu mè','sesame oil'], '🫙'],
+  [['dầu cá','fish oil'], '🐟'],
+  [['dầu hào','oyster sauce'], '🦪'],
+  [['dầu ăn','cooking oil','vegetable oil'], '🫙'],
+  [['dầu','oil'], '🫙'],
+
+  // ── CONDIMENTS & SAUCES ─────────────────────────────────────────────────────
+  [['nước mắm','fish sauce'], '🫙'],
+  [['xì dầu','nước tương','soy sauce','tamari'], '🫙'],
+  [['tương hoisin','hoisin sauce'], '🫙'],
+  [['tương đen','oyster sauce'], '🫙'],
+  [['tương cà','ketchup','tomato paste'], '🍅'],
+  [['tương ớt','sriracha','hot sauce','chili sauce'], '🌶️'],
+  [['miso','miso paste'], '🫙'],
+  [['dấm gạo','dấm táo','rice vinegar','apple cider vinegar','vinegar','dấm'], '🫙'],
+  [['mật ong','honey'], '🍯'],
+  [['đường nâu','đường thốt nốt','brown sugar','palm sugar'], '🍯'],
+  [['đường','sugar'], '🍯'],
+  [['muối biển','muối hồng','salt'], '🧂'],
+  [['gia vị','seasoning','spice mix','five spice'], '🧂'],
+
+  // ── SPICES (DRY) ────────────────────────────────────────────────────────────
+  [['quế','cinnamon'], '🌿'],
+  [['hồi','star anise'], '🌿'],
+  [['đinh hương','clove'], '🌿'],
+  [['thảo quả','cardamom'], '🌿'],
+  [['tiêu sọ','peppercorn'], '🌿'],
+  [['ớt bột','paprika powder','cayenne'], '🌶️'],
+  [['bột cà ri','curry powder'], '🌿'],
+  [['cumin','thì là'], '🌿'],
+  [['nghệ bột','turmeric powder','nghệ'], '🌿'],
+  [['bột ớt','chili powder'], '🌶️'],
+
+  // ── LIQUIDS & BROTHS ────────────────────────────────────────────────────────
+  [['nước dùng gà','chicken broth','chicken stock'], '🫕'],
+  [['nước dùng bò','beef broth','beef stock'], '🫕'],
+  [['nước dùng','broth','stock','soup base'], '🫕'],
+  [['rượu vang','wine'], '🍷'],
+  [['rượu sake','sake','mirin'], '🍶'],
+  [['bia','beer'], '🍺'],
+  [['nước dừa','coconut water'], '🥥'],
+  [['nước cam','orange juice'], '🍊'],
+  [['nước chanh','lemon juice','lime juice'], '🍋'],
+  [['nước ép','juice'], '🥤'],
+  [['nước','water'], '💧'],
+
+  // ── TEA & COFFEE ────────────────────────────────────────────────────────────
+  [['trà xanh','green tea','matcha'], '🍵'],
+  [['trà đen','black tea'], '🍵'],
+  [['trà thảo mộc','herbal tea'], '🍵'],
+  [['cà phê','coffee','espresso'], '☕'],
+  [['trà'], '🍵'],
+
+  // ── CHOCOLATE & SWEETS ──────────────────────────────────────────────────────
+  [['chocolate đen','dark chocolate'], '🍫'],
+  [['chocolate trắng','white chocolate'], '🍫'],
+  [['chocolate','cacao','cocoa'], '🍫'],
+  [['vani','vanilla'], '🌿'],
+  [['caramel'], '🍯'],
+  [['syrup','maple syrup'], '🍯'],
+
+  // ── BAKING ──────────────────────────────────────────────────────────────────
+  [['men nở','yeast'], '🫧'],
+  [['bột nở','baking powder','baking soda'], '🌾'],
+  [['gelatin','agar','thạch'], '🫙'],
+  [['pectin'], '🫙'],
+
+  // ── SKINCARE — VITAMINS ─────────────────────────────────────────────────────
+  [['vitamin c','ascorbic acid','ascorbyl glucoside','sodium ascorbyl'], '🍊'],
+  [['vitamin e','tocopherol','tocopheryl'], '🌿'],
+  [['vitamin a','retinol','retinal','tretinoin','retinoid'], '✨'],
+  [['vitamin b3','niacinamide','nicotinamide'], '🧬'],
+  [['vitamin b5','panthenol','pantothenic'], '🧬'],
+  [['vitamin b12','biotin','vitamin b'], '💊'],
+  [['vitamin d','cholecalciferol'], '☀️'],
+  [['vitamin k','phylloquinone'], '🌿'],
+  [['vitamin'], '💊'],
+
+  // ── SKINCARE — ACIDS ────────────────────────────────────────────────────────
+  [['aha','alpha hydroxy','glycolic acid','lactic acid','mandelic acid'], '⚗️'],
+  [['bha','beta hydroxy','salicylic acid'], '⚗️'],
+  [['pha','polyhydroxy','gluconolactone'], '⚗️'],
+  [['azelaic acid','axit azelaic'], '⚗️'],
+  [['kojic acid','axit kojic'], '⚗️'],
+  [['ferulic acid'], '⚗️'],
+  [['tranexamic acid'], '⚗️'],
+  [['malic acid','citric acid'], '⚗️'],
+
+  // ── SKINCARE — HYDRATORS ────────────────────────────────────────────────────
+  [['hyaluronic acid','sodium hyaluronate','axit hyaluronic'], '💧'],
+  [['glycerin','glycerol'], '💧'],
+  [['propanediol','butylene glycol'], '💧'],
+  [['aloe vera','lô hội','nha đam'], '🌵'],
+  [['panthenol'], '💧'],
+  [['sorbitol','xylitol'], '💧'],
+
+  // ── SKINCARE — PROTEINS & PEPTIDES ─────────────────────────────────────────
+  [['collagen','elastin'], '✨'],
+  [['peptide','matrixyl','argireline','leuphasyl'], '🧬'],
+  [['protein'], '🧬'],
+  [['amino acid','glutamine','glycine'], '🧬'],
+
+  // ── SKINCARE — BARRIER & LIPIDS ────────────────────────────────────────────
+  [['ceramide','phytosphingosine'], '🧴'],
+  [['squalane','squalene'], '🌿'],
+  [['jojoba oil','jojoba'], '🌿'],
+  [['argan oil','argan'], '🌿'],
+  [['rosehip oil','rosehip'], '🌹'],
+  [['marula oil'], '🌿'],
+  [['bakuchiol'], '🌿'],
+  [['shea butter','shea'], '🧈'],
+  [['cocoa butter'], '🍫'],
+
+  // ── SKINCARE — BOTANICALS ───────────────────────────────────────────────────
+  [['chiết xuất hoa hồng','rose extract'], '🌹'],
+  [['hoa hồng','rose water','rosehip'], '🌹'],
+  [['trà xanh','green tea extract','egcg'], '🍵'],
+  [['tràm trà','tea tree'], '🌿'],
+  [['hoa cúc','chamomile'], '🌼'],
+  [['lavender','oải hương'], '💜'],
+  [['hoa oải hương'], '💜'],
+  [['chiết xuất lựu','pomegranate'], '🍎'],
+  [['chiết xuất việt quất','blueberry extract'], '🫐'],
+  [['chiết xuất cam','citrus extract'], '🍊'],
+  [['chiết xuất','extract','plant extract'], '🌸'],
+
+  // ── SKINCARE — ACTIVES & MISC ──────────────────────────────────────────────
+  [['spf','sunscreen','zinc oxide','titanium dioxide'], '☀️'],
+  [['centella','rau má','cica'], '🌿'],
+  [['snail mucin','chiết xuất ốc'], '🐌'],
+  [['propolis'], '🍯'],
+  [['neem','chiết xuất neem'], '🌿'],
+  [['resveratrol'], '🍇'],
+  [['adenosine'], '✨'],
+  [['allantoin'], '🌿'],
+  [['madecassoside'], '🌿'],
+  [['serum','essence serum'], '🧴'],
+  [['toner','lotion dưỡng'], '🧴'],
+  [['kem dưỡng','moisturizer','cream'], '🧴'],
+
+  // ── SUPPLEMENTS ─────────────────────────────────────────────────────────────
+  [['omega 3','omega-3','dha','epa','fish oil supplement'], '🐟'],
+  [['collagen supplement','collagen peptide'], '✨'],
+  [['probiotics','probiotic','prebiotic','lactobacillus','bifidobacterium'], '🦠'],
+  [['kẽm','zinc'], '💊'],
+  [['sắt','iron supplement'], '💊'],
+  [['canxi','calcium'], '💊'],
+  [['magie','magnesium'], '💊'],
+  [['kali','potassium'], '💊'],
+  [['biotin'], '💊'],
+  [['whey protein','casein protein'], '💪'],
+  [['protein shake','protein powder'], '💪'],
+  [['enzyme','digestive enzyme'], '⚗️'],
+  [['melatonin'], '😴'],
+  [['thực phẩm chức năng','supplement','viên uống'], '💊'],
+  [['thuốc'], '💊'],
+];
+
 function getIngredientEmoji(name: string): string {
   const n = (name || '').toLowerCase();
-  if (n.includes('nấm') || n.includes('nam ')) return '🍄';
-  if (n.includes('thịt bò') || n.includes('thit bo') || n.includes('bò')) return '🥩';
-  if (n.includes('thịt heo') || n.includes('thit heo') || n.includes('heo')) return '🥓';
-  if (n.includes('tôm') || n.includes('tom shrimp')) return '🦐';
-  if (n.includes('mực') || n.includes('bạch tuộc')) return '🦑';
-  if (n.includes('cá') && !n.includes('cải')) return '🐟';
-  if (n.includes('trứng')) return '🥚';
-  if (n.includes('đậu hũ') || n.includes('đậu phụ') || n.includes('tofu') || n.includes('dau hu')) return '🫙';
-  if (n.includes('rau cải') || n.includes('cải') || n.includes('rau xanh') || n.includes('xà lách')) return '🥬';
-  if (n.includes('rau') && !n.includes('nước')) return '🌿';
-  if (n.includes('cà rốt') || n.includes('carrot')) return '🥕';
-  if (n.includes('bắp') || n.includes('ngô') || n.includes('corn')) return '🌽';
-  if (n.includes('khoai')) return '🥔';
-  if (n.includes('hành tây')) return '🧅';
-  if (n.includes('hành') || n.includes('hẹ')) return '🌱';
-  if (n.includes('tỏi') || n.includes('garlic')) return '🧄';
-  if (n.includes('gừng') || n.includes('ginger')) return '🫚';
-  if (n.includes('ớt') || n.includes('tiêu')) return '🌶️';
-  if (n.includes('chanh') || n.includes('lemon') || n.includes('lime')) return '🍋';
-  if (n.includes('cam') || n.includes('orange')) return '🍊';
-  if (n.includes('cà chua') || n.includes('tomato')) return '🍅';
-  if (n.includes('bơ ') || n.includes('avocado')) return '🥑';
-  if (n.includes('sữa') || n.includes('milk')) return '🥛';
-  if (n.includes('bơ') || n.includes('butter') || n.includes('cream')) return '🧈';
-  if (n.includes('nước dùng') || n.includes('nước')) return '💧';
-  if (n.includes('gia vị') || n.includes('muối') || n.includes('đường')) return '🧂';
-  if (n.includes('dầu ') || n.includes('oil')) return '🫙';
-  if (n.includes('mì') || n.includes('bún') || n.includes('phở') || n.includes('noodle')) return '🍜';
-  if (n.includes('cơm') || n.includes('rice')) return '🍚';
-  if (n.includes('trà') || n.includes('tea')) return '🍵';
-  if (n.includes('cà phê') || n.includes('coffee')) return '☕';
-  // Skincare / supplement
-  if (n.includes('vitamin c') || n.includes('ascorbic')) return '🍊';
-  if (n.includes('vitamin') || n.includes('omega') || n.includes('collagen')) return '✨';
-  if (n.includes('niacinamide') || n.includes('retinol') || n.includes('peptide')) return '🧬';
-  if (n.includes('hyaluronic') || n.includes('aloe') || n.includes('ceramide')) return '💧';
-  if (n.includes('chiết xuất') || n.includes('extract') || n.includes('essence')) return '🌿';
-  if (n.includes('serum') || n.includes('toner') || n.includes('moisturizer')) return '🧴';
+  for (const [keywords, emoji] of ING_EMOJI_MAP) {
+    if (keywords.some(k => n.includes(k.toLowerCase()))) return emoji;
+  }
   return '🌿';
+}
+
+// Real food photos from Unsplash (pre-curated for common Vietnamese ingredients)
+const UNSPLASH_PHOTOS: Record<string, string> = {
+  '🍄': 'https://images.unsplash.com/photo-1607269310177-e40f24a9c72c?w=120&h=120&fit=crop&auto=format',
+  '🥩': 'https://images.unsplash.com/photo-1546964124-0cce460f38ef?w=120&h=120&fit=crop&auto=format',
+  '🥓': 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=120&h=120&fit=crop&auto=format',
+  '🍗': 'https://images.unsplash.com/photo-1604503468506-a8da13d11d36?w=120&h=120&fit=crop&auto=format',
+  '🥚': 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=120&h=120&fit=crop&auto=format',
+  '🦐': 'https://images.unsplash.com/photo-1565680018434-b513d5e5fd47?w=120&h=120&fit=crop&auto=format',
+  '🦀': 'https://images.unsplash.com/photo-1550735490-7e9b0cfd8e39?w=120&h=120&fit=crop&auto=format',
+  '🦑': 'https://images.unsplash.com/photo-1608935405171-3a58de6acf72?w=120&h=120&fit=crop&auto=format',
+  '🐟': 'https://images.unsplash.com/photo-1534482421-64566f976cfa?w=120&h=120&fit=crop&auto=format',
+  '🫘': 'https://images.unsplash.com/photo-1620706857370-e1b9770e8bb1?w=120&h=120&fit=crop&auto=format',
+  '🫙': 'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=120&h=120&fit=crop&auto=format',
+  '🥬': 'https://images.unsplash.com/photo-1594282418426-a7fb5ce0bbc8?w=120&h=120&fit=crop&auto=format',
+  '🌿': 'https://images.unsplash.com/photo-1564844536311-de546a28c87d?w=120&h=120&fit=crop&auto=format',
+  '🍃': 'https://images.unsplash.com/photo-1592417817098-8fd3d9eb14a5?w=120&h=120&fit=crop&auto=format',
+  '🌱': 'https://images.unsplash.com/photo-1620706857370-e1b9770e8bb1?w=120&h=120&fit=crop&auto=format',
+  '🧅': 'https://images.unsplash.com/photo-1508747703725-719777637510?w=120&h=120&fit=crop&auto=format',
+  '🧄': 'https://images.unsplash.com/photo-1474440692490-2e83ae13ba29?w=120&h=120&fit=crop&auto=format',
+  '🫚': 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=120&h=120&fit=crop&auto=format',
+  '🌶️': 'https://images.unsplash.com/photo-1583119022894-919a68a3d0e3?w=120&h=120&fit=crop&auto=format',
+  '🥕': 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=120&h=120&fit=crop&auto=format',
+  '🍅': 'https://images.unsplash.com/photo-1546793665-c74683f339c1?w=120&h=120&fit=crop&auto=format',
+  '🍆': 'https://images.unsplash.com/photo-1531150756636-5a45e5432e1e?w=120&h=120&fit=crop&auto=format',
+  '🫑': 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=120&h=120&fit=crop&auto=format',
+  '🥦': 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=120&h=120&fit=crop&auto=format',
+  '🥒': 'https://images.unsplash.com/photo-1568584711271-6b1e68cda12e?w=120&h=120&fit=crop&auto=format',
+  '🌽': 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=120&h=120&fit=crop&auto=format',
+  '🥔': 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=120&h=120&fit=crop&auto=format',
+  '🍠': 'https://images.unsplash.com/photo-1596097635121-14b63b7a0c19?w=120&h=120&fit=crop&auto=format',
+  '🥑': 'https://images.unsplash.com/photo-1519162808019-7de1683fa2ad?w=120&h=120&fit=crop&auto=format',
+  '🥥': 'https://images.unsplash.com/photo-1621248618620-e1f72c5d1e33?w=120&h=120&fit=crop&auto=format',
+  '🥭': 'https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=120&h=120&fit=crop&auto=format',
+  '🍍': 'https://images.unsplash.com/photo-1550258987-190a2d41a8ba?w=120&h=120&fit=crop&auto=format',
+  '🍊': 'https://images.unsplash.com/photo-1582979512210-99b6a53386f9?w=120&h=120&fit=crop&auto=format',
+  '🍋': 'https://images.unsplash.com/photo-1582294237-729b8b1e4a80?w=120&h=120&fit=crop&auto=format',
+  '🍎': 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=120&h=120&fit=crop&auto=format',
+  '🍇': 'https://images.unsplash.com/photo-1537640538966-79f369143f8f?w=120&h=120&fit=crop&auto=format',
+  '🍓': 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=120&h=120&fit=crop&auto=format',
+  '🍌': 'https://images.unsplash.com/photo-1481349518771-20055b2a7b24?w=120&h=120&fit=crop&auto=format',
+  '🥜': 'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce?w=120&h=120&fit=crop&auto=format',
+  '🌰': 'https://images.unsplash.com/photo-1604152135912-04a022e23696?w=120&h=120&fit=crop&auto=format',
+  '🥛': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=120&h=120&fit=crop&auto=format',
+  '🧀': 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=120&h=120&fit=crop&auto=format',
+  '🧈': 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=120&h=120&fit=crop&auto=format',
+  '🍚': 'https://images.unsplash.com/photo-1536304929831-ee1ca9d44906?w=120&h=120&fit=crop&auto=format',
+  '🍜': 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=120&h=120&fit=crop&auto=format',
+  '🍵': 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=120&h=120&fit=crop&auto=format',
+  '☕': 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=120&h=120&fit=crop&auto=format',
+  '🍫': 'https://images.unsplash.com/photo-1549007994-cb92caebd54b?w=120&h=120&fit=crop&auto=format',
+  '🍯': 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=120&h=120&fit=crop&auto=format',
+  '🧂': 'https://images.unsplash.com/photo-1626196340162-3a45b76e3e9a?w=120&h=120&fit=crop&auto=format',
+  '💧': 'https://images.unsplash.com/photo-1559839914-17aae19cec71?w=120&h=120&fit=crop&auto=format',
+  '🫕': 'https://images.unsplash.com/photo-1547592180-85f173990554?w=120&h=120&fit=crop&auto=format',
+  '🌾': 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=120&h=120&fit=crop&auto=format',
+  '🧴': 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=120&h=120&fit=crop&auto=format',
+  '💊': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=120&h=120&fit=crop&auto=format',
+  '🌵': 'https://images.unsplash.com/photo-1509423350716-97f9360b4e09?w=120&h=120&fit=crop&auto=format',
+  '🌹': 'https://images.unsplash.com/photo-1518895949257-7621c3c786d7?w=120&h=120&fit=crop&auto=format',
+  '🌼': 'https://images.unsplash.com/photo-1490750967868-88df5691cc8a?w=120&h=120&fit=crop&auto=format',
+  '✨': 'https://images.unsplash.com/photo-1567168544813-cc03465b4fa8?w=120&h=120&fit=crop&auto=format',
+  '🧬': 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?w=120&h=120&fit=crop&auto=format',
+  '⚗️': 'https://images.unsplash.com/photo-1576086213369-97a306d36557?w=120&h=120&fit=crop&auto=format',
+  '☀️': 'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=120&h=120&fit=crop&auto=format',
+  '🌸': 'https://images.unsplash.com/photo-1490750967868-88df5691cc8a?w=120&h=120&fit=crop&auto=format',
+  '💜': 'https://images.unsplash.com/photo-1499578124509-1611b77778b8?w=120&h=120&fit=crop&auto=format',
+  '💪': 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=120&h=120&fit=crop&auto=format',
+  '🦠': 'https://images.unsplash.com/photo-1584036561566-baf8f5f1b144?w=120&h=120&fit=crop&auto=format',
+};
+
+function getIngredientImageUrl(name: string): { url: string; emoji: string } {
+  const emoji = getIngredientEmoji(name);
+  const url = UNSPLASH_PHOTOS[emoji] || UNSPLASH_PHOTOS['🌿'];
+  return { url, emoji };
 }
 
 // ─── Sub-renderers ────────────────────────────────────────────────────────────
@@ -256,18 +682,33 @@ function Ingredients({ config, sv }: { config: InfographicConfig; sv: StyleVars 
         {config.leftSectionTitle || 'Nguyên Liệu'}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {filled.map((ing, i) => (
+        {filled.map((ing, i) => {
+          const { url, emoji } = getIngredientImageUrl(ing.name);
+          return (
           <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {/* Emoji bubble */}
+            {/* Photo bubble with emoji fallback */}
             <div style={{
               width: 58, height: 58, borderRadius: '50%', flexShrink: 0,
               background: getIngColor(sv.ingPalette, i),
               border: `2.5px solid ${sv.ingBorder}`,
               boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
+              overflow: 'hidden',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 28, lineHeight: 1,
             }}>
-              {getIngredientEmoji(ing.name)}
+              <img
+                src={url}
+                alt={ing.name}
+                crossOrigin="anonymous"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  target.style.display = 'none';
+                  if (target.parentElement) {
+                    target.parentElement.textContent = emoji;
+                  }
+                }}
+              />
             </div>
             {/* Text */}
             <div style={{ flex: 1, minWidth: 0 }}>
@@ -286,7 +727,7 @@ function Ingredients({ config, sv }: { config: InfographicConfig; sv: StyleVars 
               )}
             </div>
           </div>
-        ))}
+        ); })}
         {filled.length === 0 && (
           <p style={{ color: sv.subtitleColor, fontSize: 12, fontStyle: 'italic' }}>Chưa có thành phần</p>
         )}
