@@ -13,6 +13,18 @@ interface ConfigPanelProps {
 
 // 1. SPECIAL CREATIVE STYLES
 const SPECIAL_STYLES: OptionItem[] = [
+  { id: 'clean_girl', label: '✨ Clean Girl (TikTok Viral)', value: 'Clean girl aesthetic, dewy natural skin, no-makeup makeup look, minimal neutral clothing, effortless real-girl beauty, viral social media aesthetic' },
+  { id: 'quiet_luxury', label: '💎 Quiet Luxury (Old Money)', value: 'Quiet luxury old money aesthetic, understated premium clothing, muted neutral palette, Loro Piana and Brunello Cucinelli vibes, timeless effortless elegance' },
+  { id: 'dark_academia', label: '📚 Dark Academia', value: 'Dark academia aesthetic, moodily lit, rich warm tones, library or stone architecture setting, intellectual and romantic atmosphere, vintage scholarly vibe' },
+  { id: 'film_candid_35mm', label: '📷 Film 35mm Candid', value: 'Authentic 35mm analog film photography, candid street or lifestyle moment, beautiful grain and light leaks, natural unposed genuine expression' },
+  { id: 'y2k_fashion', label: '🌀 Y2K Aesthetic (2000s)', value: 'Y2K fashion aesthetic, year 2000s style, glossy metallic textures, bold colors, nostalgic early internet pop culture vibes' },
+  { id: 'vogue_editorial', label: '📰 Vogue Editorial (Cover)', value: 'Vogue magazine editorial cover shoot, high fashion studio lighting, powerful commanding pose, aspirational luxury fashion photography' },
+  { id: 'korean_beauty', label: '🌸 Korean Beauty (K-beauty)', value: 'Korean beauty aesthetic, glass skin effect, soft natural lighting, minimal fresh makeup, elegant and youthful Korean photography style' },
+  { id: 'moody_editorial', label: '🌑 Moody Editorial Fashion', value: 'Dark moody editorial fashion photography, dramatic shadows, rich jewel tone colors, intense emotional atmosphere, high-concept fashion storytelling' },
+  { id: 'cinematic_still', label: '🎬 Cinematic Still (Movie Frame)', value: 'Cinematic movie still frame, narrative atmosphere, professional color grade, feels like a scene from an acclaimed film, widescreen composition' },
+  { id: 'harajuku_tokyo', label: '🗼 Harajuku Tokyo Street', value: 'Harajuku Tokyo street fashion photography, vibrant and eclectic style, busy Japanese street background, colorful and energetic urban youth culture' },
+  { id: 'supermodel_90s', label: '👑 Supermodel 90s Editorial', value: '1990s supermodel editorial style, strong powerful poses, high contrast film look, iconic era fashion photography, Helmut Newton inspired' },
+  { id: 'nature_editorial', label: '🌿 Nature Editorial (Tự nhiên)', value: 'Editorial portrait in natural outdoor setting, lush greenery or open field, golden light, effortless beauty in nature, fashion-meets-landscape' },
   { id: '3d_fb_profile', label: '✨ Ngồi trên Profile Facebook', value: 'Surreal 3D render art, cute miniature character sitting casually on top of a floating transparent Facebook profile interface screen, social media icon elements floating around, high quality 3D character design, soft global illumination' },
   { id: '3d_post_window', label: '✨ Ngồi trên khung bài đăng', value: 'Creative 3D composition, character sitting on the edge of a floating social media post window frame, breaking the fourth wall, interactive social media concept, 3D render style' },
   { id: 'typography_double', label: '✨ Chồng chữ nghệ thuật', value: 'Double exposure artistic portrait, silhouette of the face filled with complex typography text arrangements, newspaper print texture overlay, creative graphic design style, black and white or sepia tone' },
@@ -28,7 +40,7 @@ const SPECIAL_STYLES: OptionItem[] = [
   { id: 'neon_outline_sketch', label: '✨ Phác họa viền neon', value: 'Neon outline illustration over realistic portrait, hand-drawn sketch lines, dark background, artistic contrast' },
   { id: 'dreamlike_double_self', label: '✨ Hai bản ngã', value: 'Double self portrait, overlapping faces with soft transparency, dreamy psychological concept' },
   { id: 'editorial_typo_minimal', label: '✨ Typography tối giản', value: 'Minimal editorial portrait with clean typography elements, modern magazine layout, white space focused design' },
-  { id: 'hologram_identity', label: '✨ Nhân dạng hologram', value: 'Holographic portrait style, translucent glow layers, futuristic identity visualization, soft sci-fi lighting' }
+  { id: 'hologram_identity', label: '✨ Nhân dạng hologram', value: 'Holographic portrait style, translucent glow layers, futuristic identity visualization, soft sci-fi lighting' },
 ];
 
 // 2. STANDARD PHOTOGRAPHY STYLES
@@ -52,6 +64,11 @@ const STANDARD_STYLES: OptionItem[] = [
   { id: 'hands_visible_frame', label: 'Có tay trong khung', value: 'Studio portrait with hands partially visible, relaxed gesture, conversational feel' },
   { id: 'upper_body_portrait', label: 'Nửa người trên', value: 'Upper-body studio portrait, chest to head framing, suitable for speaking or presentation' },
   { id: 'asymmetric_light_balance', label: 'Ánh sáng lệch cân', value: 'Asymmetrical lighting portrait, one side brighter, subtle depth and realism' },
+  { id: 'street_handheld', label: 'Phóng sự đường phố', value: 'Street photography handheld style, candid natural movement, reportage feel, authentic and unposed' },
+  { id: 'golden_outdoor', label: 'Ngoài trời Golden Hour', value: 'Outdoor golden hour portrait, warm backlight glow, natural environment, lifestyle photography' },
+  { id: 'candid_lifestyle', label: 'Candid đời thường', value: 'Candid lifestyle portrait, subject in natural activity, authentic moment, documentary feel' },
+  { id: 'environmental_wide', label: 'Chân dung môi trường rộng', value: 'Environmental portrait with wide perspective, subject small in large meaningful space, editorial storytelling' },
+  { id: 'minimal_editorial', label: 'Tối giản Editorial', value: 'Minimalist editorial portrait, clean composition, strong negative space, modern fashion photography' },
 ];
 
 const POSE_CATEGORIES: CategoryItem[] = [
@@ -64,13 +81,13 @@ const POSE_CATEGORIES: CategoryItem[] = [
       { id: 'stand_lean_wall', label: 'Dựa lưng vào tường', value: 'Leaning back against a wall or glass window, relaxed' },
       { id: 'stand_podium', label: 'Đứng bục phát biểu', value: 'Standing behind a podium, gesturing with hands as if speaking' },
       { id: 'stand_neutral_relaxed', label: 'Đứng thả lỏng tự nhiên', value: 'Standing in a neutral relaxed posture, shoulders down, natural body alignment' },
-{ id: 'stand_hands_front', label: 'Hai tay trước người', value: 'Standing with hands lightly clasped in front, calm and approachable stance' },
-{ id: 'stand_one_arm_cross', label: 'Một tay khoanh nhẹ', value: 'Standing with one arm loosely crossed, other arm relaxed, confident yet friendly posture' },
-{ id: 'stand_weight_shift', label: 'Dồn trọng tâm một chân', value: 'Standing with weight shifted to one leg, natural and casual body language' },
-{ id: 'stand_side_angle', label: 'Đứng nghiêng nhẹ', value: 'Standing at a slight side angle, body turned subtly, adds depth and elegance' },
-{ id: 'stand_hand_gesture', label: 'Tay cử chỉ nhẹ', value: 'Standing with gentle hand gesture, conversational and expressive presence' },
-{ id: 'stand_step_forward', label: 'Bước nhẹ về phía trước', value: 'Standing with one foot stepping slightly forward, confident and dynamic posture' },
-{ id: 'stand_back_straight', label: 'Lưng thẳng cổ cao', value: 'Standing upright with straight back and lifted posture, composed and professional stance' },
+      { id: 'stand_hands_front', label: 'Hai tay trước người', value: 'Standing with hands lightly clasped in front, calm and approachable stance' },
+      { id: 'stand_one_arm_cross', label: 'Một tay khoanh nhẹ', value: 'Standing with one arm loosely crossed, other arm relaxed, confident yet friendly posture' },
+      { id: 'stand_weight_shift', label: 'Dồn trọng tâm một chân', value: 'Standing with weight shifted to one leg, natural and casual body language' },
+      { id: 'stand_side_angle', label: 'Đứng nghiêng nhẹ', value: 'Standing at a slight side angle, body turned subtly, adds depth and elegance' },
+      { id: 'stand_hand_gesture', label: 'Tay cử chỉ nhẹ', value: 'Standing with gentle hand gesture, conversational and expressive presence' },
+      { id: 'stand_step_forward', label: 'Bước nhẹ về phía trước', value: 'Standing with one foot stepping slightly forward, confident and dynamic posture' },
+      { id: 'stand_back_straight', label: 'Lưng thẳng cổ cao', value: 'Standing upright with straight back and lifted posture, composed and professional stance' },
     ]
   },
   {
@@ -93,22 +110,44 @@ const POSE_CATEGORIES: CategoryItem[] = [
       { id: 'phone_call', label: 'Nghe điện thoại', value: 'Talking on a smartphone, business negotiation context' },
       { id: 'cheers', label: 'Cụng ly (Tiệc)', value: 'Raising a wine glass for a toast, party atmosphere' },
       { id: 'walking_side_view', label: 'Đi ngang khung hình', value: 'Walking naturally across the frame, side view, casual and realistic movement' },
-{ id: 'walking_away', label: 'Đi xa dần', value: 'Walking away from the camera, relaxed pace, reflective and calm mood' },
-{ id: 'turning_back', label: 'Quay lại nhìn', value: 'Walking then turning back to look at the camera, natural transitional motion' },
-{ id: 'slow_stroll', label: 'Đi chậm thư thái', value: 'Slow relaxed walk, hands loose, calm and confident presence' },
-{ id: 'walking_with_coffee', label: 'Vừa đi vừa cầm cà phê', value: 'Walking while holding a coffee cup, casual lifestyle and approachable vibe' },
-{ id: 'adjusting_jacket_walk', label: 'Vừa đi vừa chỉnh áo', value: 'Walking and adjusting jacket or sleeves, polished and professional motion' },
-{ id: 'walking_phone_text', label: 'Vừa đi vừa nhắn tin', value: 'Walking while checking phone messages, modern urban daily movement' },
-{ id: 'entering_space', label: 'Bước vào không gian', value: 'Entering a room or space with natural stride, confident and purposeful movement' },
+      { id: 'walking_away', label: 'Đi xa dần', value: 'Walking away from the camera, relaxed pace, reflective and calm mood' },
+      { id: 'turning_back', label: 'Quay lại nhìn', value: 'Walking then turning back to look at the camera, natural transitional motion' },
+      { id: 'slow_stroll', label: 'Đi chậm thư thái', value: 'Slow relaxed walk, hands loose, calm and confident presence' },
+      { id: 'walking_with_coffee', label: 'Vừa đi vừa cầm cà phê', value: 'Walking while holding a coffee cup, casual lifestyle and approachable vibe' },
+      { id: 'adjusting_jacket_walk', label: 'Vừa đi vừa chỉnh áo', value: 'Walking and adjusting jacket or sleeves, polished and professional motion' },
+      { id: 'walking_phone_text', label: 'Vừa đi vừa nhắn tin', value: 'Walking while checking phone messages, modern urban daily movement' },
+      { id: 'entering_space', label: 'Bước vào không gian', value: 'Entering a room or space with natural stride, confident and purposeful movement' },
     ]
-  }
+  },
+  {
+    id: 'product_pose',
+    label: '📦 Cầm / Trưng bày Sản phẩm',
+    options: [
+      { id: 'hold_product_chest', label: 'Cầm trước ngực (2 tay)', value: 'Holding the product in front of chest with both hands, product label or front facing camera clearly, confident commercial pose' },
+      { id: 'hold_product_raise', label: 'Giơ sản phẩm ngang mặt', value: 'Holding the product raised up near face level with one hand, product prominently displayed beside the face, advertising style' },
+      { id: 'hold_product_one_hand', label: 'Cầm 1 tay thả lỏng', value: 'Holding the product casually in one hand at waist level, relaxed natural commercial pose, product clearly visible' },
+      { id: 'open_palm_product', label: 'Đặt trên lòng bàn tay', value: 'Product resting on open flat palm extended toward camera, gift-presenting gesture, close-up product reveal pose' },
+      { id: 'look_at_product', label: 'Nhìn vào sản phẩm', value: 'Looking at the product held in hands with curious or satisfied expression, natural discovery moment' },
+      { id: 'use_product', label: 'Đang dùng sản phẩm', value: 'Actively using or applying the product as if demonstrating it, natural usage moment, genuine interaction' },
+      { id: 'unbox_product', label: 'Mở hộp / Unboxing', value: 'Unboxing or opening the product packaging with excitement, moment of first reveal, lifestyle unboxing pose' },
+      { id: 'product_beside_face', label: 'Sản phẩm kề bên má', value: 'Holding product up beside cheek or ear with gentle smile, product and face both prominent, beauty/skincare style pose' },
+      { id: 'sit_product_table', label: 'Ngồi – Sản phẩm trên bàn', value: 'Seated with product placed on table in front, hands resting naturally, both person and product clearly visible' },
+      { id: 'point_at_product', label: 'Chỉ vào sản phẩm bên cạnh', value: 'Standing and pointing to or gesturing toward the product displayed beside them, presenter-style commercial pose' },
+      { id: 'hold_product_cross_arm', label: 'Khoanh tay – Sản phẩm ở tay', value: 'Arms loosely crossed, holding product in one hand naturally at side, confident brand ambassador pose' },
+      { id: 'smell_product', label: 'Ngửi / Cảm nhận sản phẩm', value: 'Eyes closed or half-closed, smelling or savoring the product with a blissful relaxed expression, perfume or food product pose' },
+    ]
+  },
 ];
 
-const FACE_ENHANCEMENT_OPTIONS = [
-  { id: 'younger', label: 'Trẻ hóa (Younger)', value: 'Subtle youthful appearance, slightly reduced age features, natural and realistic de-aging', note: 'append to the end of the prompt' },
-{ id: 'smooth_skin', label: 'Mịn da (Smooth Skin)', value: 'Smooth and even skin texture, natural skin tone, no plastic or over-processed look', note: 'append to the end of the prompt' },
-{ id: 'makeup', label: 'Trang điểm nhẹ (Makeup)', value: 'Light natural makeup, clean complexion, soft highlights, everyday professional look', note: 'append to the end of the prompt' },
-{ id: 'bright_eyes', label: 'Mắt sáng (Bright Eyes)', value: 'Bright and clear eyes, natural eye sparkle, healthy and alert expression', note: 'append to the end of the prompt' },
+const FACE_ENHANCEMENT_OPTIONS: OptionItem[] = [
+  { id: 'lock_face', label: '🔒 Khoá khuôn mặt', value: 'Preserve and exactly match ALL facial features from the reference photo — same face shape, bone structure, skin tone, and complete identity. Do not alter face.' },
+  { id: 'smooth_skin', label: '✨ Làm mịn da', value: 'Smooth natural skin texture, even skin tone, professional beauty retouching without plastic look' },
+  { id: 'bright_skin', label: '☀️ Da sáng tự nhiên', value: 'Naturally brightened and luminous skin tone, healthy inner glow, radiant complexion' },
+  { id: 'younger', label: '⏪ Trẻ hóa (5-10 tuổi)', value: 'Subtle natural de-aging effect, 5-10 years younger appearance, realistic and convincing result' },
+  { id: 'remove_wrinkles', label: '🌸 Xóa nếp nhăn', value: 'Light wrinkle and fine line smoothing, youthful and fresh skin while maintaining natural texture' },
+  { id: 'makeup', label: '💄 Trang điểm nhẹ', value: 'Light natural makeup, clean complexion, soft definition and highlights, everyday professional beauty' },
+  { id: 'bright_eyes', label: '👁 Mắt sáng nổi bật', value: 'Bright clear eyes, natural sparkle, healthy and expressive gaze, enhanced eye definition' },
+  { id: 'sharp_features', label: '💎 Nét mặt sắc sảo', value: 'Sharper and more defined facial features, refined jawline and cheekbones, polished and elegant appearance' },
 ];
 
 const RATIO_OPTIONS = [
@@ -156,7 +195,37 @@ const CONTEXT_CATEGORIES: CategoryItem[] = [
       { id: 'desk_workstation', label: 'Bàn làm việc cá nhân', value: 'Personal workstation desk, laptop and documents, focused working atmosphere' },
       { id: 'lounge_office', label: 'Khu tiếp khách văn phòng', value: 'Office lounge area, sofa seating, relaxed professional environment' },
       { id: 'training_room', label: 'Phòng đào tạo nội bộ', value: 'Corporate training room, chairs facing front, learning-focused atmosphere' },
-      { id: 'office_reception', label: 'Sảnh lễ tân', value: 'Office reception area, clean modern design, professional first-impression space' }
+      { id: 'office_reception', label: 'Sảnh lễ tân', value: 'Office reception area, clean modern design, professional first-impression space' },
+    ]
+  },
+  {
+    id: 'gym_fitness',
+    label: 'Gym & Thể thao',
+    options: [
+      { id: 'luxury_gym', label: 'Gym cao cấp hiện đại', value: 'Upscale luxury gym interior, high-end equipment, warm ambient LED lighting, mirror walls, polished concrete floors, premium fitness club atmosphere, real photography' },
+      { id: 'neon_gym', label: 'Gym ánh đèn neon (Mạnh mẽ)', value: 'Neon-lit industrial gym, dramatic purple and blue colored lighting, exposed brick and metal, power and intensity atmosphere, real photography' },
+      { id: 'pilates_studio', label: 'Studio Pilates sáng trưng', value: 'Bright airy pilates studio, white walls with natural light, wooden floor, reformer equipment, clean minimalist fitness space, realistic photography' },
+      { id: 'boxing_studio', label: 'Phòng tập boxing', value: 'Professional boxing studio, hanging heavy bags, focused overhead lighting, raw athletic environment, gritty and powerful atmosphere' },
+      { id: 'outdoor_park_training', label: 'Tập ngoài trời (Công viên)', value: 'Outdoor fitness training in urban green park, fresh morning light, trees and grass background, energetic and natural athletic setting' },
+      { id: 'resort_pool', label: 'Hồ bơi resort cao cấp', value: 'Luxury resort infinity pool, turquoise crystal water, palm trees, golden hour sunlight, exclusive tropical vacation atmosphere' },
+      { id: 'tennis_court', label: 'Sân tennis quốc tế', value: 'International standard hard court tennis facility, professional surroundings, clean bright sports photography, athletic prestige' },
+      { id: 'yoga_rooftop', label: 'Yoga sân thượng (City view)', value: 'Rooftop yoga and wellness space, panoramic city skyline view, sunrise or sunset light, peaceful elevated urban lifestyle setting' },
+      { id: 'crossfit_industrial', label: 'CrossFit Box (Công nghiệp)', value: 'Industrial crossfit training box, rubber matted floors, overhead pendant lighting, raw exposed structure, intense serious athletic environment' },
+      { id: 'gym_mirror', label: 'Gương gym phản chiếu', value: 'Gym mirror full-length reflection setup, modern gym equipment visible, strong ambient lighting, fitness influencer style photography' },
+    ]
+  },
+  {
+    id: 'hongkong_cinematic',
+    label: '🎬 HK Điện ảnh 80s',
+    options: [
+      { id: 'hk_wet_street_night', label: 'Phố đêm HK mưa (Wong Kar-wai)', value: 'Rain-slicked Hong Kong street at night circa 1980s, neon signs reflected in wet pavement, warm amber and green color cast, film grain, melancholic cinematic mood, Wong Kar-wai aesthetic, 2046 film style' },
+      { id: 'hk_neon_alley', label: 'Hẻm đèn neon Hồng Kông', value: 'Narrow Hong Kong alley at night, dense neon signage in Chinese characters, red yellow and pink glowing lights, vintage 1980s Kowloon urban atmosphere, moody and evocative' },
+      { id: 'hk_bar_lounge', label: 'Bar Hồng Kông thập niên 80', value: 'Intimate dim bar in 1980s Hong Kong, warm amber overhead lighting, dark wooden bar counter, smoky atmospheric haze, classic Cantopop era nostalgic vibe, In the Mood for Love style' },
+      { id: 'hk_rooftop_night', label: 'Mái nhà Hồng Kông (Hè đêm)', value: 'Rooftop in Hong Kong at night, city neon lights below, humid summer air feel, dense urban skyline, cinematic urban nostalgic mood' },
+      { id: 'hk_market_daytime', label: 'Chợ đêm Hồng Kông', value: 'Busy Hong Kong night market, small shops crowded together, lanterns and hanging goods, natural warm lighting, authentic 1980s Cantonese street life' },
+      { id: 'hk_tram_interior', label: 'Tàu điện cổ Hồng Kông', value: 'Inside a vintage Hong Kong double-decker tram, rattan seats, warm yellow interior lighting, blurred neon street outside windows, nostalgic public transport photography' },
+      { id: 'hk_cinema_lobby', label: 'Sảnh rạp HK cổ điển', value: 'Old Hong Kong cinema lobby, 1980s movie poster decor, atmospheric warm tungsten lighting, golden age of Hong Kong cinema nostalgia' },
+      { id: 'hk_phone_booth_night', label: 'Bốt điện thoại đêm HK', value: 'Vintage Hong Kong phone booth at night, rain falling outside, backlit from interior glow, lonely urban atmosphere, classic noir cinematic scene' },
     ]
   },
   {
@@ -182,7 +251,7 @@ const CONTEXT_CATEGORIES: CategoryItem[] = [
       { id: 'grand_canyon_viewpoint', label: 'Mỹ – Điểm ngắm Grand Canyon', value: 'Public viewpoint at Grand Canyon, standing position, vast landscape ahead, natural perspective' },
       { id: 'iceland_waterfall_path', label: 'Iceland – Lối đi gần thác', value: 'Walking path near Iceland waterfall, mist in air, eye-level outdoor photography' },
       { id: 'maldives_beach_walk', label: 'Maldives – Đi bộ trên bãi biển', value: 'Walking along Maldives beach, overwater villas nearby, handheld travel photo feeling' },
-      { id: 'petra_main_path', label: 'Petra – Lối đi chính', value: 'Main walking path in Petra, rock formations around, natural tourist viewpoint' }
+      { id: 'petra_main_path', label: 'Petra – Lối đi chính', value: 'Main walking path in Petra, rock formations around, natural tourist viewpoint' },
     ]
   },
   {
@@ -208,7 +277,7 @@ const CONTEXT_CATEGORIES: CategoryItem[] = [
       { id: 'newyork_neighborhood_street', label: 'Phố khu dân cư New York', value: 'Residential street in New York, brick buildings, parked cars, casual everyday city life perspective' },
       { id: 'paris_street_cafe', label: 'Cafe vỉa hè Paris', value: 'Street-side cafe in Paris, small round tables, people sitting casually, soft daylight urban scene' },
       { id: 'tokyo_local_street', label: 'Phố khu dân cư Tokyo', value: 'Quiet Tokyo neighborhood street, low-rise buildings, bicycles parked, clean everyday city atmosphere' },
-      { id: 'zurich_old_town_street', label: 'Phố cổ Zurich', value: 'Old town street in Zurich, cobblestone road, small shops, calm European daily life scene' }
+      { id: 'zurich_old_town_street', label: 'Phố cổ Zurich', value: 'Old town street in Zurich, cobblestone road, small shops, calm European daily life scene' },
     ]
   },
   {
@@ -236,7 +305,7 @@ const CONTEXT_CATEGORIES: CategoryItem[] = [
       { id: 'garden', label: 'Vườn hoa', value: 'Blooming flower garden, soft pastel colors, dreamy' },
       { id: 'mountain', label: 'Đỉnh núi', value: 'Mountain peak, clouds below, epic adventure vibe' },
     ]
-  }
+  },
 ];
 
 // OUTFIT DATABASE ORGANIZED BY GENDER
@@ -250,14 +319,14 @@ const OUTFIT_DATABASE: Record<string, CategoryItem[]> = {
         { id: 'm_modern_suit', label: 'Vest Hiện đại (Không cà vạt)', value: 'Modern slim-fit grey suit, white shirt open collar, no tie' },
         { id: 'm_tuxedo', label: 'Tuxedo (Dạ tiệc)', value: 'Black tuxedo, bow tie, formal evening wear' },
         { id: 'm_wool_silk_suit_tie', label: 'Vest len pha lụa (Cà vạt)', value: 'Tailored wool-silk blend suit, smooth texture, subtle sheen, classic tie, premium executive style' },
-{ id: 'm_italian_cut_suit_tie', label: 'Vest form Ý (Cà vạt)', value: 'Italian-cut slim suit, structured shoulders, fine wool fabric, elegant tie, refined modern gentleman look' },
-{ id: 'm_charcoal_business_suit_tie', label: 'Vest xám than doanh nhân (Cà vạt)', value: 'Charcoal grey business suit, high-quality wool, crisp tailoring, professional tie, confident leadership presence' },
-{ id: 'm_light_grey_open_collar', label: 'Vest xám sáng cổ mở', value: 'Light grey premium suit, open collar white shirt, breathable fine wool, clean modern professional style' },
-{ id: 'm_beige_summer_suit', label: 'Vest be mùa hè', value: 'Beige summer suit, lightweight linen-wool blend, open collar, relaxed yet upscale look' },
-{ id: 'm_navy_minimal_suit', label: 'Vest xanh navy tối giản', value: 'Navy blue minimalist suit, soft tailoring, open collar shirt, young executive aesthetic' },
-{ id: 'm_double_breasted_modern', label: 'Vest 2 hàng nút hiện đại', value: 'Modern double-breasted suit, premium fabric, sharp lines, open collar styling, confident fashion-forward look' },
-{ id: 'm_textured_fabric_suit', label: 'Vest vải dệt texture', value: 'Textured premium fabric suit, subtle weave detail, open collar shirt, contemporary stylish appearance' },
-{ id: 'm_dark_green_suit', label: 'Vest xanh rêu cao cấp', value: 'Dark green tailored suit, luxury wool fabric, open collar, distinctive yet elegant modern style' },
+        { id: 'm_italian_cut_suit_tie', label: 'Vest form Ý (Cà vạt)', value: 'Italian-cut slim suit, structured shoulders, fine wool fabric, elegant tie, refined modern gentleman look' },
+        { id: 'm_charcoal_business_suit_tie', label: 'Vest xám than doanh nhân (Cà vạt)', value: 'Charcoal grey business suit, high-quality wool, crisp tailoring, professional tie, confident leadership presence' },
+        { id: 'm_light_grey_open_collar', label: 'Vest xám sáng cổ mở', value: 'Light grey premium suit, open collar white shirt, breathable fine wool, clean modern professional style' },
+        { id: 'm_beige_summer_suit', label: 'Vest be mùa hè', value: 'Beige summer suit, lightweight linen-wool blend, open collar, relaxed yet upscale look' },
+        { id: 'm_navy_minimal_suit', label: 'Vest xanh navy tối giản', value: 'Navy blue minimalist suit, soft tailoring, open collar shirt, young executive aesthetic' },
+        { id: 'm_double_breasted_modern', label: 'Vest 2 hàng nút hiện đại', value: 'Modern double-breasted suit, premium fabric, sharp lines, open collar styling, confident fashion-forward look' },
+        { id: 'm_textured_fabric_suit', label: 'Vest vải dệt texture', value: 'Textured premium fabric suit, subtle weave detail, open collar shirt, contemporary stylish appearance' },
+        { id: 'm_dark_green_suit', label: 'Vest xanh rêu cao cấp', value: 'Dark green tailored suit, luxury wool fabric, open collar, distinctive yet elegant modern style' },
       ]
     },
     {
@@ -268,14 +337,14 @@ const OUTFIT_DATABASE: Record<string, CategoryItem[]> = {
         { id: 'm_linen', label: 'Sơ mi Hè/Linen', value: 'White linen shirt, rolled sleeves, relaxed summer vibe' },
         { id: 'm_hoodie', label: 'Hoodie/Jacket', value: 'Trendy streetwear, bomber jacket, layered clothing' },
         { id: 'm_business_casual_blazer', label: 'Blazer & Áo thun', value: 'Unstructured blazer with premium cotton t-shirt, tailored trousers, modern business casual style' },
-{ id: 'm_knit_polo_trousers', label: 'Polo dệt & Quần tây', value: 'Fine-knit polo shirt with tailored trousers, clean smart casual businessman look' },
-{ id: 'm_shirt_no_tie', label: 'Sơ mi cổ mở', value: 'Crisp white shirt, open collar, slim trousers, relaxed executive appearance' },
-{ id: 'm_light_sweater_layer', label: 'Áo len mỏng khoác vai', value: 'Lightweight sweater layered over shirt, elegant casual European businessman style' },
-{ id: 'm_summer_blazer_linen', label: 'Blazer linen mùa hè', value: 'Linen blazer with open collar shirt, breathable fabric, upscale summer business style' },
-{ id: 'm_dark_polo_minimal', label: 'Polo tối giản cao cấp', value: 'Dark tone premium polo shirt, tailored pants, minimalist modern entrepreneur vibe' },
-{ id: 'm_cardigan_smart', label: 'Cardigan lịch sự', value: 'Fine wool cardigan over shirt, clean trousers, intellectual business casual look' },
-{ id: 'm_shirt_trousers_watch', label: 'Sơ mi & đồng hồ cơ', value: 'Tailored shirt with dress trousers, mechanical watch detail, refined gentleman style' },
-{ id: 'm_casual_leather_jacket', label: 'Áo khoác da nhẹ', value: 'Minimal leather jacket with shirt and trousers, confident urban businessman aesthetic' },
+        { id: 'm_knit_polo_trousers', label: 'Polo dệt & Quần tây', value: 'Fine-knit polo shirt with tailored trousers, clean smart casual businessman look' },
+        { id: 'm_shirt_no_tie', label: 'Sơ mi cổ mở', value: 'Crisp white shirt, open collar, slim trousers, relaxed executive appearance' },
+        { id: 'm_light_sweater_layer', label: 'Áo len mỏng khoác vai', value: 'Lightweight sweater layered over shirt, elegant casual European businessman style' },
+        { id: 'm_summer_blazer_linen', label: 'Blazer linen mùa hè', value: 'Linen blazer with open collar shirt, breathable fabric, upscale summer business style' },
+        { id: 'm_dark_polo_minimal', label: 'Polo tối giản cao cấp', value: 'Dark tone premium polo shirt, tailored pants, minimalist modern entrepreneur vibe' },
+        { id: 'm_cardigan_smart', label: 'Cardigan lịch sự', value: 'Fine wool cardigan over shirt, clean trousers, intellectual business casual look' },
+        { id: 'm_shirt_trousers_watch', label: 'Sơ mi & đồng hồ cơ', value: 'Tailored shirt with dress trousers, mechanical watch detail, refined gentleman style' },
+        { id: 'm_casual_leather_jacket', label: 'Áo khoác da nhẹ', value: 'Minimal leather jacket with shirt and trousers, confident urban businessman aesthetic' },
       ]
     },
     {
@@ -285,15 +354,15 @@ const OUTFIT_DATABASE: Record<string, CategoryItem[]> = {
         { id: 'm_gym', label: 'Đồ tập Gym', value: 'Professional athletic wear, compression shirt, gym context' },
         { id: 'm_golf', label: 'Đồ Golf', value: 'Professional golf outfit, polo and technical trousers' },
         { id: 'm_gym_minimal', label: 'Gym tối giản nam', value: 'Mens minimalist gym outfit, fitted performance t-shirt, tapered training pants, clean athletic look' },
-{ id: 'm_gym_polo_athletic', label: 'Gym polo thể thao', value: 'Mens athletic polo shirt with technical fabric, smart gym style, professional appearance' },
-{ id: 'm_gym_layered_clean', label: 'Gym layering lịch sự', value: 'Mens layered gym outfit, lightweight zip jacket over training top, refined athletic aesthetic' },
-{ id: 'm_hiking_smart_tech', label: 'Leo núi tech lịch sự', value: 'Mens technical hiking outfit, breathable long-sleeve top, slim trekking pants, clean outdoor style' },
-{ id: 'm_hiking_softshell', label: 'Leo núi áo softshell', value: 'Mens softshell hiking jacket, functional yet tailored fit, professional trekking appearance' },
-{ id: 'm_hiking_neutral_tone', label: 'Leo núi tông trung tính', value: 'Mens hiking outfit in neutral colors, modern cut, understated and elegant outdoor look' },
-{ id: 'm_hiking_travel_style', label: 'Leo núi kiểu travel', value: 'Mens travel-style hiking wear, versatile jacket and pants, suitable for city-to-mountain transition' },
-{ id: 'm_running_smart_minimal', label: 'Chạy bộ tối giản', value: 'Mens minimalist running outfit, streamlined athletic wear, clean and professional runner style' },
-{ id: 'm_running_long_sleeve', label: 'Chạy bộ tay dài', value: 'Mens long-sleeve running top with technical fabric, smart and composed athletic appearance' },
-{ id: 'm_active_travel_casual', label: 'Activewear đa năng', value: 'Mens versatile activewear, suitable for light workout, walking, and travel, smart casual athletic style' },
+        { id: 'm_gym_polo_athletic', label: 'Gym polo thể thao', value: 'Mens athletic polo shirt with technical fabric, smart gym style, professional appearance' },
+        { id: 'm_gym_layered_clean', label: 'Gym layering lịch sự', value: 'Mens layered gym outfit, lightweight zip jacket over training top, refined athletic aesthetic' },
+        { id: 'm_hiking_smart_tech', label: 'Leo núi tech lịch sự', value: 'Mens technical hiking outfit, breathable long-sleeve top, slim trekking pants, clean outdoor style' },
+        { id: 'm_hiking_softshell', label: 'Leo núi áo softshell', value: 'Mens softshell hiking jacket, functional yet tailored fit, professional trekking appearance' },
+        { id: 'm_hiking_neutral_tone', label: 'Leo núi tông trung tính', value: 'Mens hiking outfit in neutral colors, modern cut, understated and elegant outdoor look' },
+        { id: 'm_hiking_travel_style', label: 'Leo núi kiểu travel', value: 'Mens travel-style hiking wear, versatile jacket and pants, suitable for city-to-mountain transition' },
+        { id: 'm_running_smart_minimal', label: 'Chạy bộ tối giản', value: 'Mens minimalist running outfit, streamlined athletic wear, clean and professional runner style' },
+        { id: 'm_running_long_sleeve', label: 'Chạy bộ tay dài', value: 'Mens long-sleeve running top with technical fabric, smart and composed athletic appearance' },
+        { id: 'm_active_travel_casual', label: 'Activewear đa năng', value: 'Mens versatile activewear, suitable for light workout, walking, and travel, smart casual athletic style' },
       ]
     },
     {
@@ -303,15 +372,15 @@ const OUTFIT_DATABASE: Record<string, CategoryItem[]> = {
         { id: 'm_party_shirt', label: 'Sơ mi họa tiết tiệc', value: 'Stylish patterned shirt, unbuttoned collar, party lighting' },
         { id: 'm_leather_jacket', label: 'Áo khoác da cá tính', value: 'Black leather jacket, dark t-shirt, night life style' },
         { id: 'm_party_black_shirt', label: 'Sơ mi đen tiệc tối', value: 'Mens black tailored shirt, subtle sheen fabric, slim trousers, elegant evening party style' },
-{ id: 'm_party_silk_shirt', label: 'Sơ mi lụa cao cấp', value: 'Mens silk-blend shirt, smooth texture, open collar, refined luxury party look' },
-{ id: 'm_party_blazer_no_tie', label: 'Blazer tiệc không cà vạt', value: 'Mens sharp blazer with open-collar shirt, tailored pants, modern gentleman party aesthetic' },
-{ id: 'm_party_velvet_blazer', label: 'Blazer nhung dạ tiệc', value: 'Mens velvet blazer, dark tone, soft lighting reflection, upscale evening event style' },
-{ id: 'm_party_monochrome', label: 'Monochrome tiệc đêm', value: 'Mens monochrome party outfit, black or dark grey tones, minimalist luxury vibe' },
-{ id: 'm_party_leather_blazer', label: 'Blazer da cá tính', value: 'Mens leather or leather-look blazer, dark shirt, confident nightlife party style' },
-{ id: 'm_party_dark_turtleneck', label: 'Áo cổ lọ tiệc', value: 'Mens dark turtleneck with tailored trousers, sleek modern evening elegance' },
-{ id: 'm_party_pattern_subtle', label: 'Sơ mi họa tiết tinh tế', value: 'Mens subtle patterned shirt, premium fabric, tasteful party-ready appearance' },
-{ id: 'm_party_double_breasted', label: 'Vest tiệc 2 hàng nút', value: 'Mens double-breasted suit, open collar or minimal shirt, sophisticated party gentleman look' },
-{ id: 'm_party_night_luxury', label: 'Luxury nightlife', value: 'Mens upscale nightlife outfit, dark tones, refined textures, confident elite party presence' },
+        { id: 'm_party_silk_shirt', label: 'Sơ mi lụa cao cấp', value: 'Mens silk-blend shirt, smooth texture, open collar, refined luxury party look' },
+        { id: 'm_party_blazer_no_tie', label: 'Blazer tiệc không cà vạt', value: 'Mens sharp blazer with open-collar shirt, tailored pants, modern gentleman party aesthetic' },
+        { id: 'm_party_velvet_blazer', label: 'Blazer nhung dạ tiệc', value: 'Mens velvet blazer, dark tone, soft lighting reflection, upscale evening event style' },
+        { id: 'm_party_monochrome', label: 'Monochrome tiệc đêm', value: 'Mens monochrome party outfit, black or dark grey tones, minimalist luxury vibe' },
+        { id: 'm_party_leather_blazer', label: 'Blazer da cá tính', value: 'Mens leather or leather-look blazer, dark shirt, confident nightlife party style' },
+        { id: 'm_party_dark_turtleneck', label: 'Áo cổ lọ tiệc', value: 'Mens dark turtleneck with tailored trousers, sleek modern evening elegance' },
+        { id: 'm_party_pattern_subtle', label: 'Sơ mi họa tiết tinh tế', value: 'Mens subtle patterned shirt, premium fabric, tasteful party-ready appearance' },
+        { id: 'm_party_double_breasted', label: 'Vest tiệc 2 hàng nút', value: 'Mens double-breasted suit, open collar or minimal shirt, sophisticated party gentleman look' },
+        { id: 'm_party_night_luxury', label: 'Luxury nightlife', value: 'Mens upscale nightlife outfit, dark tones, refined textures, confident elite party presence' },
       ]
     },
     {
@@ -320,16 +389,36 @@ const OUTFIT_DATABASE: Record<string, CategoryItem[]> = {
       options: [
         { id: 'm_aodai', label: 'Áo Dài Nam', value: 'Traditional Vietnamese Ao Dai for men, ceremonial style' },
         { id: 'm_aodai_brocade_dragon', label: 'Áo dài gấm rồng', value: 'Mens traditional Ao Dai with subtle dragon brocade pattern, structured form, dignified masculine style' },
-{ id: 'm_aodai_brocade_cloud', label: 'Áo dài gấm mây', value: 'Mens Ao Dai with cloud motif brocade, refined texture, ceremonial and elegant appearance' },
-{ id: 'm_aodai_solid_embroidery', label: 'Áo dài thêu tối giản', value: 'Mens Ao Dai with minimal embroidery details, clean lines, understated traditional masculinity' },
-{ id: 'm_aodai_calligraphy', label: 'Áo dài thư pháp', value: 'Mens Ao Dai featuring calligraphy-inspired patterns, cultural depth, intellectual and formal style' },
-{ id: 'm_aodai_geometric_classic', label: 'Áo dài hoa văn hình học', value: 'Mens Ao Dai with classic geometric patterns, balanced symmetry, strong and composed look' },
-{ id: 'm_aodai_silk_jacquard', label: 'Áo dài lụa jacquard', value: 'Mens silk jacquard Ao Dai, rich woven texture, smooth drape, premium traditional outfit' },
-{ id: 'm_aodai_royal_pattern', label: 'Áo dài họa tiết hoàng gia', value: 'Mens Ao Dai with royal-inspired motifs, formal ceremonial tone, authoritative masculine presence' },
-{ id: 'm_aodai_bamboo_motif', label: 'Áo dài họa tiết tre', value: 'Mens Ao Dai with bamboo motif patterns, symbolic strength and integrity, elegant Vietnamese heritage style' },
-{ id: 'm_aodai_dark_traditional', label: 'Áo dài tông trầm truyền thống', value: 'Mens dark-tone traditional Ao Dai, subtle woven patterns, calm and powerful formal appearance' },
+        { id: 'm_aodai_brocade_cloud', label: 'Áo dài gấm mây', value: 'Mens Ao Dai with cloud motif brocade, refined texture, ceremonial and elegant appearance' },
+        { id: 'm_aodai_solid_embroidery', label: 'Áo dài thêu tối giản', value: 'Mens Ao Dai with minimal embroidery details, clean lines, understated traditional masculinity' },
+        { id: 'm_aodai_calligraphy', label: 'Áo dài thư pháp', value: 'Mens Ao Dai featuring calligraphy-inspired patterns, cultural depth, intellectual and formal style' },
+        { id: 'm_aodai_geometric_classic', label: 'Áo dài hoa văn hình học', value: 'Mens Ao Dai with classic geometric patterns, balanced symmetry, strong and composed look' },
+        { id: 'm_aodai_silk_jacquard', label: 'Áo dài lụa jacquard', value: 'Mens silk jacquard Ao Dai, rich woven texture, smooth drape, premium traditional outfit' },
+        { id: 'm_aodai_royal_pattern', label: 'Áo dài họa tiết hoàng gia', value: 'Mens Ao Dai with royal-inspired motifs, formal ceremonial tone, authoritative masculine presence' },
+        { id: 'm_aodai_bamboo_motif', label: 'Áo dài họa tiết tre', value: 'Mens Ao Dai with bamboo motif patterns, symbolic strength and integrity, elegant Vietnamese heritage style' },
+        { id: 'm_aodai_dark_traditional', label: 'Áo dài tông trầm truyền thống', value: 'Mens dark-tone traditional Ao Dai, subtle woven patterns, calm and powerful formal appearance' },
       ]
-    }
+    },
+    {
+      id: 'korean_style_m',
+      label: 'Hàn Quốc (K-Style)',
+      options: [
+        { id: 'm_k_ootd', label: 'OOTD Hàn Quốc nam', value: "Korean men's OOTD, clean minimal layers, neutral tones, slim fit pieces, effortless Seoul street style" },
+        { id: 'm_k_business_casual', label: 'Smart casual Hàn Quốc', value: "Korean smart casual, fitted turtleneck or shirt, tailored pants, clean accessories, sophisticated Korean men's fashion" },
+        { id: 'm_k_streetwear', label: 'Streetwear Seoul', value: 'Seoul streetwear, oversized hoodie or shirt, jogger pants, clean sneakers, Korean urban youth fashion' },
+        { id: 'm_k_minimal', label: 'Tối giản cao cấp Hàn', value: 'Korean premium minimal style, quality fabrics, muted palette, clean silhouette, understated Seoul elegance' },
+      ]
+    },
+    {
+      id: 'beach_resort_m',
+      label: 'Biển & Resort',
+      options: [
+        { id: 'm_resort_linen_shirt', label: 'Sơ mi linen resort nam', value: "Men's linen shirt unbuttoned, resort style, relaxed vacation look, Mediterranean vibes" },
+        { id: 'm_resort_shorts', label: 'Short vải cao cấp resort', value: "Men's premium fabric shorts with fitted polo, luxury resort casual style" },
+        { id: 'm_beach_minimal', label: 'Biển tối giản nam', value: "Men's minimal beach style, clean swim shorts, premium casual resort wear" },
+        { id: 'm_resort_blazer_white', label: 'Blazer trắng resort nam', value: "Men's white or cream linen blazer, lightweight summer luxury, yacht club inspired" },
+      ]
+    },
   ],
   FEMALE: [
     {
@@ -339,13 +428,13 @@ const OUTFIT_DATABASE: Record<string, CategoryItem[]> = {
         { id: 'f_female_suit', label: 'Vest Nữ quyền lực', value: 'Sharp tailored female power suit, elegant and professional' },
         { id: 'f_blazer_skirt', label: 'Blazer & Chân váy', value: 'Professional blazer with matching pencil skirt' },
         { id: 'f_power_suit_modern', label: 'Vest nữ quyền lực hiện đại', value: 'Modern female power suit, sharp tailoring, premium fabric, confident professional presence' },
-{ id: 'f_oversized_blazer', label: 'Vest oversize cá tính', value: 'Oversized blazer suit for women, relaxed fit, fashion-forward and confident style' },
-{ id: 'f_pastel_suit', label: 'Vest màu pastel trẻ trung', value: 'Pastel-tone women suit, soft color palette, youthful and elegant professional look' },
-{ id: 'f_crop_blazer_suit', label: 'Vest croptop phá cách', value: 'Cropped blazer suit for women, modern silhouette, bold and stylish personality' },
-{ id: 'f_double_breasted_suit', label: 'Vest nữ 2 hàng nút', value: 'Double-breasted women suit, structured shoulders, classic yet powerful aesthetic' },
-{ id: 'f_monochrome_suit', label: 'Vest đơn sắc thời thượng', value: 'Monochrome women suit, minimalist design, clean and high-fashion business style' },
-{ id: 'f_belted_blazer_suit', label: 'Vest thắt đai eo', value: 'Belted blazer suit for women, accentuated waist, elegant and confident feminine power look' },
-{ id: 'f_textured_fabric_suit', label: 'Vest vải texture cao cấp', value: 'Textured premium fabric women suit, subtle pattern, modern stylish professional appearance' },
+        { id: 'f_oversized_blazer', label: 'Vest oversize cá tính', value: 'Oversized blazer suit for women, relaxed fit, fashion-forward and confident style' },
+        { id: 'f_pastel_suit', label: 'Vest màu pastel trẻ trung', value: 'Pastel-tone women suit, soft color palette, youthful and elegant professional look' },
+        { id: 'f_crop_blazer_suit', label: 'Vest croptop phá cách', value: 'Cropped blazer suit for women, modern silhouette, bold and stylish personality' },
+        { id: 'f_double_breasted_suit', label: 'Vest nữ 2 hàng nút', value: 'Double-breasted women suit, structured shoulders, classic yet powerful aesthetic' },
+        { id: 'f_monochrome_suit', label: 'Vest đơn sắc thời thượng', value: 'Monochrome women suit, minimalist design, clean and high-fashion business style' },
+        { id: 'f_belted_blazer_suit', label: 'Vest thắt đai eo', value: 'Belted blazer suit for women, accentuated waist, elegant and confident feminine power look' },
+        { id: 'f_textured_fabric_suit', label: 'Vest vải texture cao cấp', value: 'Textured premium fabric women suit, subtle pattern, modern stylish professional appearance' },
       ]
     },
     {
@@ -355,16 +444,15 @@ const OUTFIT_DATABASE: Record<string, CategoryItem[]> = {
         { id: 'f_dress_summer', label: 'Váy Hè nhẹ nhàng', value: 'Flowing summer dress, floral patterns, relaxed vibe' },
         { id: 'f_jeans_top', label: 'Jeans & Áo thun', value: 'Casual denim jeans, white stylish top, everyday look' },
         { id: 'f_wrap_dress', label: 'Váy wrap nữ tính', value: 'Wrap dress for women, flattering silhouette, soft fabric, elegant and subtly seductive everyday style' },
-{ id: 'f_slip_dress', label: 'Váy lụa slip dress', value: 'Silk slip dress, minimalist cut, smooth texture, modern feminine and fashionable look' },
-{ id: 'f_flared_dress', label: 'Váy xòe trẻ trung', value: 'Flared casual dress, light fabric, playful movement, youthful and energetic vibe' },
-{ id: 'f_bodycon_dress', label: 'Váy ôm tôn dáng', value: 'Bodycon dress, figure-hugging fit, confident and stylish everyday femininity' },
-{ id: 'f_shirt_dress', label: 'Váy sơ mi hiện đại', value: 'Shirt dress for women, relaxed yet chic cut, versatile daily fashion style' },
-
-{ id: 'f_crop_top_jeans', label: 'Áo croptop & jeans', value: 'Crop top paired with high-waist jeans, youthful, confident and dynamic street style' },
-{ id: 'f_tanktop_skirt', label: 'Tank top & chân váy', value: 'Fitted tank top with casual skirt, relaxed feminine summer look' },
-{ id: 'f_blouse_shorts', label: 'Áo blouse & quần short', value: 'Light blouse with tailored shorts, fresh and fashionable casual outfit' },
-{ id: 'f_oversize_shirt_jeans', label: 'Sơ mi oversize & jeans', value: 'Oversized shirt with denim jeans, effortless modern street fashion for women' },
-{ id: 'f_sporty_chic', label: 'Phong cách sporty chic', value: 'Sporty chic womenswear, fitted top with casual pants, active yet stylish everyday vibe' },
+        { id: 'f_slip_dress', label: 'Váy lụa slip dress', value: 'Silk slip dress, minimalist cut, smooth texture, modern feminine and fashionable look' },
+        { id: 'f_flared_dress', label: 'Váy xòe trẻ trung', value: 'Flared casual dress, light fabric, playful movement, youthful and energetic vibe' },
+        { id: 'f_bodycon_dress', label: 'Váy ôm tôn dáng', value: 'Bodycon dress, figure-hugging fit, confident and stylish everyday femininity' },
+        { id: 'f_shirt_dress', label: 'Váy sơ mi hiện đại', value: 'Shirt dress for women, relaxed yet chic cut, versatile daily fashion style' },
+        { id: 'f_crop_top_jeans', label: 'Áo croptop & jeans', value: 'Crop top paired with high-waist jeans, youthful, confident and dynamic street style' },
+        { id: 'f_tanktop_skirt', label: 'Tank top & chân váy', value: 'Fitted tank top with casual skirt, relaxed feminine summer look' },
+        { id: 'f_blouse_shorts', label: 'Áo blouse & quần short', value: 'Light blouse with tailored shorts, fresh and fashionable casual outfit' },
+        { id: 'f_oversize_shirt_jeans', label: 'Sơ mi oversize & jeans', value: 'Oversized shirt with denim jeans, effortless modern street fashion for women' },
+        { id: 'f_sporty_chic', label: 'Phong cách sporty chic', value: 'Sporty chic womenswear, fitted top with casual pants, active yet stylish everyday vibe' },
       ]
     },
     {
@@ -374,17 +462,15 @@ const OUTFIT_DATABASE: Record<string, CategoryItem[]> = {
         { id: 'f_yoga', label: 'Đồ tập Yoga', value: 'Premium yoga wear, leggings and sports top, fit body' },
         { id: 'f_tennis', label: 'Đồ Tennis', value: 'Classic white tennis outfit, skirt and polo' },
         { id: 'f_gym_minimal_fit', label: 'Gym tối giản nữ', value: 'Womens minimalist gym outfit, fitted performance top and high-waist leggings, clean and confident athletic look' },
-{ id: 'f_gym_layered_style', label: 'Gym layering hiện đại', value: 'Womens gym wear with light zip jacket over sports top, sleek and refined fitness style' },
-
-{ id: 'f_hiking_modern_neutral', label: 'Leo núi tông trung tính', value: 'Womens modern hiking outfit, neutral colors, fitted long-sleeve top, slim trekking pants, elegant outdoor style' },
-{ id: 'f_hiking_softshell_fit', label: 'Leo núi áo softshell', value: 'Womens softshell hiking jacket with tailored fit, functional yet feminine trekking appearance' },
-{ id: 'f_hiking_travel_active', label: 'Leo núi phong cách travel', value: 'Womens travel-style hiking wear, versatile jacket and pants, city-to-nature modern look' },
-{ id: 'f_hiking_layered_light', label: 'Leo núi layering nhẹ', value: 'Womens layered hiking outfit, breathable inner top, lightweight outer layer, active and graceful outdoor vibe' },
-
-{ id: 'f_running_slim_modern', label: 'Chạy bộ gọn dáng', value: 'Womens streamlined running outfit, fitted top and leggings, modern and confident runner style' },
-{ id: 'f_running_long_sleeve', label: 'Chạy bộ tay dài', value: 'Womens long-sleeve running top with technical fabric, elegant and composed athletic look' },
-{ id: 'f_running_jacket_light', label: 'Chạy bộ áo khoác mỏng', value: 'Womens lightweight running jacket, slim fit, sporty yet stylish urban running aesthetic' },
-{ id: 'f_running_monotone', label: 'Chạy bộ đơn sắc', value: 'Womens monotone running outfit, clean lines, subtle curves, modern and tasteful fitness fashion' },
+        { id: 'f_gym_layered_style', label: 'Gym layering hiện đại', value: 'Womens gym wear with light zip jacket over sports top, sleek and refined fitness style' },
+        { id: 'f_hiking_modern_neutral', label: 'Leo núi tông trung tính', value: 'Womens modern hiking outfit, neutral colors, fitted long-sleeve top, slim trekking pants, elegant outdoor style' },
+        { id: 'f_hiking_softshell_fit', label: 'Leo núi áo softshell', value: 'Womens softshell hiking jacket with tailored fit, functional yet feminine trekking appearance' },
+        { id: 'f_hiking_travel_active', label: 'Leo núi phong cách travel', value: 'Womens travel-style hiking wear, versatile jacket and pants, city-to-nature modern look' },
+        { id: 'f_hiking_layered_light', label: 'Leo núi layering nhẹ', value: 'Womens layered hiking outfit, breathable inner top, lightweight outer layer, active and graceful outdoor vibe' },
+        { id: 'f_running_slim_modern', label: 'Chạy bộ gọn dáng', value: 'Womens streamlined running outfit, fitted top and leggings, modern and confident runner style' },
+        { id: 'f_running_long_sleeve', label: 'Chạy bộ tay dài', value: 'Womens long-sleeve running top with technical fabric, elegant and composed athletic look' },
+        { id: 'f_running_jacket_light', label: 'Chạy bộ áo khoác mỏng', value: 'Womens lightweight running jacket, slim fit, sporty yet stylish urban running aesthetic' },
+        { id: 'f_running_monotone', label: 'Chạy bộ đơn sắc', value: 'Womens monotone running outfit, clean lines, subtle curves, modern and tasteful fitness fashion' },
       ]
     },
     {
@@ -394,16 +480,15 @@ const OUTFIT_DATABASE: Record<string, CategoryItem[]> = {
         { id: 'f_evening_gown', label: 'Đầm dạ hội', value: 'Elegant long evening gown, luxury jewelry, gala style' },
         { id: 'f_cocktail_dress', label: 'Váy Cocktail', value: 'Chic cocktail dress, vibrant party colors' },
         { id: 'f_evening_satin_gown', label: 'Đầm satin dạ hội', value: 'Satin evening gown, smooth flowing fabric, elegant silhouette, refined and tasteful sensuality' },
-{ id: 'f_one_shoulder_dress', label: 'Váy lệch vai', value: 'One-shoulder cocktail dress, clean lines, subtle feminine allure, classy party style' },
-{ id: 'f_slit_long_dress', label: 'Váy dài xẻ nhẹ', value: 'Long evening dress with subtle side slit, graceful movement, elegant and confident femininity' },
-{ id: 'f_midi_party_dress', label: 'Váy midi dự tiệc', value: 'Midi party dress, fitted waist, balanced coverage, chic and sophisticated look' },
-{ id: 'f_back_detail_dress', label: 'Váy hở lưng tinh tế', value: 'Evening dress with refined open-back detail, tasteful sensuality, elegant night event style' },
-
-{ id: 'f_blazer_evening_set', label: 'Blazer dự tiệc', value: 'Womens tailored blazer with elegant inner top, slim trousers or skirt, modern classy party outfit' },
-{ id: 'f_silk_blouse_trousers', label: 'Áo lụa & quần tây', value: 'Silk blouse paired with tailored trousers, soft shine fabric, understated luxury evening style' },
-{ id: 'f_monochrome_party_set', label: 'Set tiệc đơn sắc', value: 'Monochrome party outfit for women, clean silhouette, modern and elegant event presence' },
-{ id: 'f_lace_detail_outfit', label: 'Trang phục điểm ren', value: 'Evening outfit with subtle lace accents, feminine detail, refined and tasteful allure' },
-{ id: 'f_dark_turtleneck_party', label: 'Cổ lọ tiệc tối', value: 'Dark-tone turtleneck with elegant skirt or trousers, sleek and sophisticated night event look' },
+        { id: 'f_one_shoulder_dress', label: 'Váy lệch vai', value: 'One-shoulder cocktail dress, clean lines, subtle feminine allure, classy party style' },
+        { id: 'f_slit_long_dress', label: 'Váy dài xẻ nhẹ', value: 'Long evening dress with subtle side slit, graceful movement, elegant and confident femininity' },
+        { id: 'f_midi_party_dress', label: 'Váy midi dự tiệc', value: 'Midi party dress, fitted waist, balanced coverage, chic and sophisticated look' },
+        { id: 'f_back_detail_dress', label: 'Váy hở lưng tinh tế', value: 'Evening dress with refined open-back detail, tasteful sensuality, elegant night event style' },
+        { id: 'f_blazer_evening_set', label: 'Blazer dự tiệc', value: 'Womens tailored blazer with elegant inner top, slim trousers or skirt, modern classy party outfit' },
+        { id: 'f_silk_blouse_trousers', label: 'Áo lụa & quần tây', value: 'Silk blouse paired with tailored trousers, soft shine fabric, understated luxury evening style' },
+        { id: 'f_monochrome_party_set', label: 'Set tiệc đơn sắc', value: 'Monochrome party outfit for women, clean silhouette, modern and elegant event presence' },
+        { id: 'f_lace_detail_outfit', label: 'Trang phục điểm ren', value: 'Evening outfit with subtle lace accents, feminine detail, refined and tasteful allure' },
+        { id: 'f_dark_turtleneck_party', label: 'Cổ lọ tiệc tối', value: 'Dark-tone turtleneck with elegant skirt or trousers, sleek and sophisticated night event look' },
       ]
     },
     {
@@ -412,28 +497,64 @@ const OUTFIT_DATABASE: Record<string, CategoryItem[]> = {
       options: [
         { id: 'f_aodai', label: 'Áo Dài Nữ', value: 'Traditional Vietnamese Ao Dai, silk texture, intricate patterns' },
         { id: 'f_aodai_classic_silk', label: 'Áo dài lụa truyền thống', value: 'Classic womens Ao Dai in silk fabric, smooth drape, elegant traditional Vietnamese femininity' },
-{ id: 'f_aodai_floral_embroidery', label: 'Áo dài thêu hoa', value: 'Womens Ao Dai with floral embroidery details, graceful and refined traditional beauty' },
-{ id: 'f_aodai_pastel_modern', label: 'Áo dài pastel hiện đại', value: 'Pastel-tone modern Ao Dai, soft colors, youthful and fashionable Vietnamese style' },
-{ id: 'f_aodai_high_collar', label: 'Áo dài cổ cao cách tân', value: 'High-collar modern Ao Dai, clean lines, elegant and confident feminine look' },
-{ id: 'f_aodai_short_sleeve', label: 'Áo dài tay ngắn', value: 'Short-sleeve Ao Dai for women, light and comfortable design, modern daily elegance' },
-{ id: 'f_aodai_layered_sheer', label: 'Áo dài layering voan', value: 'Layered Ao Dai with sheer fabric overlay, airy movement, contemporary feminine aesthetic' },
-{ id: 'f_aodai_geometric_pattern', label: 'Áo dài họa tiết hình học', value: 'Womens Ao Dai with geometric patterns, bold yet balanced modern-traditional fusion' },
-{ id: 'f_aodai_lace_detail', label: 'Áo dài điểm ren', value: 'Ao Dai with subtle lace accents, delicate femininity, elegant and tasteful allure' },
-{ id: 'f_aodai_royal_motif', label: 'Áo dài họa tiết hoàng gia', value: 'Womens Ao Dai with royal-inspired motifs, formal ceremonial tone, luxurious Vietnamese heritage' },
-{ id: 'f_aodai_dark_elegant', label: 'Áo dài tông trầm sang trọng', value: 'Dark-tone elegant Ao Dai, refined patterns, mature and graceful feminine presence' },
-{ id: 'f_aodai_modern_split', label: 'Áo dài cách tân xẻ hiện đại', value: 'Modern split Ao Dai design, fashion-forward silhouette, confident and stylish Vietnamese woman' },
+        { id: 'f_aodai_floral_embroidery', label: 'Áo dài thêu hoa', value: 'Womens Ao Dai with floral embroidery details, graceful and refined traditional beauty' },
+        { id: 'f_aodai_pastel_modern', label: 'Áo dài pastel hiện đại', value: 'Pastel-tone modern Ao Dai, soft colors, youthful and fashionable Vietnamese style' },
+        { id: 'f_aodai_high_collar', label: 'Áo dài cổ cao cách tân', value: 'High-collar modern Ao Dai, clean lines, elegant and confident feminine look' },
+        { id: 'f_aodai_short_sleeve', label: 'Áo dài tay ngắn', value: 'Short-sleeve Ao Dai for women, light and comfortable design, modern daily elegance' },
+        { id: 'f_aodai_layered_sheer', label: 'Áo dài layering voan', value: 'Layered Ao Dai with sheer fabric overlay, airy movement, contemporary feminine aesthetic' },
+        { id: 'f_aodai_geometric_pattern', label: 'Áo dài họa tiết hình học', value: 'Womens Ao Dai with geometric patterns, bold yet balanced modern-traditional fusion' },
+        { id: 'f_aodai_lace_detail', label: 'Áo dài điểm ren', value: 'Ao Dai with subtle lace accents, delicate femininity, elegant and tasteful allure' },
+        { id: 'f_aodai_royal_motif', label: 'Áo dài họa tiết hoàng gia', value: 'Womens Ao Dai with royal-inspired motifs, formal ceremonial tone, luxurious Vietnamese heritage' },
+        { id: 'f_aodai_dark_elegant', label: 'Áo dài tông trầm sang trọng', value: 'Dark-tone elegant Ao Dai, refined patterns, mature and graceful feminine presence' },
+        { id: 'f_aodai_modern_split', label: 'Áo dài cách tân xẻ hiện đại', value: 'Modern split Ao Dai design, fashion-forward silhouette, confident and stylish Vietnamese woman' },
       ]
-    }
+    },
+    {
+      id: 'korean_style',
+      label: 'Hàn Quốc (K-Style)',
+      options: [
+        { id: 'f_k_ootd', label: 'OOTD Hàn Quốc ngọt ngào', value: 'Korean sweet OOTD, light pastel colors, feminine silhouette, layered accessories, K-drama heroine style' },
+        { id: 'f_k_street', label: 'Streetwear Hàn Quốc', value: 'Korean streetwear, oversized cotton pieces, neutral tones, clean sneakers, effortless Seoul street style' },
+        { id: 'f_k_minimal', label: 'Hàn tối giản cao cấp', value: 'Korean minimalist style, premium fabrics, understated colors, clean tailoring, sophisticated Seoul fashion' },
+        { id: 'f_k_cafe', label: 'Cafe look Hàn Quốc', value: 'Korean cafe date look, cozy knit sweater, straight leg jeans, clean and aesthetic everyday style' },
+        { id: 'f_k_business', label: 'Business Hàn Quốc thanh lịch', value: 'Korean business chic, structured blazer with feminine details, clean professional look, Seoul office style' },
+        { id: 'f_k_idol', label: 'Style idol Kpop', value: 'Kpop idol-inspired fashion, trendy and polished styling, stage-ready chic with casual luxe elements' },
+      ]
+    },
+    {
+      id: 'beach_resort',
+      label: 'Biển & Resort',
+      options: [
+        { id: 'f_resort_white', label: 'Đầm trắng resort', value: 'White flowing resort maxi dress, light fabric, Mediterranean luxury vacation style' },
+        { id: 'f_bikini_cover', label: 'Áo khoác bãi biển', value: 'Beach cover-up over swimwear, stylish resort look, tropical destination fashion' },
+        { id: 'f_sundress_tropical', label: 'Sundress nhiệt đới', value: 'Bright tropical sundress, floral patterns, lightweight fabric, summer vacation style' },
+        { id: 'f_resort_linen', label: 'Linen set resort', value: 'Matching linen set top and pants, neutral tones, breezy and elegant resort wear' },
+        { id: 'f_beach_elegant', label: 'Biển sang trọng', value: 'Elegant beach style, tailored shorts with silk blouse, resort luxury fashion' },
+      ]
+    },
+    {
+      id: 'quiet_luxury_f',
+      label: 'Quiet Luxury (Tối giản)',
+      options: [
+        { id: 'f_ql_camel', label: 'Camel coat tối giản', value: 'Camel wool coat, minimal branding, premium fabric, old money quiet luxury aesthetic' },
+        { id: 'f_ql_cream_set', label: 'Cream matching set', value: 'Cream colored coordinated set, clean tailoring, understated elegance, Loro Piana inspired' },
+        { id: 'f_ql_trench', label: 'Trench coat cổ điển', value: 'Classic trench coat, timeless cut, neutral tone, effortlessly sophisticated' },
+        { id: 'f_ql_cashmere', label: 'Cashmere turtleneck', value: 'Fine cashmere turtleneck, perfectly fitted, minimal luxury, elevated everyday dressing' },
+        { id: 'f_ql_wide_pants', label: 'Quần rộng vải cao cấp', value: 'Wide-leg tailored trousers, premium fabric drape, paired with simple top, refined minimalist fashion' },
+      ]
+    },
   ]
 };
 
 const QUALITY_OPTIONS: OptionItem[] = [
-  { id: 'realistic', label: 'Siêu thực (Photorealistic)', value: 'Hyper-realistic, 8k resolution, raw photo style' },
-  { id: 'cinematic', label: 'Điện ảnh (Cinematic)', value: 'Movie scene look, color graded, teal and orange, dramatic' },
-  { id: '4k_studio', label: '4K Studio (Sắc nét)', value: '4K studio quality, extreme sharpness, commercial photography' },
-  { id: 'vintage', label: 'Film Grain (Cổ điển)', value: 'Vintage analog film look, grain, kodak portra 400' },
-  { id: 'natural_realistic', label: 'Đời thường tự nhiên', value: 'Realistic photo, natural lighting, real skin texture, unretouched look' },
-  { id: 'mobile_real', label: 'Điện thoại đời thật', value: 'Smartphone photo style, natural exposure, slight handheld feel, real-world lighting' },
+  { id: 'hyperreal_8k', label: 'Siêu thực 8K (Photorealistic)', value: 'Hyper-realistic photography, 8K ultra-high resolution, raw unprocessed photo quality, extreme skin and fabric detail' },
+  { id: 'cinematic', label: 'Điện ảnh (Cinematic)', value: 'Cinematic movie quality, professional DCI color grading, film-like atmosphere, teal and orange tone palette' },
+  { id: 'high_fashion', label: 'Thời trang cao cấp (Editorial)', value: "High-fashion editorial photography, Vogue and Harper's Bazaar magazine quality, luxury aesthetic, impeccable styling" },
+  { id: 'luxury_commercial', label: 'Quảng cáo thương mại (Luxury)', value: 'Luxury commercial advertising photography, premium brand campaign quality, aspirational and flawless presentation' },
+  { id: '4k_studio', label: '4K Studio Professional', value: '4K professional studio photography, extreme sharpness, precise lighting control, commercial portfolio quality' },
+  { id: 'vintage_film', label: 'Film Analog 35mm (Cổ điển)', value: 'Authentic 35mm analog film photography, organic grain, Kodak Portra 400 color science, timeless nostalgic quality' },
+  { id: 'natural_realistic', label: 'Đời thường tự nhiên', value: 'Natural realistic photography, unretouched authentic look, real skin texture, candid natural lighting' },
+  { id: 'smartphone_candid', label: 'Điện thoại (Candid đời thật)', value: 'Smartphone photography aesthetic, candid feel, natural exposure, slight handheld realism, social media authentic style' },
 ];
 
 const EXPRESSION_OPTIONS: OptionItem[] = [
@@ -446,12 +567,30 @@ const EXPRESSION_OPTIONS: OptionItem[] = [
   { id: 'dreamy', label: 'Mơ màng', value: 'Dreamy look, looking away slightly, soft eyes' },
 ];
 
-const LIGHTING_OPTIONS = [
-  { id: 'studio', label: 'Studio Soft', value: 'Soft studio lighting' },
-  { id: 'natural', label: 'Tự nhiên', value: 'Natural daylight' },
-  { id: 'golden', label: 'Golden Hour', value: 'Warm golden hour sun' },
-  { id: 'neon', label: 'Neon Cyber', value: 'Neon pink and blue lights' },
-  { id: 'dramatic', label: 'Kịch tính', value: 'High contrast dramatic shadows' },
+const LIGHTING_OPTIONS: OptionItem[] = [
+  { id: 'studio_soft', label: '💡 Studio Soft (Softbox)', value: 'Professional softbox studio lighting, beautifully even and flattering illumination, clean controlled shadows' },
+  { id: 'natural_window', label: '🪟 Cửa sổ tự nhiên', value: 'Natural window light, soft directional daylight, warm indoor photography atmosphere, realistic and flattering' },
+  { id: 'golden_hour', label: '🌅 Golden Hour (Hoàng hôn)', value: 'Warm golden hour sunlight, romantic cinematic glow, long soft shadows, magical late afternoon quality' },
+  { id: 'rembrandt', label: '🎭 Rembrandt (Nghệ thuật)', value: 'Classic Rembrandt lighting, dramatic side illumination, triangular highlight on cheek, fine art portrait depth' },
+  { id: 'split', label: '⚡ Split Light (Nửa sáng/tối)', value: 'Bold split lighting, exactly half face in bright light and half in shadow, strong dramatic portrait statement' },
+  { id: 'butterfly', label: '🦋 Butterfly (Glamour)', value: 'Butterfly lighting from directly above, glamour shadow beneath nose, Hollywood golden age beauty style' },
+  { id: 'backlit', label: '✨ Ngược sáng (Backlit)', value: 'Beautiful artistic backlight, glowing rim light around subject, dreamy and ethereal halo atmosphere' },
+  { id: 'neon', label: '🌈 Neon Cyber (Đô thị đêm)', value: 'Vivid neon pink and blue cyberpunk lighting, urban night atmosphere, colorful and dramatic mood' },
+  { id: 'candle', label: '🕯 Nến / Ánh đèn ấm', value: 'Warm intimate candlelight or ambient lamp glow, soft warm color temperature, romantic atmosphere' },
+  { id: 'blue_hour', label: '🌙 Blue Hour (Chạng vạng)', value: 'Blue hour twilight outdoor light, cool deep blue sky, warm artificial lights in contrast, magical evening atmosphere' },
+  { id: 'overcast', label: '☁️ Overcast (Mây khuếch tán)', value: 'Soft overcast sky diffused light, even outdoor illumination, no harsh shadows, clean and professional outdoor result' },
+];
+
+const CAMERA_OPTIONS: OptionItem[] = [
+  { id: 'portrait_85mm', label: '85mm f/1.4 Portrait (Bokeh đẹp)', value: 'Shot on 85mm f/1.4 portrait lens, beautiful creamy bokeh background blur, flattering perspective compression, sharp subject' },
+  { id: 'standard_50mm', label: '50mm f/1.8 Standard (Tự nhiên)', value: 'Shot on 50mm f/1.8 standard lens, natural perspective, slight background separation, clean and realistic rendering' },
+  { id: 'street_35mm', label: '35mm f/1.4 Street (Môi trường)', value: 'Shot on 35mm lens, wide environmental portrait, natural perspective with surroundings, reportage street style' },
+  { id: 'tele_135mm', label: '135mm f/2 Telephoto (Nén cảnh)', value: 'Shot on 135mm f/2 telephoto lens, strong background compression, very flattering subject rendering, silky bokeh' },
+  { id: 'medium_format', label: 'Medium Format (Hasselblad)', value: 'Shot on Hasselblad medium format camera, extraordinary tonal depth and resolution, luxury fashion campaign quality' },
+  { id: 'zoom_2470', label: '24-70mm f/2.8 (Đa năng)', value: 'Shot on professional 24-70mm f/2.8 zoom lens, versatile framing, sharp commercial photography quality' },
+  { id: 'wide_16mm', label: '16mm Wide Angle (Toàn cảnh)', value: 'Shot on 16mm ultra-wide angle lens, dramatic environmental context, powerful sense of place and scale' },
+  { id: 'film_35mm', label: 'Film Camera 35mm (Analog)', value: 'Shot on analog 35mm film camera, authentic organic grain and vintage color rendering, timeless photographic character' },
+  { id: 'none', label: 'Không chọn (Mặc định AI)', value: '' },
 ];
 
 const ANGLE_OPTIONS = [
@@ -465,7 +604,6 @@ const ANGLE_OPTIONS = [
 export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange, imageFlags }) => {
   const outfitInputRef = useRef<HTMLInputElement>(null);
   const [activePoseTab, setActivePoseTab] = useState('standing');
-  // State for outfit gender selection, defaults based on subjectType
   const [outfitGender, setOutfitGender] = useState<string>(config.subjectType === 'MALE' ? 'MALE' : 'FEMALE');
 
   const previewPrompt = buildPrompt(config, imageFlags ?? { hasFaces: config.source === 'UPLOAD', hasProducts: false, hasLogo: false });
@@ -496,12 +634,11 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange, imag
     }
   };
 
-  // Determine categories to show based on gender
   const currentOutfitCategories = OUTFIT_DATABASE[outfitGender] || OUTFIT_DATABASE.FEMALE;
 
   return (
     <div className="bg-slate-900/50 p-6 rounded-2xl border border-slate-800 space-y-8 max-h-[800px] overflow-y-auto custom-scrollbar">
-      
+
       {/* HEADER */}
       <div className="flex items-center gap-2 border-b border-slate-800 pb-4">
         <Settings2 className="text-blue-400" size={20} />
@@ -510,36 +647,36 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange, imag
 
       {/* 1. KHUNG HÌNH & GÓC MÁY */}
       <div className="grid grid-cols-1 gap-4">
-         <div className="space-y-3">
-            <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
-               <Monitor size={14} /> Khung hình & Góc máy
-            </label>
-            
-            <div className="grid grid-cols-3 gap-2 mb-3">
-              {RATIO_OPTIONS.map((opt) => (
-                <button
-                  key={opt.id}
-                  onClick={() => updateConfig('aspectRatio', opt.value)}
-                  className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
-                    config.aspectRatio === opt.value
-                      ? 'bg-blue-600 border-blue-500 text-white shadow-lg'
-                      : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
-                  }`}
-                >
-                  <opt.icon size={20} className="mb-1" />
-                  <span className="text-xs font-medium">{opt.label.split(' ')[0]}</span>
-                </button>
-              ))}
-            </div>
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
+            <Monitor size={14} /> Khung hình & Góc máy
+          </label>
 
-            <select
-                onChange={(e) => updateConfig('cameraAngle', e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-blue-500"
-                value={ANGLE_OPTIONS.find(a => a.value === config.cameraAngle)?.value || config.cameraAngle}
-            >
-                {ANGLE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-            </select>
-         </div>
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            {RATIO_OPTIONS.map((opt) => (
+              <button
+                key={opt.id}
+                onClick={() => updateConfig('aspectRatio', opt.value)}
+                className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
+                  config.aspectRatio === opt.value
+                    ? 'bg-blue-600 border-blue-500 text-white shadow-lg'
+                    : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
+                }`}
+              >
+                <opt.icon size={20} className="mb-1" />
+                <span className="text-xs font-medium">{opt.label.split(' ')[0]}</span>
+              </button>
+            ))}
+          </div>
+
+          <select
+            onChange={(e) => updateConfig('cameraAngle', e.target.value)}
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-blue-500"
+            value={ANGLE_OPTIONS.find(a => a.value === config.cameraAngle)?.value || config.cameraAngle}
+          >
+            {ANGLE_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+          </select>
+        </div>
       </div>
 
       {/* 2. ĐỐI TƯỢNG */}
@@ -548,12 +685,11 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange, imag
           <Users size={14} /> Đối tượng
         </label>
         <div className="grid grid-cols-3 gap-2">
-          {['MALE', 'FEMALE', 'PRODUCT'].map((type) => (
+          {(['MALE', 'FEMALE', 'PRODUCT'] as const).map((type) => (
             <button
               key={type}
               onClick={() => {
                 updateConfig('subjectType', type);
-                // Also update outfit gender for convenience if male/female
                 if (type === 'MALE' || type === 'FEMALE') setOutfitGender(type);
               }}
               className={`px-3 py-2 rounded-lg text-xs md:text-sm border transition-all ${
@@ -567,154 +703,154 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange, imag
           ))}
         </div>
         <div className="grid grid-cols-2 gap-2">
-           <button
-             onClick={() => updateConfig('subjectType', 'COUPLE')}
-             className={`px-3 py-2 rounded-lg text-xs md:text-sm border transition-all ${
-               config.subjectType === 'COUPLE' ? 'bg-blue-600 border-blue-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-400'
-             }`}
-           >
-             Cặp đôi
-           </button>
-           <button
-             onClick={() => updateConfig('subjectType', 'GROUP')}
-             className={`px-3 py-2 rounded-lg text-xs md:text-sm border transition-all ${
-               config.subjectType === 'GROUP' ? 'bg-blue-600 border-blue-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-400'
-             }`}
-           >
-             Nhóm
-           </button>
+          <button
+            onClick={() => updateConfig('subjectType', 'COUPLE')}
+            className={`px-3 py-2 rounded-lg text-xs md:text-sm border transition-all ${
+              config.subjectType === 'COUPLE' ? 'bg-blue-600 border-blue-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-400'
+            }`}
+          >
+            Cặp đôi
+          </button>
+          <button
+            onClick={() => updateConfig('subjectType', 'GROUP')}
+            className={`px-3 py-2 rounded-lg text-xs md:text-sm border transition-all ${
+              config.subjectType === 'GROUP' ? 'bg-blue-600 border-blue-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-400'
+            }`}
+          >
+            Nhóm
+          </button>
         </div>
       </div>
 
       {/* 3. FACE ENHANCEMENTS */}
       {config.subjectType !== 'PRODUCT' && (
         <div className="space-y-3 bg-blue-900/10 p-4 rounded-xl border border-blue-900/30">
-           <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
-              <Sparkles size={14} /> Nâng cấp Khuôn mặt
-           </label>
-           <div className="grid grid-cols-2 gap-3">
-             {FACE_ENHANCEMENT_OPTIONS.map((opt) => (
-                <label key={opt.id} className="flex items-center space-x-2 cursor-pointer group">
-                  <input 
-                    type="checkbox" 
-                    className="h-4 w-4 rounded border-slate-600 bg-slate-800 text-blue-600 focus:ring-blue-500 focus:ring-offset-slate-900"
-                    checked={config.faceEnhancements?.includes(opt.id) || false}
-                    onChange={() => toggleFaceEnhancement(opt.id)}
-                  />
-                  <span className="text-xs md:text-sm text-slate-300 group-hover:text-white transition-colors">{opt.label}</span>
-                </label>
-             ))}
-           </div>
+          <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
+            <Sparkles size={14} /> Nâng cấp Khuôn mặt
+          </label>
+          <div className="grid grid-cols-2 gap-3">
+            {FACE_ENHANCEMENT_OPTIONS.map((opt) => (
+              <label key={opt.id} className="flex items-center space-x-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-slate-600 bg-slate-800 text-blue-600 focus:ring-blue-500 focus:ring-offset-slate-900"
+                  checked={config.faceEnhancements?.includes(opt.id) || false}
+                  onChange={() => toggleFaceEnhancement(opt.id)}
+                />
+                <span className="text-xs md:text-sm text-slate-300 group-hover:text-white transition-colors">{opt.label}</span>
+              </label>
+            ))}
+          </div>
         </div>
       )}
 
       {/* 4. CHẤT LƯỢNG & BIỂU CẢM */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-            <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
-               <Zap size={14} /> Chất lượng
-            </label>
-            <select
-                value={QUALITY_OPTIONS.find(q => q.value === config.quality)?.value || config.quality}
-                onChange={(e) => updateConfig('quality', e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-sm text-white outline-none"
-            >
-                {QUALITY_OPTIONS.map(q => <option key={q.id} value={q.value}>{q.label}</option>)}
-            </select>
+          <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
+            <Zap size={14} /> Chất lượng
+          </label>
+          <select
+            value={QUALITY_OPTIONS.find(q => q.value === config.quality)?.value || config.quality}
+            onChange={(e) => updateConfig('quality', e.target.value)}
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-sm text-white outline-none"
+          >
+            {QUALITY_OPTIONS.map(q => <option key={q.id} value={q.value}>{q.label}</option>)}
+          </select>
         </div>
         <div className="space-y-2">
-            <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
-               <Smile size={14} /> Biểu cảm
-            </label>
-            <select
-                value={EXPRESSION_OPTIONS.find(e => e.value === config.expression)?.value || config.expression}
-                onChange={(e) => updateConfig('expression', e.target.value)}
-                className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-sm text-white outline-none"
-            >
-                {EXPRESSION_OPTIONS.map(e => <option key={e.id} value={e.value}>{e.label}</option>)}
-            </select>
+          <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
+            <Smile size={14} /> Biểu cảm
+          </label>
+          <select
+            value={EXPRESSION_OPTIONS.find(e => e.value === config.expression)?.value || config.expression}
+            onChange={(e) => updateConfig('expression', e.target.value)}
+            className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-sm text-white outline-none"
+          >
+            {EXPRESSION_OPTIONS.map(e => <option key={e.id} value={e.value}>{e.label}</option>)}
+          </select>
         </div>
       </div>
 
       {/* GRID WRAPPER FOR CONTEXT AND PHOTOGRAPHY STYLE */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4 border-t border-slate-800">
-          
-          {/* 5. BỐI CẢNH */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
-              <MapPin size={14} /> Bối cảnh
-              {config.photographyStyleCategory === 'special' && (
-                <span className="text-[10px] text-yellow-400/70 italic ml-1">(Ít hiệu lực với style đặc biệt)</span>
-              )}
-            </label>
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {CONTEXT_CATEGORIES.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => updateConfig('contextCategory', cat.id)}
-                  className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                    config.contextCategory === cat.id
-                      ? 'bg-blue-600 border-blue-500 text-white'
-                      : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-            <div className="grid grid-cols-1 gap-1 bg-slate-800/30 p-2 rounded-lg border border-slate-700/50 max-h-[200px] overflow-y-auto custom-scrollbar">
-              {CONTEXT_CATEGORIES.find(c => c.id === config.contextCategory)?.options.map(opt => (
-                <button
-                    key={opt.id}
-                    onClick={() => updateConfig('contextDetail', opt.value)}
-                    className={`p-2 rounded-md text-left text-xs transition-all border ${
-                      config.contextDetail === opt.value
-                        ? 'bg-blue-600 border-blue-500 text-white shadow-md'
-                        : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
-                    }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+
+        {/* 5. BỐI CẢNH */}
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-blue-300 flex items-center gap-2 uppercase tracking-wider">
+            <MapPin size={14} /> Bối cảnh
+            {config.photographyStyleCategory === 'special' && (
+              <span className="text-[10px] text-yellow-400/70 italic ml-1">(Ít hiệu lực với style đặc biệt)</span>
+            )}
+          </label>
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {CONTEXT_CATEGORIES.map(cat => (
+              <button
+                key={cat.id}
+                onClick={() => updateConfig('contextCategory', cat.id)}
+                className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                  config.contextCategory === cat.id
+                    ? 'bg-blue-600 border-blue-500 text-white'
+                    : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
           </div>
-          
-          {/* 6. PHONG CÁCH CHỤP */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-purple-300 flex items-center gap-2 uppercase tracking-wider">
-              <ScanFace size={14} /> Phong cách & Sáng tạo
-            </label>
-            <div className="flex flex-col gap-1 bg-purple-900/10 p-2 rounded-lg border border-purple-900/30 max-h-[250px] overflow-y-auto custom-scrollbar">
-              <div className="px-2 py-1.5 text-[10px] font-bold text-yellow-400 uppercase tracking-wider border-b border-purple-500/20 mb-1 flex items-center gap-1">
-                 <Wand2 size={10} /> Đặc biệt
-              </div>
-              {SPECIAL_STYLES.map(opt => (
-                <button
-                    key={opt.id}
-                    onClick={() => onChange({ ...config, photographyStyle: opt.value, photographyStyleCategory: 'special' })}
-                    className={`p-2 rounded-md text-left text-xs transition-all border ${
-                      config.photographyStyle === opt.value ? 'bg-yellow-600 border-yellow-500 text-white' : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
-                    }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-              <div className="px-2 py-1.5 text-[10px] font-bold text-purple-300 uppercase tracking-wider border-b border-purple-500/20 mb-1 mt-2 flex items-center gap-1">
-                 <Camera size={10} /> Cơ bản
-              </div>
-              {STANDARD_STYLES.map(opt => (
-                <button
-                    key={opt.id}
-                    onClick={() => onChange({ ...config, photographyStyle: opt.value, photographyStyleCategory: 'standard' })}
-                    className={`p-2 rounded-md text-left text-xs transition-all border ${
-                      config.photographyStyle === opt.value ? 'bg-purple-600 border-purple-500 text-white' : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
-                    }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
+          <div className="grid grid-cols-1 gap-1 bg-slate-800/30 p-2 rounded-lg border border-slate-700/50 max-h-[200px] overflow-y-auto custom-scrollbar">
+            {CONTEXT_CATEGORIES.find(c => c.id === config.contextCategory)?.options.map(opt => (
+              <button
+                key={opt.id}
+                onClick={() => updateConfig('contextDetail', opt.value)}
+                className={`p-2 rounded-md text-left text-xs transition-all border ${
+                  config.contextDetail === opt.value
+                    ? 'bg-blue-600 border-blue-500 text-white shadow-md'
+                    : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
+        </div>
+
+        {/* 6. PHONG CÁCH CHỤP */}
+        <div className="space-y-3">
+          <label className="text-sm font-medium text-purple-300 flex items-center gap-2 uppercase tracking-wider">
+            <ScanFace size={14} /> Phong cách & Sáng tạo
+          </label>
+          <div className="flex flex-col gap-1 bg-purple-900/10 p-2 rounded-lg border border-purple-900/30 max-h-[250px] overflow-y-auto custom-scrollbar">
+            <div className="px-2 py-1.5 text-[10px] font-bold text-yellow-400 uppercase tracking-wider border-b border-purple-500/20 mb-1 flex items-center gap-1">
+              <Wand2 size={10} /> Đặc biệt & Trending
+            </div>
+            {SPECIAL_STYLES.map(opt => (
+              <button
+                key={opt.id}
+                onClick={() => onChange({ ...config, photographyStyle: opt.value, photographyStyleCategory: 'special' })}
+                className={`p-2 rounded-md text-left text-xs transition-all border ${
+                  config.photographyStyle === opt.value ? 'bg-yellow-600 border-yellow-500 text-white' : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+            <div className="px-2 py-1.5 text-[10px] font-bold text-purple-300 uppercase tracking-wider border-b border-purple-500/20 mb-1 mt-2 flex items-center gap-1">
+              <Camera size={10} /> Cơ bản
+            </div>
+            {STANDARD_STYLES.map(opt => (
+              <button
+                key={opt.id}
+                onClick={() => onChange({ ...config, photographyStyle: opt.value, photographyStyleCategory: 'standard' })}
+                className={`p-2 rounded-md text-left text-xs transition-all border ${
+                  config.photographyStyle === opt.value ? 'bg-purple-600 border-purple-500 text-white' : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* 7. TẠO DÁNG */}
@@ -739,34 +875,33 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange, imag
           ))}
         </div>
         <div className="grid grid-cols-2 gap-2 bg-slate-800/30 p-2 rounded-lg border border-slate-700/50">
-           {POSE_CATEGORIES.find(c => c.id === activePoseTab)?.options.map(opt => (
-             <button
-                key={opt.id}
-                onClick={() => updateConfig('pose', opt.value)}
-                className={`p-2 rounded-md text-left text-xs transition-all border ${
-                  config.pose === opt.value ? 'bg-green-600 border-green-500 text-white shadow-md' : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
-                }`}
-             >
-               {opt.label}
-             </button>
-           ))}
+          {POSE_CATEGORIES.find(c => c.id === activePoseTab)?.options.map(opt => (
+            <button
+              key={opt.id}
+              onClick={() => updateConfig('pose', opt.value)}
+              className={`p-2 rounded-md text-left text-xs transition-all border ${
+                config.pose === opt.value ? 'bg-green-600 border-green-500 text-white shadow-md' : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* 8. TRANG PHỤC (NGANG CẤP VỚI BỐI CẢNH) */}
+      {/* 8. TRANG PHỤC */}
       {config.subjectType !== 'PRODUCT' && (
         <div className="space-y-4 pt-4 border-t border-slate-800">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-purple-300 flex items-center gap-2 uppercase tracking-wider">
               <Shirt size={14} /> Trang phục
             </label>
-            {/* GENDER SELECTOR FOR OUTFIT */}
             <div className="flex bg-slate-800 rounded-lg p-1">
-              <button 
+              <button
                 onClick={() => setOutfitGender('MALE')}
                 className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${outfitGender === 'MALE' ? 'bg-blue-600 text-white' : 'text-slate-500'}`}
               >NAM</button>
-              <button 
+              <button
                 onClick={() => setOutfitGender('FEMALE')}
                 className={`px-3 py-1 rounded-md text-[10px] font-bold transition-all ${outfitGender === 'FEMALE' ? 'bg-pink-600 text-white' : 'text-slate-500'}`}
               >NỮ</button>
@@ -775,83 +910,96 @@ export const ConfigPanel: React.FC<ConfigPanelProps> = ({ config, onChange, imag
 
           <div className="mb-3">
             {!config.outfitImage ? (
-                <button 
-                    onClick={() => outfitInputRef.current?.click()}
-                    className="w-full py-3 border border-dashed border-slate-600 rounded-lg text-slate-400 text-xs flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
-                >
-                    <Upload size={14} /> Tải ảnh trang phục mẫu (Tùy chọn)
-                </button>
+              <button
+                onClick={() => outfitInputRef.current?.click()}
+                className="w-full py-3 border border-dashed border-slate-600 rounded-lg text-slate-400 text-xs flex items-center justify-center gap-2 hover:bg-slate-800 transition-colors"
+              >
+                <Upload size={14} /> Tải ảnh trang phục mẫu (Tùy chọn)
+              </button>
             ) : (
-                <div className="relative w-full h-32 rounded-lg overflow-hidden border border-purple-500 group">
-                    <img src={`data:image/jpeg;base64,${config.outfitImage}`} className="w-full h-full object-cover opacity-70" />
-                    <button onClick={() => updateConfig('outfitImage', null)} className="absolute top-2 right-2 bg-red-500 p-1.5 rounded-full text-white"><Trash2 size={12} /></button>
-                </div>
+              <div className="relative w-full h-32 rounded-lg overflow-hidden border border-purple-500 group">
+                <img src={`data:image/jpeg;base64,${config.outfitImage}`} className="w-full h-full object-cover opacity-70" alt="outfit reference" />
+                <button onClick={() => updateConfig('outfitImage', null)} className="absolute top-2 right-2 bg-red-500 p-1.5 rounded-full text-white"><Trash2 size={12} /></button>
+              </div>
             )}
             <input type="file" ref={outfitInputRef} onChange={handleOutfitImageUpload} accept="image/*" className="hidden" />
           </div>
-          
+
           {!config.outfitImage && (
             <div className="space-y-3">
-                <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                    {currentOutfitCategories.map(cat => (
-                        <button
-                        key={cat.id}
-                        onClick={() => updateConfig('outfitCategory', cat.id)}
-                        className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
-                            config.outfitCategory === cat.id ? 'bg-purple-600 border-purple-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
-                        }`}
-                        >
-                        {cat.label}
-                        </button>
-                    ))}
-                </div>
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {currentOutfitCategories.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => updateConfig('outfitCategory', cat.id)}
+                    className={`whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${
+                      config.outfitCategory === cat.id ? 'bg-purple-600 border-purple-500 text-white' : 'bg-slate-800 border-slate-700 text-slate-400 hover:bg-slate-700'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
 
-                <div className="grid grid-cols-2 gap-2 bg-slate-800/30 p-2 rounded-lg border border-slate-700/50 max-h-[150px] overflow-y-auto custom-scrollbar">
-                    {currentOutfitCategories.find(c => c.id === config.outfitCategory)?.options.map(opt => (
-                        <button
-                            key={opt.id}
-                            onClick={() => updateConfig('outfitDetail', opt.value)}
-                            className={`p-2 rounded-md text-left text-xs transition-all border ${
-                            config.outfitDetail === opt.value ? 'bg-purple-600 border-purple-500 text-white shadow-md' : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
-                            }`}
-                        >
-                            {opt.label}
-                        </button>
-                    ))}
-                </div>
+              <div className="grid grid-cols-2 gap-2 bg-slate-800/30 p-2 rounded-lg border border-slate-700/50 max-h-[150px] overflow-y-auto custom-scrollbar">
+                {currentOutfitCategories.find(c => c.id === config.outfitCategory)?.options.map(opt => (
+                  <button
+                    key={opt.id}
+                    onClick={() => updateConfig('outfitDetail', opt.value)}
+                    className={`p-2 rounded-md text-left text-xs transition-all border ${
+                      config.outfitDetail === opt.value ? 'bg-purple-600 border-purple-500 text-white shadow-md' : 'bg-transparent border-transparent text-slate-300 hover:bg-slate-700/50'
+                    }`}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
       )}
 
-      {/* 9. ÁNH SÁNG & GHI CHÚ */}
+      {/* 9. ÁNH SÁNG, CAMERA & GHI CHÚ */}
       <div className="space-y-4 pt-4 border-t border-slate-800">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                  <label className="text-xs font-medium text-slate-400 flex items-center gap-1">
-                    <Sun size={14} /> Ánh sáng
-                  </label>
-                  <select
-                    onChange={(e) => updateConfig('lighting', e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white outline-none"
-                    value={LIGHTING_OPTIONS.find(l => l.value === config.lighting)?.value || config.lighting}
-                  >
-                    {LIGHTING_OPTIONS.map(opt => <option key={opt.id} value={opt.value}>{opt.label}</option>)}
-                  </select>
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-xs font-medium text-slate-400 flex items-center gap-1">
+              <Sun size={14} /> Ánh sáng
+            </label>
+            <select
+              onChange={(e) => updateConfig('lighting', e.target.value)}
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white outline-none"
+              value={LIGHTING_OPTIONS.find(l => l.value === config.lighting)?.value || config.lighting}
+            >
+              {LIGHTING_OPTIONS.map(opt => <option key={opt.id} value={opt.value}>{opt.label}</option>)}
+            </select>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-              <Palette size={14} /> Ghi chú thêm
+            <label className="text-xs font-medium text-slate-400 flex items-center gap-1">
+              <Camera size={14} /> Ống kính & Máy ảnh
             </label>
-            <textarea
-              value={config.additionalPrompt}
-              onChange={(e) => updateConfig('additionalPrompt', e.target.value)}
-              placeholder="VD: Cầm ly rượu vang, đeo kính râm, trời đang mưa..."
-              className="w-full h-20 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none resize-none"
-            />
+            <select
+              onChange={(e) => updateConfig('camera', e.target.value)}
+              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-2 text-xs text-white outline-none"
+              value={CAMERA_OPTIONS.find(c => c.value === config.camera)?.value ?? config.camera}
+            >
+              {CAMERA_OPTIONS.map(opt => <option key={opt.id} value={opt.value}>{opt.label}</option>)}
+            </select>
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+            <Palette size={14} /> Ghi chú thêm
+          </label>
+          <textarea
+            value={config.additionalPrompt}
+            onChange={(e) => updateConfig('additionalPrompt', e.target.value)}
+            placeholder="VD: Cầm ly rượu vang, đeo kính râm, trời đang mưa..."
+            className="w-full h-20 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none resize-none"
+          />
+        </div>
       </div>
 
       {/* PROMPT PREVIEW */}
