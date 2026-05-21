@@ -670,7 +670,11 @@ function Badges({ config, sv }: { config: InfographicConfig; sv: StyleVars }) {
   );
 }
 
-function Ingredients({ config, sv }: { config: InfographicConfig; sv: StyleVars }) {
+function Ingredients({ config, sv, ingredientImages }: {
+  config: InfographicConfig;
+  sv: StyleVars;
+  ingredientImages?: (string | null)[];
+}) {
   const filled = config.ingredients.filter(i => i.name);
   return (
     <div>
@@ -682,14 +686,17 @@ function Ingredients({ config, sv }: { config: InfographicConfig; sv: StyleVars 
         {config.leftSectionTitle || 'Nguyên Liệu'}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-        {filled.map((ing, i) => {
-          const { url, emoji } = getIngredientImageUrl(ing.name);
+        {config.ingredients.map((ing, origIdx) => {
+          if (!ing.name) return null;
+          const { url: unsplashUrl, emoji } = getIngredientImageUrl(ing.name);
+          const aiUrl = ingredientImages?.[origIdx] ?? null;
+          const imgSrc = aiUrl || unsplashUrl;
           return (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            {/* Photo bubble with emoji fallback */}
+          <div key={origIdx} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            {/* Photo bubble: AI-generated first, Unsplash fallback, emoji last */}
             <div style={{
               width: 58, height: 58, borderRadius: '50%', flexShrink: 0,
-              background: getIngColor(sv.ingPalette, i),
+              background: getIngColor(sv.ingPalette, origIdx),
               border: `2.5px solid ${sv.ingBorder}`,
               boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
               overflow: 'hidden',
@@ -697,12 +704,18 @@ function Ingredients({ config, sv }: { config: InfographicConfig; sv: StyleVars 
               fontSize: 28, lineHeight: 1,
             }}>
               <img
-                src={url}
+                src={imgSrc}
                 alt={ing.name}
                 crossOrigin="anonymous"
                 style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                 onError={(e) => {
                   const target = e.currentTarget;
+                  // If AI image failed, fall back to Unsplash
+                  if (aiUrl && target.src !== unsplashUrl) {
+                    target.src = unsplashUrl;
+                    return;
+                  }
+                  // If Unsplash also failed, show emoji
                   target.style.display = 'none';
                   if (target.parentElement) {
                     target.parentElement.textContent = emoji;
@@ -728,7 +741,7 @@ function Ingredients({ config, sv }: { config: InfographicConfig; sv: StyleVars 
             </div>
           </div>
         ); })}
-        {filled.length === 0 && (
+        {!config.ingredients.some(i => i.name) && (
           <p style={{ color: sv.subtitleColor, fontSize: 12, fontStyle: 'italic' }}>Chưa có thành phần</p>
         )}
       </div>
@@ -823,60 +836,67 @@ function HeroImage({ heroImageUrl, sv, label }: { heroImageUrl: string | null; s
 
 // ─── Layout variants ──────────────────────────────────────────────────────────
 
-function ClassicLayout({ config, sv, heroImageUrl }: { config: InfographicConfig; sv: StyleVars; heroImageUrl: string | null }) {
+interface LayoutProps {
+  config: InfographicConfig;
+  sv: StyleVars;
+  heroImageUrl: string | null;
+  ingredientImages?: (string | null)[];
+}
+
+function ClassicLayout({ config, sv, heroImageUrl, ingredientImages }: LayoutProps) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr 240px', gap: 36, alignItems: 'start' }}>
-      <Ingredients config={config} sv={sv} />
+      <Ingredients config={config} sv={sv} ingredientImages={ingredientImages} />
       <HeroImage heroImageUrl={heroImageUrl} sv={sv} />
       <Steps config={config} sv={sv} />
     </div>
   );
 }
 
-function HeroCenterLayout({ config, sv, heroImageUrl }: { config: InfographicConfig; sv: StyleVars; heroImageUrl: string | null }) {
+function HeroCenterLayout({ config, sv, heroImageUrl, ingredientImages }: LayoutProps) {
   return (
     <div>
       <div style={{ marginBottom: 32 }}><HeroImage heroImageUrl={heroImageUrl} sv={sv} /></div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
-        <Ingredients config={config} sv={sv} />
+        <Ingredients config={config} sv={sv} ingredientImages={ingredientImages} />
         <Steps config={config} sv={sv} />
       </div>
     </div>
   );
 }
 
-function LeftHeroLayout({ config, sv, heroImageUrl }: { config: InfographicConfig; sv: StyleVars; heroImageUrl: string | null }) {
+function LeftHeroLayout({ config, sv, heroImageUrl, ingredientImages }: LayoutProps) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1.3fr 1fr', gap: 40, alignItems: 'start' }}>
       <HeroImage heroImageUrl={heroImageUrl} sv={sv} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
-        <Ingredients config={config} sv={sv} />
+        <Ingredients config={config} sv={sv} ingredientImages={ingredientImages} />
         <Steps config={config} sv={sv} />
       </div>
     </div>
   );
 }
 
-function TopHeroLayout({ config, sv, heroImageUrl }: { config: InfographicConfig; sv: StyleVars; heroImageUrl: string | null }) {
+function TopHeroLayout({ config, sv, heroImageUrl, ingredientImages }: LayoutProps) {
   return (
     <div>
       <div style={{ marginBottom: 32 }}><HeroImage heroImageUrl={heroImageUrl} sv={sv} /></div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40 }}>
-        <Ingredients config={config} sv={sv} />
+        <Ingredients config={config} sv={sv} ingredientImages={ingredientImages} />
         <Steps config={config} sv={sv} />
       </div>
     </div>
   );
 }
 
-function GridLayout({ config, sv, heroImageUrl }: { config: InfographicConfig; sv: StyleVars; heroImageUrl: string | null }) {
+function GridLayout({ config, sv, heroImageUrl, ingredientImages }: LayoutProps) {
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 36, alignItems: 'start' }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
         <HeroImage heroImageUrl={heroImageUrl} sv={sv} />
         <Steps config={config} sv={sv} />
       </div>
-      <Ingredients config={config} sv={sv} />
+      <Ingredients config={config} sv={sv} ingredientImages={ingredientImages} />
     </div>
   );
 }
@@ -886,14 +906,15 @@ function GridLayout({ config, sv, heroImageUrl }: { config: InfographicConfig; s
 interface Props {
   config: InfographicConfig;
   heroImageUrl: string | null;
+  ingredientImages?: (string | null)[];
 }
 
 export const InfographicRenderer = forwardRef<HTMLDivElement, Props>(
-  ({ config, heroImageUrl }, ref) => {
+  ({ config, heroImageUrl, ingredientImages }, ref) => {
     const sv = STYLES[config.style] || STYLES.soft_pastel;
 
     const renderLayout = () => {
-      const props = { config, sv, heroImageUrl };
+      const props = { config, sv, heroImageUrl, ingredientImages };
       switch (config.layout) {
         case 'hero_center':   return <HeroCenterLayout {...props} />;
         case 'left_hero':     return <LeftHeroLayout {...props} />;

@@ -286,3 +286,47 @@ export async function generateInfographic(config: InfographicConfig): Promise<st
   const data = await response.json();
   return `data:image/png;base64,${data.image}`;
 }
+
+export async function generateIngredientIllustration(
+  name: string,
+  style: InfographicStyle,
+): Promise<string | null> {
+  const sv = STYLE_TEMPLATES[style];
+  const prompt = `${sv.prompt}.
+
+Cute miniature 3D illustration icon of: "${name}"
+CRITICAL REQUIREMENTS:
+- Subject perfectly centered, fills ~80% of the square frame
+- Beautiful photorealistic 3D render, high quality
+- Soft clean background (cream or white), circular-friendly composition
+- ABSOLUTELY NO TEXT, NO LABELS, NO NUMBERS, NO WRITING anywhere
+- Square format
+- Premium Korean food/product illustration style
+- Soft studio lighting from upper-left
+- The image will be used as a small circular ingredient icon in an infographic`;
+
+  try {
+    const res = await fetch('/api/story', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return `data:image/png;base64,${data.image}`;
+  } catch {
+    return null;
+  }
+}
+
+export async function generateAllIngredientIllustrations(
+  config: InfographicConfig,
+): Promise<(string | null)[]> {
+  return Promise.all(
+    config.ingredients.map(ing =>
+      ing.name
+        ? generateIngredientIllustration(ing.name, config.style)
+        : Promise.resolve(null),
+    ),
+  );
+}

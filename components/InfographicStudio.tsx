@@ -6,7 +6,7 @@ import {
 } from '../types';
 import {
   TYPE_TEMPLATES, STYLE_TEMPLATES, LAYOUT_TEMPLATES,
-  getBadgePresets, generateHeroImage,
+  getBadgePresets, generateHeroImage, generateAllIngredientIllustrations,
 } from '../services/infographicService';
 import { InfographicRenderer } from './InfographicRenderer';
 
@@ -112,6 +112,7 @@ function StepBadge({ n }: { n: number }) {
 export function InfographicStudio() {
   const [config, setConfig] = useState<InfographicConfig>(DEFAULT_CONFIG);
   const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
+  const [ingredientImages, setIngredientImages] = useState<(string | null)[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -121,6 +122,7 @@ export function InfographicStudio() {
   const update = <K extends keyof InfographicConfig>(key: K, val: InfographicConfig[K]) => {
     setConfig(p => ({ ...p, [key]: val }));
     setHeroImageUrl(null);
+    setIngredientImages([]);
   };
 
   // Ingredient helpers
@@ -153,6 +155,7 @@ export function InfographicStudio() {
   const applyPreset = (preset: Partial<InfographicConfig>, type: InfographicType) => {
     setConfig({ ...DEFAULT_CONFIG, type, ...preset });
     setHeroImageUrl(null);
+    setIngredientImages([]);
   };
 
   const applyTypeDefaults = (type: InfographicType) => {
@@ -169,9 +172,15 @@ export function InfographicStudio() {
     }
     setIsLoading(true);
     setError(null);
+    setIngredientImages([]);
     try {
-      const url = await generateHeroImage(config);
-      setHeroImageUrl(url);
+      // Run hero + all ingredient illustrations in parallel
+      const [heroUrl, ingImages] = await Promise.all([
+        generateHeroImage(config),
+        generateAllIngredientIllustrations(config),
+      ]);
+      setHeroImageUrl(heroUrl);
+      setIngredientImages(ingImages);
     } catch (err: any) {
       setError(err.message || 'Có lỗi xảy ra. Thử lại nhé!');
     } finally {
@@ -247,14 +256,14 @@ export function InfographicStudio() {
               <style>{`
                 @media (max-width: 1280px) { :root { --infographic-scale: calc((min(100vw, 1200px) - 32px) / 1200) } }
               `}</style>
-              <InfographicRenderer ref={rendererRef} config={config} heroImageUrl={heroImageUrl} />
+              <InfographicRenderer ref={rendererRef} config={config} heroImageUrl={heroImageUrl} ingredientImages={ingredientImages} />
             </div>
           </div>
         </div>
 
         <div className="flex gap-3 justify-center pt-1">
           <button
-            onClick={() => { setHeroImageUrl(null); setConfig(DEFAULT_CONFIG); }}
+            onClick={() => { setHeroImageUrl(null); setIngredientImages([]); setConfig(DEFAULT_CONFIG); }}
             className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white transition-colors font-semibold text-sm"
           >
             Tạo infographic mới
@@ -597,7 +606,9 @@ export function InfographicStudio() {
               className="w-full py-4 rounded-xl text-base font-semibold text-white shadow-xl transition-all disabled:opacity-50 hover:-translate-y-0.5 disabled:cursor-not-allowed"
               style={{ background: (isLoading || !config.title.trim()) ? '#374151' : 'linear-gradient(135deg, #d97706, #f59e0b)' }}
             >
-              {isLoading ? 'Đang tạo hình minh họa AI...' : '✦ Tạo Infographic'}
+              {isLoading
+                ? `Đang tạo ${config.ingredients.filter(i => i.name).length + 1} hình AI...`
+                : '✦ Tạo Infographic'}
             </button>
 
             {!config.title.trim() && <p className="text-center text-xs text-slate-600">Nhập tên sản phẩm/món ăn để bắt đầu</p>}
