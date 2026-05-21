@@ -233,6 +233,42 @@ ${badgesSection ? 'Highlight badges: ' + badgesSection : ''}`,
   return parts.filter(Boolean).join('\n');
 }
 
+export function buildHeroPrompt(config: InfographicConfig): string {
+  const style = STYLE_TEMPLATES[config.style];
+  return `${style.prompt}.
+
+Generate a beautiful, high-quality illustration or photorealistic image of:
+${config.heroDescription || 'A beautiful food dish or product, perfectly styled and composed'}
+
+CRITICAL REQUIREMENTS:
+- Absolutely NO TEXT, NO LABELS, NO NUMBERS, NO WRITING anywhere in the image
+- Clean, centered composition — subject fills the frame beautifully
+- Professional food photography / product photography quality
+- Square or slightly portrait format
+- The image will be embedded as the centerpiece of a designed infographic card
+- Soft, clean background that doesn't distract
+- Beautiful lighting with gentle shadows
+- High detail, appetizing and appealing visual`;
+}
+
+export async function generateHeroImage(config: InfographicConfig): Promise<string> {
+  const prompt = buildHeroPrompt(config);
+
+  const response = await fetch('/api/story', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prompt }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json();
+    throw new Error(err.error || 'Lỗi khi tạo hình minh họa');
+  }
+
+  const data = await response.json();
+  return `data:image/png;base64,${data.image}`;
+}
+
 export async function generateInfographic(config: InfographicConfig): Promise<string> {
   const prompt = buildInfographicPrompt(config);
 

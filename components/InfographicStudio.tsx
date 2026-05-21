@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import { Download, RefreshCw, Plus, X, Check, ChevronDown, Zap, Sparkles, Image } from 'lucide-react';
 import {
   InfographicConfig, InfographicType, InfographicStyle, InfographicLayout,
@@ -6,8 +6,9 @@ import {
 } from '../types';
 import {
   TYPE_TEMPLATES, STYLE_TEMPLATES, LAYOUT_TEMPLATES,
-  getBadgePresets, generateInfographic,
+  getBadgePresets, generateHeroImage,
 } from '../services/infographicService';
+import { InfographicRenderer } from './InfographicRenderer';
 
 const BADGE_COLORS = ['pink', 'mint', 'peach', 'lavender', 'blue', 'green', 'orange', 'yellow'];
 const BADGE_COLOR_STYLES: Record<string, string> = {
@@ -110,14 +111,16 @@ function StepBadge({ n }: { n: number }) {
 
 export function InfographicStudio() {
   const [config, setConfig] = useState<InfographicConfig>(DEFAULT_CONFIG);
-  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showStylePanel, setShowStylePanel] = useState(false);
+  const rendererRef = useRef<HTMLDivElement>(null);
 
   const update = <K extends keyof InfographicConfig>(key: K, val: InfographicConfig[K]) => {
     setConfig(p => ({ ...p, [key]: val }));
-    setResultUrl(null);
+    setHeroImageUrl(null);
   };
 
   // Ingredient helpers
@@ -149,7 +152,7 @@ export function InfographicStudio() {
 
   const applyPreset = (preset: Partial<InfographicConfig>, type: InfographicType) => {
     setConfig({ ...DEFAULT_CONFIG, type, ...preset });
-    setResultUrl(null);
+    setHeroImageUrl(null);
   };
 
   const applyTypeDefaults = (type: InfographicType) => {
@@ -167,8 +170,8 @@ export function InfographicStudio() {
     setIsLoading(true);
     setError(null);
     try {
-      const url = await generateInfographic(config);
-      setResultUrl(url);
+      const url = await generateHeroImage(config);
+      setHeroImageUrl(url);
     } catch (err: any) {
       setError(err.message || 'Có lỗi xảy ra. Thử lại nhé!');
     } finally {
@@ -176,39 +179,84 @@ export function InfographicStudio() {
     }
   };
 
+  const handleDownload = useCallback(async () => {
+    if (!rendererRef.current) return;
+    setIsExporting(true);
+    setError(null);
+    try {
+      await document.fonts.ready;
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(rendererRef.current, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null,
+        logging: false,
+      });
+      const link = document.createElement('a');
+      link.download = `infographic-${config.title.replace(/\s+/g, '-')}-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+    } catch (err: any) {
+      setError('Lỗi khi xuất ảnh: ' + (err.message || 'Thử lại nhé!'));
+    } finally {
+      setIsExporting(false);
+    }
+  }, [config.title]);
+
   const currentType = TYPE_TEMPLATES[config.type];
   const currentStyle = STYLE_TEMPLATES[config.style];
   const badgePresets = getBadgePresets();
 
   // ─── RESULT VIEW ───────────────────────────────────────────────────────────
-  if (resultUrl) {
+  if (heroImageUrl) {
     return (
       <div className="space-y-6">
+        {/* Action bar */}
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h3 className="text-xl font-bold text-white">{currentType.icon} Infographic đã sẵn sàng!</h3>
-            <p className="text-slate-400 text-sm mt-1">{config.title} · {currentStyle.label}</p>
+            <h3 className="text-xl font-bold text-white">{currentType.icon} Infographic sẵn sàng!</h3>
+            <p className="text-slate-400 text-sm mt-1">{config.title} · {currentStyle.label} · Text tiếng Việt chuẩn</p>
           </div>
-          <div className="flex gap-3">
-            <button onClick={() => setResultUrl(null)} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white transition-colors text-sm">
-              <RefreshCw size={14} /> Tạo lại
+          <div className="flex gap-3 flex-wrap">
+            <button onClick={() => setHeroImageUrl(null)} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white transition-colors text-sm">
+              <RefreshCw size={14} /> Tạo lại ảnh hero
+            </button>
+            <button onClick={handleGenerate} disabled={isLoading} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-700/60 text-amber-300 hover:border-amber-500 hover:bg-amber-900/20 transition-colors text-sm disabled:opacity-50">
+              <Zap size={14} /> {isLoading ? 'Đang tạo...' : 'Biến thể mới'}
             </button>
             <button
-              onClick={() => { const a = document.createElement('a'); a.href = resultUrl; a.download = `infographic-${Date.now()}.png`; a.click(); }}
-              className="flex items-center gap-2 px-5 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold shadow-lg transition-colors"
+              onClick={handleDownload}
+              disabled={isExporting}
+              className="flex items-center gap-2 px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-lg transition-colors disabled:opacity-60"
             >
-              <Download size={14} /> Tải xuống
+              <Download size={14} /> {isExporting ? 'Đang xuất...' : 'Tải về PNG'}
             </button>
           </div>
         </div>
-        <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/50 shadow-2xl">
-          <img src={resultUrl} alt="Infographic" className="w-full max-h-[85vh] object-contain" />
+
+        {error && <div className="bg-red-500/10 border border-red-500/40 text-red-200 px-4 py-3 rounded-xl text-sm">⚠️ {error}</div>}
+
+        {/* Renderer — scaled to fit screen width, full 1200px internally */}
+        <div className="rounded-2xl overflow-auto border border-slate-700/60 bg-slate-900/30 shadow-2xl p-2">
+          <div style={{ minWidth: 320 }}>
+            <div style={{
+              transformOrigin: 'top left',
+              transform: 'scale(var(--infographic-scale, 1))',
+            }}>
+              <style>{`
+                @media (max-width: 1280px) { :root { --infographic-scale: calc((min(100vw, 1200px) - 32px) / 1200) } }
+              `}</style>
+              <InfographicRenderer ref={rendererRef} config={config} heroImageUrl={heroImageUrl} />
+            </div>
+          </div>
         </div>
-        <div className="flex gap-3 justify-center pt-2">
-          <button onClick={handleGenerate} disabled={isLoading} className="flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold transition-all disabled:opacity-50 shadow-lg hover:-translate-y-0.5" style={{ background: 'linear-gradient(135deg, #d97706, #f59e0b)' }}>
-            <Zap size={16} /> Tạo biến thể mới
-          </button>
-          <button onClick={() => { setResultUrl(null); setConfig(DEFAULT_CONFIG); }} className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white transition-colors font-semibold">
+
+        <div className="flex gap-3 justify-center pt-1">
+          <button
+            onClick={() => { setHeroImageUrl(null); setConfig(DEFAULT_CONFIG); }}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white transition-colors font-semibold text-sm"
+          >
             Tạo infographic mới
           </button>
         </div>
@@ -549,7 +597,7 @@ export function InfographicStudio() {
               className="w-full py-4 rounded-xl text-base font-semibold text-white shadow-xl transition-all disabled:opacity-50 hover:-translate-y-0.5 disabled:cursor-not-allowed"
               style={{ background: (isLoading || !config.title.trim()) ? '#374151' : 'linear-gradient(135deg, #d97706, #f59e0b)' }}
             >
-              {isLoading ? 'Đang tạo infographic...' : '✦ Tạo Infographic'}
+              {isLoading ? 'Đang tạo hình minh họa AI...' : '✦ Tạo Infographic'}
             </button>
 
             {!config.title.trim() && <p className="text-center text-xs text-slate-600">Nhập tên sản phẩm/món ăn để bắt đầu</p>}
