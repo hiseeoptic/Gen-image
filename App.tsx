@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Briefcase, History, Wand2, RefreshCw, Layers, Box, User, Users, Package, ScanFace } from 'lucide-react';
+import { Sparkles, Briefcase, History, Wand2, RefreshCw, Layers, Box, User, Users, Package, ScanFace, Layers2, BookImage } from 'lucide-react';
 import { AppMode, PhotoConfig, DEFAULT_CONFIG } from './types';
 import { UploadArea } from './components/UploadArea';
 import { UploadedImage } from './components/MultiUploadArea';
@@ -7,18 +7,21 @@ import { SingleSlotUpload } from './components/SingleSlotUpload';
 import { Button } from './components/Button';
 import { ResultView } from './components/ResultView';
 import { ConfigPanel } from './components/ConfigPanel';
+import { PosterStudio } from './components/PosterStudio';
+import { StoryStudio } from './components/StoryStudio';
+import { InfographicStudio } from './components/InfographicStudio';
 import { restorePhoto, generatePersonalPhoto, fileToGenerativePart } from './services/openaiService';
 
 function App() {
   const [mode, setMode] = useState<AppMode>(AppMode.PERSONAL);
-  
+
   // State cho Phục chế (1 ảnh duy nhất)
   const [restorationFile, setRestorationFile] = useState<File | null>(null);
   const [restorationPreview, setRestorationPreview] = useState<string | null>(null);
 
   // State cho Tạo ảnh - CHỈ 1 NGƯỜI
   const [faceImage, setFaceImage] = useState<UploadedImage | null>(null);
-  
+
   // Products & Logo
   const [productImages, setProductImages] = useState<(UploadedImage | null)[]>([null]);
   const [logoImage, setLogoImage] = useState<UploadedImage | null>(null);
@@ -26,7 +29,7 @@ function App() {
   const [resultUrl, setResultUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const [photoConfig, setPhotoConfig] = useState<PhotoConfig>(DEFAULT_CONFIG);
 
   // --- HANDLERS FOR RESTORATION ---
@@ -100,16 +103,16 @@ function App() {
         setError("Vui lòng tải ảnh lên để phục chế.");
         return;
     }
-    
+
     if (mode === AppMode.PERSONAL && photoConfig.source === 'UPLOAD') {
         const hasProduct = productImages.some(img => img !== null);
-        
+
         if (!faceImage && !hasProduct) {
              setError("Vui lòng tải ảnh khuôn mặt của bạn (hoặc sản phẩm).");
              return;
         }
     }
-    
+
     setIsLoading(true);
     setError(null);
 
@@ -122,14 +125,14 @@ function App() {
         generatedImageBase64 = await restorePhoto(base64Data);
       } else {
         const facesData = faceImage ? [await fileToGenerativePart(faceImage.file)] : [];
-        
+
         const validProducts = productImages.filter((img): img is UploadedImage => img !== null);
         const productsData = await Promise.all(validProducts.map(img => fileToGenerativePart(img.file)));
-        
+
         const logoData = logoImage ? await fileToGenerativePart(logoImage.file) : null;
 
         generatedImageBase64 = await generatePersonalPhoto({
-            faces: facesData, // Send array of 1 (or 0)
+            faces: facesData,
             products: productsData,
             logo: logoData
         }, photoConfig);
@@ -147,7 +150,7 @@ function App() {
   const renderInputSection = () => {
     if (mode === AppMode.RESTORATION) {
       return (
-        <UploadArea 
+        <UploadArea
           onImageSelected={handleRestorationSelect}
           selectedImage={restorationPreview}
           onClear={handleRestorationClear}
@@ -174,7 +177,7 @@ function App() {
                 <ScanFace size={18} />
                 <span className="text-sm font-bold uppercase tracking-wider">Ảnh Khuôn mặt của bạn (1 Người)</span>
             </div>
-            <UploadArea 
+            <UploadArea
                 onImageSelected={handleFaceSelect}
                 selectedImage={faceImage?.url || null}
                 onClear={handleFaceClear}
@@ -239,7 +242,7 @@ function App() {
           </div>
           <div className="flex items-center gap-4">
              <span className="text-xs text-slate-500 border border-slate-800 rounded-full px-3 py-1">
-               Powered by OpenAI gpt-image-1
+               Powered by Google Gemini
              </span>
           </div>
         </div>
@@ -251,8 +254,8 @@ function App() {
             <button
               onClick={() => handleModeSwitch(AppMode.PERSONAL)}
               className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                mode === AppMode.PERSONAL 
-                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/50' 
+                mode === AppMode.PERSONAL
+                  ? 'bg-purple-600 text-white shadow-lg shadow-purple-900/50'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
@@ -262,24 +265,66 @@ function App() {
             <button
               onClick={() => handleModeSwitch(AppMode.RESTORATION)}
               className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
-                mode === AppMode.RESTORATION 
-                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50' 
+                mode === AppMode.RESTORATION
+                  ? 'bg-blue-600 text-white shadow-lg shadow-blue-900/50'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
               <History size={18} />
               2. Phục chế ảnh cũ
             </button>
+            <button
+              onClick={() => handleModeSwitch(AppMode.POSTER)}
+              className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                mode === AppMode.POSTER
+                  ? 'bg-gradient-to-r from-rose-600 to-orange-600 text-white shadow-lg shadow-rose-900/50'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Layers2 size={18} />
+              3. Tạo Poster
+            </button>
+            <button
+              onClick={() => handleModeSwitch(AppMode.STORY)}
+              className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                mode === AppMode.STORY
+                  ? 'bg-gradient-to-r from-amber-600 to-yellow-500 text-white shadow-lg shadow-amber-900/50'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <BookImage size={18} />
+              4. Kể Chuyện AI
+            </button>
+            <button
+              onClick={() => handleModeSwitch(AppMode.INFOGRAPHIC)}
+              className={`flex items-center gap-3 px-6 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${
+                mode === AppMode.INFOGRAPHIC
+                  ? 'bg-gradient-to-r from-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-900/50'
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              <Layers size={18} />
+              5. Infographic
+            </button>
           </div>
         </div>
 
         <div className="space-y-8">
+
+          {mode === AppMode.POSTER && <PosterStudio />}
+
+          {mode === AppMode.STORY && <StoryStudio />}
+
+          {mode === AppMode.INFOGRAPHIC && <InfographicStudio />}
+
+          {(mode !== AppMode.POSTER && mode !== AppMode.STORY && mode !== AppMode.INFOGRAPHIC) && (
+          <>
           <div className="text-center space-y-2 mb-8">
             <h2 className="text-3xl font-bold text-white">
               {mode === AppMode.RESTORATION ? 'Phục chế ảnh cũ' : 'Studio Chân Dung AI'}
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              {mode === AppMode.RESTORATION 
+              {mode === AppMode.RESTORATION
                 ? 'Tải lên những tấm ảnh cũ, bị xước hoặc mờ. AI sẽ phục hồi độ sắc nét và màu sắc.'
                 : 'Tải lên 1 ảnh khuôn mặt rõ nét của bạn. AI sẽ tạo ra những bức ảnh chuyên nghiệp.'}
             </p>
@@ -290,13 +335,13 @@ function App() {
               <div className="lg:col-span-8 space-y-6">
                 {mode === AppMode.PERSONAL && (
                   <div className="flex gap-4 mb-4">
-                     <button 
+                     <button
                         onClick={() => setPhotoConfig({...photoConfig, source: 'UPLOAD'})}
                         className={`flex-1 py-2 rounded-lg border text-sm font-medium transition-colors ${photoConfig.source === 'UPLOAD' ? 'border-purple-500 bg-purple-500/10 text-purple-200' : 'border-slate-700 bg-slate-800 text-slate-400'}`}
                      >
                        Từ ảnh mẫu
                      </button>
-                     <button 
+                     <button
                         onClick={() => {
                            setPhotoConfig({...photoConfig, source: 'TEXT_ONLY'});
                         }}
@@ -345,7 +390,7 @@ function App() {
                         </>
                       ) : (
                         <>
-                           <li className="flex gap-2"><span className="text-blue-400 font-bold">✦</span> Upload ảnh mặt → AI giữ nguyên khuôn mặt bạn (OpenAI).</li>
+                           <li className="flex gap-2"><span className="text-blue-400 font-bold">✦</span> Upload ảnh mặt → AI giữ nguyên khuôn mặt bạn.</li>
                            <li className="flex gap-2">✓ Ảnh mặt nên nhìn thẳng, rõ nét, không bị che.</li>
                            <li className="flex gap-2">✓ Không upload ảnh → sáng tạo tự do theo prompt.</li>
                            <li className="flex gap-2">✓ Mô tả chi tiết trang phục, bối cảnh trong ghi chú.</li>
@@ -354,8 +399,8 @@ function App() {
                     </ul>
                   </div>
 
-                  <Button 
-                    onClick={handleProcess} 
+                  <Button
+                    onClick={handleProcess}
                     disabled={isLoading}
                     isLoading={isLoading}
                     variant={mode === AppMode.RESTORATION ? 'primary' : 'secondary'}
@@ -368,7 +413,7 @@ function App() {
 
             </div>
           ) : (
-            <ResultView 
+            <ResultView
               originalImage={getPreviewImage() || ""}
               resultImage={resultUrl}
               onReset={() => {
@@ -377,6 +422,9 @@ function App() {
               mode={mode}
             />
           )}
+          </>
+          )}
+
 
         </div>
       </main>
