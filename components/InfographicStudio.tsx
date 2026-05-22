@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { Download, RefreshCw, Plus, X, Check, ChevronDown, Zap, Sparkles, Image } from 'lucide-react';
+import { Download, RefreshCw, Plus, X, Check, ChevronDown, Zap, Sparkles, Image, ImagePlus, Camera } from 'lucide-react';
 import {
   InfographicConfig, InfographicType, InfographicStyle, InfographicLayout, InfographicFormat,
   InfographicIngredient, InfographicStep, InfographicBadge,
@@ -13,7 +13,8 @@ const FORMAT_OPTIONS: { id: InfographicFormat; label: string; ratio: string; ico
 ];
 import {
   TYPE_TEMPLATES, STYLE_TEMPLATES, LAYOUT_TEMPLATES,
-  getBadgePresets, buildHeroPrompt, generateHeroImage, generateAllIngredientIllustrations,
+  getBadgePresets, buildHeroPrompt, fileToBase64,
+  generateHeroImage, generateAllIngredientIllustrations,
 } from '../services/infographicService';
 import { InfographicRenderer } from './InfographicRenderer';
 import { PromptBox } from './PromptBox';
@@ -129,6 +130,27 @@ export function InfographicStudio() {
   const [showStylePanel, setShowStylePanel] = useState(false);
   const rendererRef = useRef<HTMLDivElement>(null);
 
+  // Product / food photo upload
+  const [productFile, setProductFile] = useState<File | null>(null);
+  const [productPreview, setProductPreview] = useState<string | null>(null);
+  const [isDraggingProduct, setIsDraggingProduct] = useState(false);
+  const productInputRef = useRef<HTMLInputElement>(null);
+
+  const handleProductFileSelect = useCallback((file: File) => {
+    if (!file.type.startsWith('image/')) return;
+    setProductFile(file);
+    setProductPreview(URL.createObjectURL(file));
+    setHeroImageUrl(null);
+    setIngredientImages([]);
+  }, []);
+
+  const clearProductFile = () => {
+    setProductFile(null);
+    setProductPreview(null);
+    setHeroImageUrl(null);
+    setIngredientImages([]);
+  };
+
   const update = <K extends keyof InfographicConfig>(key: K, val: InfographicConfig[K]) => {
     setConfig(p => ({ ...p, [key]: val }));
     setHeroImageUrl(null);
@@ -185,9 +207,12 @@ export function InfographicStudio() {
     setIngredientImages([]);
     setLastPrompt(buildHeroPrompt(config));
     try {
+      let uploadedImage: { data: string; mimeType: string } | null = null;
+      if (productFile) uploadedImage = await fileToBase64(productFile);
+
       // Run hero + all ingredient illustrations in parallel
       const [heroUrl, ingImages] = await Promise.all([
-        generateHeroImage(config),
+        generateHeroImage(config, uploadedImage),
         generateAllIngredientIllustrations(config),
       ]);
       setHeroImageUrl(heroUrl);
@@ -383,11 +408,62 @@ export function InfographicStudio() {
             </div>
           </SectionCard>
 
+          {/* STEP 3.5: Product / Food Photo Upload */}
+          <SectionCard title={
+            <div className="flex items-center gap-3">
+              <StepBadge n={3} />
+              <div>
+                <h3 className="font-semibold text-white text-sm">Ảnh sản phẩm / món ăn thực tế</h3>
+                <p className="text-slate-500 text-xs">Tùy chọn — AI sẽ nâng cấp ảnh của bạn thành hình infographic đẹp</p>
+              </div>
+            </div>
+          }>
+            {!productPreview ? (
+              <div
+                onDrop={e => { e.preventDefault(); setIsDraggingProduct(false); const f = e.dataTransfer.files[0]; if (f) handleProductFileSelect(f); }}
+                onDragOver={e => { e.preventDefault(); setIsDraggingProduct(true); }}
+                onDragLeave={() => setIsDraggingProduct(false)}
+                onClick={() => productInputRef.current?.click()}
+                className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
+                  isDraggingProduct
+                    ? 'border-amber-400 bg-amber-500/10 scale-[1.01]'
+                    : 'border-slate-700 hover:border-amber-500/50 hover:bg-slate-800/30'
+                }`}
+              >
+                <input ref={productInputRef} type="file" accept="image/*" className="hidden"
+                  onChange={e => e.target.files?.[0] && handleProductFileSelect(e.target.files[0])} />
+                <Camera size={32} className="mx-auto mb-2 text-slate-500" />
+                <p className="text-slate-300 font-medium text-sm">Kéo thả ảnh vào đây hoặc click để chọn</p>
+                <p className="text-slate-500 text-xs mt-1">Ảnh nền trắng hoặc sản phẩm rõ ràng → kết quả tốt nhất</p>
+                <p className="text-slate-600 text-[10px] mt-2">Không bắt buộc — bỏ qua nếu muốn AI tự tạo hình</p>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4 p-3 bg-slate-800/40 rounded-xl border border-slate-700/50">
+                <img src={productPreview} alt="product" className="h-20 w-20 object-contain rounded-lg border border-slate-700 bg-slate-900 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-medium text-sm truncate">{productFile?.name}</p>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    {productFile ? (productFile.size / 1024 < 1024
+                      ? Math.round(productFile.size / 1024) + ' KB'
+                      : (productFile.size / 1024 / 1024).toFixed(1) + ' MB') : ''}
+                  </p>
+                  <span className="inline-flex items-center gap-1 text-amber-400 text-xs mt-1 font-medium">
+                    <Check size={11} /> AI sẽ dùng ảnh này làm hero
+                  </span>
+                </div>
+                <button onClick={clearProductFile}
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors px-3 py-1.5 rounded-lg border border-red-900/50 hover:border-red-700 shrink-0">
+                  Xóa
+                </button>
+              </div>
+            )}
+          </SectionCard>
+
           {/* STEP 4: Ingredients */}
           <SectionCard title={
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <StepBadge n={3} />
+                <StepBadge n={4} />
                 <div>
                   <h3 className="font-semibold text-white text-sm">{currentType.ingredientLabel}</h3>
                   <p className="text-slate-500 text-xs">Tên tiêu đề cột: <span className="text-slate-400">"{config.leftSectionTitle}"</span></p>
@@ -424,7 +500,7 @@ export function InfographicStudio() {
           <SectionCard title={
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <StepBadge n={4} />
+                <StepBadge n={5} />
                 <div>
                   <h3 className="font-semibold text-white text-sm">{currentType.stepLabel}</h3>
                   <p className="text-slate-500 text-xs">Tên tiêu đề cột: <span className="text-slate-400">"{config.rightSectionTitle}"</span></p>
@@ -462,7 +538,7 @@ export function InfographicStudio() {
           {/* STEP 6: Info Badges */}
           <SectionCard title={
             <div className="flex items-center gap-3">
-              <StepBadge n={5} />
+              <StepBadge n={6} />
               <div><h3 className="font-semibold text-white text-sm">Thẻ thông tin nhanh</h3><p className="text-slate-500 text-xs">Các badge hiển thị ngay cạnh hình chính</p></div>
             </div>
           }>
@@ -512,7 +588,7 @@ export function InfographicStudio() {
           <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl overflow-hidden">
             <button onClick={() => setShowStylePanel(!showStylePanel)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors">
               <div className="flex items-center gap-3">
-                <StepBadge n={6} />
+                <StepBadge n={7} />
                 <div className="text-left">
                   <h3 className="font-semibold text-white text-sm">Bố cục & Phong cách</h3>
                   <p className="text-slate-500 text-xs">{LAYOUT_TEMPLATES[config.layout].label} · {currentStyle.label}</p>

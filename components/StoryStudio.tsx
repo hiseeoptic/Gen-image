@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Download, RefreshCw, Sparkles, Zap, ChevronDown, Check, Plus, X } from 'lucide-react';
+import React, { useState, useRef, useCallback } from 'react';
+import { Download, RefreshCw, Sparkles, Zap, ChevronDown, Check, Plus, X, ImagePlus, Images } from 'lucide-react';
 import { StoryConfig, StoryLayout, StoryStyle, StoryColorScheme } from '../types';
 import {
   LAYOUT_TEMPLATES, STYLE_TEMPLATES, COLOR_SCHEMES,
   CHARACTER_OPTIONS, SYMBOL_OPTIONS, MILESTONE_OPTIONS,
   FLOW_TYPE_OPTIONS, BACKGROUND_OPTIONS, DECORATIVE_OPTIONS,
-  buildStoryPrompt, generateStoryVisual,
+  buildStoryPrompt, generateStoryVisual, fileToStoryImageInput, StoryImageInput,
 } from '../services/storyService';
 import { PromptBox } from './PromptBox';
 
@@ -58,6 +58,29 @@ export function StoryStudio() {
     advanced: false,
   });
 
+  // Reference image uploads
+  const [refFiles, setRefFiles] = useState<File[]>([]);
+  const [refPreviews, setRefPreviews] = useState<string[]>([]);
+  const refInputRef = useRef<HTMLInputElement>(null);
+
+  const handleRefImageAdd = useCallback((files: FileList | null) => {
+    if (!files) return;
+    const newFiles: File[] = [];
+    const newPreviews: string[] = [];
+    Array.from(files).slice(0, 3 - refFiles.length).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      newFiles.push(file);
+      newPreviews.push(URL.createObjectURL(file));
+    });
+    setRefFiles(prev => [...prev, ...newFiles].slice(0, 3));
+    setRefPreviews(prev => [...prev, ...newPreviews].slice(0, 3));
+  }, [refFiles.length]);
+
+  const removeRefImage = (idx: number) => {
+    setRefFiles(prev => prev.filter((_, i) => i !== idx));
+    setRefPreviews(prev => prev.filter((_, i) => i !== idx));
+  };
+
   const update = <K extends keyof StoryConfig>(key: K, value: StoryConfig[K]) => {
     setConfig(prev => ({ ...prev, [key]: value }));
     setResultUrl(null);
@@ -82,7 +105,11 @@ export function StoryStudio() {
     setError(null);
     setLastPrompt(buildStoryPrompt(config));
     try {
-      const url = await generateStoryVisual(config);
+      let refImages: StoryImageInput[] | undefined;
+      if (refFiles.length > 0) {
+        refImages = await Promise.all(refFiles.map(fileToStoryImageInput));
+      }
+      const url = await generateStoryVisual(config, refImages);
       setResultUrl(url);
     } catch (err: any) {
       setError(err.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.');
@@ -410,9 +437,62 @@ export function StoryStudio() {
             )}
           </div>
 
-          {/* STEP 3.5: Flow / Ribbon Type */}
+          {/* STEP 3.5: Reference Images Upload */}
           <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6">
-            <SectionHeader step="4" label="Kiểu dải / luồng hình ảnh" sublabel="Yếu tố thị giác nối các cảnh lại với nhau" />
+            <SectionHeader
+              step="4"
+              label="Ảnh tham khảo (tùy chọn)"
+              sublabel="Tải lên 1-3 ảnh để AI lấy cảm hứng về phong cách, màu sắc, nhân vật"
+            />
+            <div className="flex gap-3 flex-wrap">
+              {refPreviews.map((url, idx) => (
+                <div key={idx} className="relative group">
+                  <img
+                    src={url}
+                    alt={`ref-${idx}`}
+                    className="w-24 h-24 object-cover rounded-xl border border-slate-700 bg-slate-900"
+                  />
+                  <button
+                    onClick={() => removeRefImage(idx)}
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={10} className="text-white" />
+                  </button>
+                </div>
+              ))}
+              {refPreviews.length < 3 && (
+                <button
+                  onClick={() => refInputRef.current?.click()}
+                  className="w-24 h-24 rounded-xl border-2 border-dashed border-slate-700 hover:border-rose-500/60 hover:bg-slate-800/40 transition-all flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-slate-300"
+                >
+                  <input
+                    ref={refInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={e => handleRefImageAdd(e.target.files)}
+                  />
+                  <ImagePlus size={20} />
+                  <span className="text-[10px] text-center leading-tight">Thêm ảnh<br/>tham khảo</span>
+                </button>
+              )}
+            </div>
+            {refPreviews.length > 0 && (
+              <p className="text-[11px] text-slate-500 mt-3 flex items-center gap-1.5">
+                <Images size={11} /> AI sẽ phân tích {refPreviews.length} ảnh này và tích hợp phong cách vào ảnh tạo ra
+              </p>
+            )}
+            {refPreviews.length === 0 && (
+              <p className="text-[11px] text-slate-600 mt-2">
+                Không bắt buộc — bỏ qua nếu muốn AI tự sáng tạo hoàn toàn
+              </p>
+            )}
+          </div>
+
+          {/* STEP 4.5: Flow / Ribbon Type */}
+          <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6">
+            <SectionHeader step="5" label="Kiểu dải / luồng hình ảnh" sublabel="Yếu tố thị giác nối các cảnh lại với nhau" />
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {FLOW_TYPE_OPTIONS.map(opt => (
                 <button
@@ -435,9 +515,9 @@ export function StoryStudio() {
             </div>
           </div>
 
-          {/* STEP 5: Characters */}
+          {/* STEP 6: Characters */}
           <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6">
-            <SectionHeader step="5" label="Nhân vật trong ảnh" sublabel="Chọn những nhân vật sẽ xuất hiện (tối đa 3-4)" />
+            <SectionHeader step="6" label="Nhân vật trong ảnh" sublabel="Chọn những nhân vật sẽ xuất hiện (tối đa 3-4)" />
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
               {CHARACTER_OPTIONS.map(char => (
                 <button
@@ -459,9 +539,9 @@ export function StoryStudio() {
             </div>
           </div>
 
-          {/* STEP 6: Symbols + Background + Decorative */}
+          {/* STEP 7: Symbols + Background + Decorative */}
           <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 space-y-6">
-            <SectionHeader step="6" label="Biểu tượng & Môi trường & Trang trí" sublabel="Click chọn để thêm vào ảnh — không cần suy nghĩ!" />
+            <SectionHeader step="7" label="Biểu tượng & Môi trường & Trang trí" sublabel="Click chọn để thêm vào ảnh — không cần suy nghĩ!" />
 
             {/* Symbols */}
             <div>
@@ -527,11 +607,11 @@ export function StoryStudio() {
             </div>
           </div>
 
-          {/* STEP 7: Style & Color (collapsible) */}
+          {/* STEP 8: Style & Color (collapsible) */}
           <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl overflow-hidden">
             <button onClick={() => toggleExpand('style')} className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors">
               <div className="flex items-center gap-3">
-                <span className="bg-slate-700 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">7</span>
+                <span className="bg-slate-700 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">8</span>
                 <div className="text-left">
                   <h3 className="font-semibold text-white text-sm">Phong cách & Bảng màu</h3>
                   <p className="text-slate-500 text-xs">{currentStyle.label} · {currentColor.label}</p>

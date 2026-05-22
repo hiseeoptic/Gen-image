@@ -251,13 +251,35 @@ CRITICAL REQUIREMENTS:
 - High detail, appetizing and appealing visual`;
 }
 
-export async function generateHeroImage(config: InfographicConfig): Promise<string> {
+export async function fileToBase64(file: File): Promise<{ data: string; mimeType: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      resolve({ data: dataUrl.split(',')[1], mimeType: file.type || 'image/jpeg' });
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+export async function generateHeroImage(config: InfographicConfig, uploadedImage?: { data: string; mimeType: string } | null): Promise<string> {
   const prompt = buildHeroPrompt(config);
+
+  const body: any = { prompt };
+  if (uploadedImage) {
+    // Send uploaded image + prompt — Gemini will style/enhance it
+    const enhancePrompt = `${prompt}
+
+The user has provided their own product/food photo. Use this image as the primary visual reference and create a beautifully styled, professionally lit version of it — same subject, same product, but with gorgeous photography-quality enhancement. Maintain product identity while elevating the visual quality.`;
+    body.prompt = enhancePrompt;
+    body.images = [uploadedImage];
+  }
 
   const response = await fetch('/api/story', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {

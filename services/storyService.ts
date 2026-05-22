@@ -444,13 +444,34 @@ export function buildStoryPrompt(config: StoryConfig): string {
   return parts.filter(Boolean).join('\n\n');
 }
 
-export async function generateStoryVisual(config: StoryConfig): Promise<string> {
+export interface StoryImageInput {
+  data: string;
+  mimeType: string;
+}
+
+export async function fileToStoryImageInput(file: File): Promise<StoryImageInput> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      const base64 = dataUrl.split(',')[1];
+      resolve({ data: base64, mimeType: file.type || 'image/jpeg' });
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+export async function generateStoryVisual(config: StoryConfig, referenceImages?: StoryImageInput[]): Promise<string> {
   const prompt = buildStoryPrompt(config);
+
+  const body: any = { prompt };
+  if (referenceImages && referenceImages.length > 0) body.images = referenceImages;
 
   const response = await fetch('/api/story', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt }),
+    body: JSON.stringify(body),
   });
 
   if (!response.ok) {

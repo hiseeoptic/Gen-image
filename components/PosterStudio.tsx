@@ -3,6 +3,7 @@ import { Download, RefreshCw, Sparkles, ChevronDown, ChevronUp, Package, Zap, Im
 import { PosterConfig, PosterStyle, PosterFormat, ProductCategory } from '../types';
 import { fileToGenerativePart } from '../services/openaiService';
 import { STYLE_TEMPLATES, FORMAT_INFO, buildPosterPrompt, generatePoster } from '../services/posterService';
+import { Button } from './Button';
 import { PromptBox } from './PromptBox';
 
 const DEFAULT_CONFIG: PosterConfig = {
