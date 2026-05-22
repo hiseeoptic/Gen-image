@@ -80,6 +80,10 @@ export interface StoryConfig {
   // Characters & Symbols
   characters: string[];
   symbols: string[];
+  // Visual composition
+  flowType: string;
+  backgroundElements: string[];
+  decorativeDetails: string[];
   additionalNotes: string;
 }
 

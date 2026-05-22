@@ -175,6 +175,77 @@ export const SYMBOL_OPTIONS: SymbolOption[] = [
   { id: 'go_board', label: 'Bàn Cờ', emoji: '♟', prompt: 'a traditional Asian game board with black and white stones, symbolizing strategy and wisdom' },
 ];
 
+// ─── FLOW / RIBBON TYPES ─────────────────────────────────────────────────────
+
+export interface FlowTypeOption {
+  id: string;
+  label: string;
+  icon: string;
+  description: string;
+  prompt: string;
+}
+
+export const FLOW_TYPE_OPTIONS: FlowTypeOption[] = [
+  { id: 'golden_ribbon', label: 'Dải Sáng Vàng', icon: '✨', description: 'Ánh sáng vàng hình chữ S nối các cảnh', prompt: 'a luminous flowing golden light ribbon weaving organically in an elegant S-curve through the entire canvas connecting all scenes, glowing and ethereal' },
+  { id: 'dragon_body', label: 'Thân Rồng Vàng', icon: '🐉', description: 'Rồng vàng uốn lượn xuyên qua các cảnh', prompt: 'a majestic golden dragon body whose serpentine form curves and winds through all scenes, its glowing scales serving as the visual spine of the composition' },
+  { id: 'smoke_steam', label: 'Khói & Hơi Nước', icon: '💨', description: 'Khói bốc lên uốn lượn như dải lụa', prompt: 'elegant curling wisps of smoke and steam rising in graceful organic curves, connecting all elements like a floating ribbon of mist' },
+  { id: 'winding_path', label: 'Con Đường Uốn Lượn', icon: '🛤', description: 'Con đường vàng ngoằn ngoèo qua từng cảnh', prompt: 'a winding golden road or pathway that curves dynamically left to right through the landscape, connecting all narrative scenes like chapters of a journey' },
+  { id: 'river_flow', label: 'Dòng Sông Vàng', icon: '🌊', description: 'Dòng sông ánh vàng chảy qua các cảnh', prompt: 'a flowing river of liquid gold that meanders gracefully through the composition, its reflective surface connecting and illuminating all scenes' },
+  { id: 'comet_trail', label: 'Đuôi Sao Chổi', icon: '☄', description: 'Tia sáng vụt qua như sao chổi', prompt: 'a blazing comet trail of golden and white light streaking dramatically through the composition, leaving glowing sparks that illuminate each scene' },
+  { id: 'lotus_vine', label: 'Dây Hoa Sen', icon: '🪷', description: 'Dây leo hoa sen uốn lượn qua cảnh', prompt: 'elegant lotus vines and branches gracefully weaving through all scenes, with blooming lotus flowers and golden leaves at key narrative moments' },
+  { id: 'phoenix_trail', label: 'Đường Bay Phượng Hoàng', icon: '🦅', description: 'Vệt bay rực lửa của phượng hoàng', prompt: 'the blazing trail of a golden phoenix soaring through the composition, leaving streams of crimson and gold flames that connect all scenes in a dramatic arc' },
+];
+
+// ─── BACKGROUND ELEMENTS ─────────────────────────────────────────────────────
+
+export interface VisualOption {
+  id: string;
+  label: string;
+  emoji: string;
+  prompt: string;
+}
+
+export const BACKGROUND_OPTIONS: VisualOption[] = [
+  { id: 'rice_fields',    label: 'Ruộng Lúa Vàng',    emoji: '🌾', prompt: 'vast golden rice paddies stretching to the horizon at golden hour sunset' },
+  { id: 'mountains',      label: 'Núi Non Hùng Vĩ',   emoji: '⛰', prompt: 'dramatic misty mountain range with peaks bathed in golden morning light' },
+  { id: 'bamboo_forest',  label: 'Rừng Tre Xanh',     emoji: '🎍', prompt: 'dense lush bamboo forest with shafts of golden light filtering through the canopy' },
+  { id: 'ancient_palace', label: 'Cung Điện Cổ',      emoji: '🏯', prompt: 'ancient Vietnamese palace complex with curved rooflines against a dramatic sky' },
+  { id: 'vietnam_map',    label: 'Bản Đồ Việt Nam',   emoji: '🗺', prompt: 'antique parchment map of Vietnam with aged ink marks, compass rose, and vintage cartography style' },
+  { id: 'epic_sky',       label: 'Bầu Trời Sử Thi',   emoji: '🌄', prompt: 'epic dramatic sky with towering golden cumulonimbus clouds and rays of light piercing through' },
+  { id: 'moonlit_night',  label: 'Đêm Trăng Rằm',    emoji: '🌕', prompt: 'serene moonlit night over ancient Vietnamese landscape with full moon reflection on water' },
+  { id: 'golden_dawn',    label: 'Bình Minh Vàng',    emoji: '🌅', prompt: 'stunning golden dawn with the sun breaking over the horizon in radiant amber and gold' },
+  { id: 'ancient_city',   label: 'Phố Cổ Đèn Lồng',  emoji: '🏮', prompt: 'atmospheric ancient Vietnamese old town with glowing red lanterns and traditional wooden shop houses' },
+  { id: 'starry_sky',     label: 'Trời Đầy Sao',      emoji: '🌌', prompt: 'spectacular starry night sky with visible Milky Way and nebula over Vietnamese landscape' },
+  { id: 'parchment',      label: 'Nền Giấy Cổ',       emoji: '📜', prompt: 'aged parchment background texture with subtle ink stains, worn edges, and vintage document quality' },
+  { id: 'campfire',       label: 'Lửa Trại Đêm Khuya',emoji: '🔥', prompt: 'warm campfire glowing in a forest clearing at night, embers floating upward into the dark sky' },
+  { id: 'morning_mist',   label: 'Sương Sớm Núi',     emoji: '🌫', prompt: 'soft morning mist rolling through mountain valleys creating layered atmospheric depth' },
+  { id: 'ocean_coast',    label: 'Bờ Biển Việt Nam',  emoji: '🌊', prompt: 'dramatic Vietnamese coastline with rocky cliffs, turquoise water, and golden sunset light' },
+  { id: 'cherry_blossom', label: 'Hoa Anh Đào',       emoji: '🌸', prompt: 'delicate cherry blossom trees in full bloom with petals drifting gently in the breeze' },
+];
+
+export const DECORATIVE_OPTIONS: VisualOption[] = [
+  { id: 'floating_lanterns', label: 'Đèn Lồng Bay',       emoji: '🏮', prompt: 'dozens of glowing red and gold lanterns floating upward into the night sky' },
+  { id: 'cherry_petals',     label: 'Cánh Hoa Rơi',       emoji: '🌸', prompt: 'delicate pink and white flower petals drifting gracefully in the breeze' },
+  { id: 'gold_coins',        label: 'Đồng Tiền Vàng',     emoji: '🪙', prompt: 'golden coins raining down or scattered elegantly in the air' },
+  { id: 'light_rays',        label: 'Tia Sáng Thần Thánh',emoji: '✨', prompt: 'divine golden light rays piercing through storm clouds from above' },
+  { id: 'magic_sparkles',    label: 'Đốm Sáng Kỳ Diệu',  emoji: '💫', prompt: 'twinkling magical sparkle particles and stardust floating throughout the scene' },
+  { id: 'dragon_scales',     label: 'Vảy Rồng Kim',       emoji: '🐉', prompt: 'intricate golden dragon scale pattern as a decorative motif or texture overlay' },
+  { id: 'phoenix_feathers',  label: 'Lông Phượng Hoàng',  emoji: '🦅', prompt: 'crimson and gold phoenix feathers floating gracefully through the air' },
+  { id: 'lotus_blooms',      label: 'Hoa Sen Nở Rực',     emoji: '🪷', prompt: 'white and pink lotus flowers blooming on still reflective water' },
+  { id: 'calligraphy',       label: 'Thư Pháp Cổ Điển',   emoji: '🖌', prompt: 'elegant Vietnamese or East Asian calligraphy brushstrokes as decorative background elements' },
+  { id: 'glowing_embers',    label: 'Than Hồng Bay',       emoji: '🔥', prompt: 'glowing ember particles floating and swirling upward from a fire below' },
+  { id: 'fireflies',         label: 'Đom Đóm Lập Lòe',    emoji: '✨', prompt: 'hundreds of fireflies creating a magical twinkling green-gold effect in the darkness' },
+  { id: 'autumn_leaves',     label: 'Lá Vàng Mùa Thu',    emoji: '🍂', prompt: 'swirling autumn leaves in amber, gold, and rust tones spiraling through the air' },
+  { id: 'water_ripples',     label: 'Gợn Sóng Nước',      emoji: '💧', prompt: 'concentric water ripples expanding on a reflective surface with golden light reflections' },
+  { id: 'thunder_lightning',  label: 'Sấm Sét Oai Hùng',   emoji: '⚡', prompt: 'dramatic golden lightning bolts striking across a stormy dramatic sky' },
+  { id: 'stardust',          label: 'Bụi Sao Ngân Hà',    emoji: '🌟', prompt: 'cosmic stardust and nebula wisps in gold, purple, and blue tones swirling overhead' },
+  { id: 'gold_aura',         label: 'Hào Quang Vàng',     emoji: '🌕', prompt: 'a radiant golden aura or halo of light emanating from the central element' },
+  { id: 'incense_smoke',     label: 'Khói Hương Trầm',    emoji: '🕯', prompt: 'delicate wisps of incense smoke curling upward in elegant spirals from below' },
+  { id: 'flag_banners',      label: 'Cờ Hiệu Bay Phấp Phới', emoji: '🚩', prompt: 'colorful Vietnamese flags and military banners waving proudly in the wind' },
+  { id: 'ancient_script',    label: 'Chữ Cổ Phát Sáng',   emoji: '📖', prompt: 'glowing ancient script, runes, or seal characters floating in the air' },
+  { id: 'golden_particles',  label: 'Hạt Bụi Vàng',       emoji: '✦', prompt: 'countless tiny golden particles and dust motes drifting through shafts of light' },
+];
+
 // ─── JOURNEY MILESTONE OPTIONS ───────────────────────────────────────────────
 
 export interface MilestoneOption {
@@ -196,6 +267,24 @@ export const MILESTONE_OPTIONS: MilestoneOption[] = [
 ];
 
 // ─── PROMPT BUILDER ──────────────────────────────────────────────────────────
+
+function getFlowPrompt(flowType: string): string {
+  return FLOW_TYPE_OPTIONS.find(f => f.id === flowType)?.prompt
+    || 'a flowing glowing golden light ribbon weaving organically through all scenes';
+}
+
+function buildEnvironmentBlock(config: StoryConfig): string {
+  const bgList = (config.backgroundElements || [])
+    .map(id => BACKGROUND_OPTIONS.find(b => b.id === id)?.prompt)
+    .filter(Boolean);
+  const decList = (config.decorativeDetails || [])
+    .map(id => DECORATIVE_OPTIONS.find(d => d.id === id)?.prompt)
+    .filter(Boolean);
+  const parts: string[] = [];
+  if (bgList.length > 0) parts.push(`BACKGROUND & ENVIRONMENT: ${bgList.join('; ')}`);
+  if (decList.length > 0) parts.push(`ATMOSPHERIC DECORATIVE DETAILS scattered throughout: ${decList.join('; ')}`);
+  return parts.join('.\n');
+}
 
 function getCharacterPrompts(ids: string[]): string {
   return ids
@@ -232,7 +321,8 @@ function buildJourneyPrompt(config: StoryConfig): string {
   const syms = getSymbolPrompts(config.symbols);
   const milestones = getMilestonePrompts(config.journeyMilestones);
 
-  return `COMPOSITION: Ultra-wide cinematic landscape format. A winding golden path/road extends from far left to far right, serving as the visual spine connecting the entire narrative.
+  const flowDesc = getFlowPrompt(config.flowType);
+  return `COMPOSITION: Ultra-wide cinematic landscape format. ${flowDesc} extends from far left to far right, serving as the visual spine connecting the entire narrative.
 
 LEFT SIDE (START POINT): ${config.journeyStart || 'A person standing at the beginning of a long golden path, hopeful and determined'}. Label this area clearly.
 
@@ -273,11 +363,12 @@ function buildMultiScenePrompt(config: StoryConfig): string {
     ? scenes.map((s, i) => `Scene ${i + 1}: ${s}`).join('. ')
     : 'Scene 1: The beginning — a lone figure with a mission. Scene 2: The challenge — difficult terrain and obstacles. Scene 3: The helpers — allies and knowledge gained. Scene 4: The turning point — a key moment of decision. Scene 5: The triumph — celebration and legacy.';
 
-  return `COMPOSITION: Ultra-wide landscape format. Multiple distinct narrative scenes are connected by a flowing glowing golden light ribbon that weaves organically from left to right through the entire canvas, like chapters of a story.
+  const flowDesc = getFlowPrompt(config.flowType);
+  return `COMPOSITION: Ultra-wide landscape format. Multiple distinct narrative scenes are connected by ${flowDesc}, weaving from left to right through the entire canvas like chapters of a story.
 
 ${sceneText}
 
-The golden light ribbon flows between and through all scenes, creating visual continuity. Each scene should feel like a distinct panel that is part of one coherent story.
+This visual flow element connects and passes through all scenes, creating visual continuity. Each scene should feel like a distinct panel that is part of one coherent story.
 
 ${chars ? `CHARACTERS TO INCLUDE ACROSS SCENES: ${chars}.` : ''}
 ${syms ? `DECORATIVE VISUAL ELEMENTS: ${syms}.` : ''}
@@ -287,11 +378,12 @@ ${buildTextBlock(config)}`;
 function buildBannerPrompt(config: StoryConfig): string {
   const syms = getSymbolPrompts(config.symbols);
 
+  const flowDesc = getFlowPrompt(config.flowType);
   return `COMPOSITION: Ultra-wide banner format (approximately 16:9 or wider). Rich atmospheric background.
 
 TOP SECTION: Very large dominant text — ${config.headline || 'an inspiring date and title'}. This text should be the most visually prominent element.
 
-MIDDLE SECTION: A curving golden road or path runs through the middle portion of the image. Along this path, 3-5 gold icon symbols are placed at intervals: ${syms || 'compass, book/gear, seedling, handshake'}. Each icon represents a concept or step.
+MIDDLE SECTION: ${flowDesc} runs through the middle portion of the image. Along this visual flow, 3-5 gold icon symbols are placed at intervals: ${syms || 'compass, book/gear, seedling, handshake'}. Each icon represents a concept or step.
 
 BOTTOM SECTION: An elegant bordered quote box or text area containing: "${config.quote || 'Bắt đầu mỗi ngày với tâm thế tích cực và quyết tâm mạnh mẽ'}". Below that, smaller footer text: "${config.bodyText || ''}".
 
@@ -337,11 +429,14 @@ export function buildStoryPrompt(config: StoryConfig): string {
     case 'infographic': layoutSection = buildInfographicPrompt(config); break;
   }
 
+  const envBlock = buildEnvironmentBlock(config);
+
   const parts = [
     `${style.prompt}.`,
     `${color.prompt}.`,
     'IMPORTANT: This is a professionally designed Vietnamese motivational/educational visual content piece. Ultra-wide landscape format. Hyper-detailed, premium quality illustration.',
     layoutSection,
+    envBlock,
     config.additionalNotes ? `ADDITIONAL CREATIVE DIRECTION: ${config.additionalNotes}` : '',
     'The final result must feel like it was designed by a world-class creative director and senior illustrator. NOT generic AI art. Premium, intentional, emotionally impactful visual storytelling at the highest commercial quality level.',
   ];

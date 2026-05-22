@@ -10,7 +10,8 @@ import { ConfigPanel } from './components/ConfigPanel';
 import { PosterStudio } from './components/PosterStudio';
 import { StoryStudio } from './components/StoryStudio';
 import { InfographicStudio } from './components/InfographicStudio';
-import { restorePhoto, generatePersonalPhoto, fileToGenerativePart } from './services/openaiService';
+import { restorePhoto, generatePersonalPhoto, buildPrompt, fileToGenerativePart } from './services/openaiService';
+import { PromptBox } from './components/PromptBox';
 
 function App() {
   const [mode, setMode] = useState<AppMode>(AppMode.PERSONAL);
@@ -27,6 +28,7 @@ function App() {
   const [logoImage, setLogoImage] = useState<UploadedImage | null>(null);
 
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [lastPrompt, setLastPrompt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -115,6 +117,15 @@ function App() {
 
     setIsLoading(true);
     setError(null);
+
+    if (mode === AppMode.PERSONAL) {
+      const hasFaces = faceImage !== null;
+      const hasProducts = productImages.some(img => img !== null);
+      const hasLogo = logoImage !== null;
+      setLastPrompt(buildPrompt(photoConfig, { hasFaces, hasProducts, hasLogo }));
+    } else {
+      setLastPrompt(null);
+    }
 
     try {
       let generatedImageBase64 = '';
@@ -413,14 +424,17 @@ function App() {
 
             </div>
           ) : (
-            <ResultView
-              originalImage={getPreviewImage() || ""}
-              resultImage={resultUrl}
-              onReset={() => {
-                setResultUrl(null);
-              }}
-              mode={mode}
-            />
+            <>
+              <ResultView
+                originalImage={getPreviewImage() || ""}
+                resultImage={resultUrl}
+                onReset={() => {
+                  setResultUrl(null);
+                }}
+                mode={mode}
+              />
+              {lastPrompt && <PromptBox prompt={lastPrompt} />}
+            </>
           )}
           </>
           )}

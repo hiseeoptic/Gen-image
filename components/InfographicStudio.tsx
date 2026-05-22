@@ -13,9 +13,10 @@ const FORMAT_OPTIONS: { id: InfographicFormat; label: string; ratio: string; ico
 ];
 import {
   TYPE_TEMPLATES, STYLE_TEMPLATES, LAYOUT_TEMPLATES,
-  getBadgePresets, generateHeroImage, generateAllIngredientIllustrations,
+  getBadgePresets, buildHeroPrompt, generateHeroImage, generateAllIngredientIllustrations,
 } from '../services/infographicService';
 import { InfographicRenderer } from './InfographicRenderer';
+import { PromptBox } from './PromptBox';
 
 const BADGE_COLORS = ['pink', 'mint', 'peach', 'lavender', 'blue', 'green', 'orange', 'yellow'];
 const BADGE_COLOR_STYLES: Record<string, string> = {
@@ -120,6 +121,7 @@ function StepBadge({ n }: { n: number }) {
 export function InfographicStudio() {
   const [config, setConfig] = useState<InfographicConfig>(DEFAULT_CONFIG);
   const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
+  const [lastPrompt, setLastPrompt] = useState<string | null>(null);
   const [ingredientImages, setIngredientImages] = useState<(string | null)[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
@@ -181,6 +183,7 @@ export function InfographicStudio() {
     setIsLoading(true);
     setError(null);
     setIngredientImages([]);
+    setLastPrompt(buildHeroPrompt(config));
     try {
       // Run hero + all ingredient illustrations in parallel
       const [heroUrl, ingImages] = await Promise.all([
@@ -277,6 +280,8 @@ export function InfographicStudio() {
             </div>
           );
         })()}
+
+        <PromptBox prompt={lastPrompt} label="Xem Hero Prompt · Copy sang Nano Banana / Midjourney" />
 
         <div className="flex gap-3 justify-center pt-1">
           <button

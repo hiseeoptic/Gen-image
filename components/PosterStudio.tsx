@@ -2,8 +2,8 @@ import React, { useState, useCallback, useRef } from 'react';
 import { Download, RefreshCw, Sparkles, ChevronDown, ChevronUp, Package, Zap, ImageIcon, Check } from 'lucide-react';
 import { PosterConfig, PosterStyle, PosterFormat, ProductCategory } from '../types';
 import { fileToGenerativePart } from '../services/openaiService';
-import { STYLE_TEMPLATES, FORMAT_INFO, generatePoster } from '../services/posterService';
-import { Button } from './Button';
+import { STYLE_TEMPLATES, FORMAT_INFO, buildPosterPrompt, generatePoster } from '../services/posterService';
+import { PromptBox } from './PromptBox';
 
 const DEFAULT_CONFIG: PosterConfig = {
   style: 'minimal_luxury',
@@ -32,6 +32,7 @@ export function PosterStudio() {
   const [productPreview, setProductPreview] = useState<string | null>(null);
   const [config, setConfig] = useState<PosterConfig>(DEFAULT_CONFIG);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [lastPrompt, setLastPrompt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showTextOptions, setShowTextOptions] = useState(false);
@@ -65,6 +66,7 @@ export function PosterStudio() {
     }
     setIsLoading(true);
     setError(null);
+    setLastPrompt(buildPosterPrompt(config));
     try {
       const base64 = await fileToGenerativePart(productFile);
       const url = await generatePoster(base64, productFile.type || 'image/jpeg', config);
@@ -120,6 +122,8 @@ export function PosterStudio() {
         <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/50 shadow-2xl">
           <img src={resultUrl} alt="Generated poster" className="w-full max-h-[80vh] object-contain" />
         </div>
+
+        <PromptBox prompt={lastPrompt} label="Xem Poster Prompt · Copy sang Nano Banana / Midjourney" />
 
         <div className="flex gap-4 justify-center pt-2">
           <button
