@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
-import { Download, RefreshCw, Sparkles, Zap, ChevronDown, ChevronUp, Check, Plus, X } from 'lucide-react';
+import React, { useState, useRef, useCallback } from 'react';
+import { Download, RefreshCw, Sparkles, Zap, ChevronDown, Check, Plus, X, ImagePlus, Images } from 'lucide-react';
 import { StoryConfig, StoryLayout, StoryStyle, StoryColorScheme } from '../types';
 import {
   LAYOUT_TEMPLATES, STYLE_TEMPLATES, COLOR_SCHEMES,
   CHARACTER_OPTIONS, SYMBOL_OPTIONS, MILESTONE_OPTIONS,
-  generateStoryVisual,
+  FLOW_TYPE_OPTIONS, BACKGROUND_OPTIONS, DECORATIVE_OPTIONS,
+  buildStoryPrompt, generateStoryVisual, fileToStoryImageInput, StoryImageInput,
 } from '../services/storyService';
-import { Button } from './Button';
+import { PromptBox } from './PromptBox';
+import { ChatAssistant } from './ChatAssistant';
 
 const DEFAULT_CONFIG: StoryConfig = {
   layout: 'journey',
@@ -26,6 +28,9 @@ const DEFAULT_CONFIG: StoryConfig = {
   sceneDescriptions: ['', '', ''],
   characters: [],
   symbols: [],
+  flowType: 'golden_ribbon',
+  backgroundElements: [],
+  decorativeDetails: [],
   additionalNotes: '',
 };
 
@@ -46,12 +51,37 @@ function SectionHeader({ step, label, sublabel }: { step: number | string; label
 export function StoryStudio() {
   const [config, setConfig] = useState<StoryConfig>(DEFAULT_CONFIG);
   const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [lastPrompt, setLastPrompt] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     style: false,
     advanced: false,
   });
+  const [chatMode, setChatMode] = useState(false);
+
+  // Reference image uploads
+  const [refFiles, setRefFiles] = useState<File[]>([]);
+  const [refPreviews, setRefPreviews] = useState<string[]>([]);
+  const refInputRef = useRef<HTMLInputElement>(null);
+
+  const handleRefImageAdd = useCallback((files: FileList | null) => {
+    if (!files) return;
+    const newFiles: File[] = [];
+    const newPreviews: string[] = [];
+    Array.from(files).slice(0, 3 - refFiles.length).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      newFiles.push(file);
+      newPreviews.push(URL.createObjectURL(file));
+    });
+    setRefFiles(prev => [...prev, ...newFiles].slice(0, 3));
+    setRefPreviews(prev => [...prev, ...newPreviews].slice(0, 3));
+  }, [refFiles.length]);
+
+  const removeRefImage = (idx: number) => {
+    setRefFiles(prev => prev.filter((_, i) => i !== idx));
+    setRefPreviews(prev => prev.filter((_, i) => i !== idx));
+  };
 
   const update = <K extends keyof StoryConfig>(key: K, value: StoryConfig[K]) => {
     setConfig(prev => ({ ...prev, [key]: value }));
@@ -61,7 +91,7 @@ export function StoryStudio() {
   const toggleExpand = (key: string) =>
     setExpandedSections(prev => ({ ...prev, [key]: !prev[key] }));
 
-  const toggleArrayItem = (key: 'characters' | 'symbols' | 'journeyMilestones', id: string) => {
+  const toggleArrayItem = (key: 'characters' | 'symbols' | 'journeyMilestones' | 'backgroundElements' | 'decorativeDetails', id: string) => {
     const arr = config[key] as string[];
     update(key, arr.includes(id) ? arr.filter(x => x !== id) : [...arr, id]);
   };
@@ -75,8 +105,13 @@ export function StoryStudio() {
   const handleGenerate = async () => {
     setIsLoading(true);
     setError(null);
+    setLastPrompt(buildStoryPrompt(config));
     try {
-      const url = await generateStoryVisual(config);
+      let refImages: StoryImageInput[] | undefined;
+      if (refFiles.length > 0) {
+        refImages = await Promise.all(refFiles.map(fileToStoryImageInput));
+      }
+      const url = await generateStoryVisual(config, refImages);
       setResultUrl(url);
     } catch (err: any) {
       setError(err.message || 'Đã có lỗi xảy ra. Vui lòng thử lại.');
@@ -118,6 +153,7 @@ export function StoryStudio() {
         <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/50 shadow-2xl">
           <img src={resultUrl} alt="Story visual" className="w-full max-h-[80vh] object-contain" />
         </div>
+        <PromptBox prompt={lastPrompt} />
         <div className="flex gap-4 justify-center pt-2">
           <button onClick={handleGenerate} disabled={isLoading} className="flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold transition-all disabled:opacity-50 shadow-lg hover:-translate-y-0.5">
             <Zap size={16} /> Tạo biến thể mới
@@ -142,8 +178,25 @@ export function StoryStudio() {
         <p className="text-slate-400 max-w-2xl mx-auto">
           Chọn bố cục → thêm nội dung → chọn nhân vật & biểu tượng → AI tạo ra ảnh chuyên nghiệp. Không cần thiết kế, không cần Photoshop.
         </p>
+        <div className="flex items-center justify-center gap-2 pt-1">
+          <button onClick={() => setChatMode(false)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${!chatMode ? 'bg-rose-600 border-rose-500 text-white' : 'border-slate-700 text-slate-400 hover:border-slate-500'}`}>
+            📋 Form thủ công
+          </button>
+          <button onClick={() => setChatMode(true)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${chatMode ? 'bg-rose-600 border-rose-500 text-white' : 'border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white'}`}>
+            ✨ Chat với AI
+          </button>
+        </div>
       </div>
 
+      {chatMode && (
+        <div className="bg-slate-900/50 border border-slate-800/60 rounded-2xl overflow-hidden">
+          <ChatAssistant mode="story" />
+        </div>
+      )}
+
+      {!chatMode && (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* ── Left Column: Steps ── */}
         <div className="lg:col-span-8 space-y-5">
@@ -403,9 +456,87 @@ export function StoryStudio() {
             )}
           </div>
 
-          {/* STEP 4: Characters */}
+          {/* STEP 3.5: Reference Images Upload */}
           <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6">
-            <SectionHeader step="4" label="Nhân vật trong ảnh" sublabel="Chọn những nhân vật sẽ xuất hiện (tối đa 3-4)" />
+            <SectionHeader
+              step="4"
+              label="Ảnh tham khảo (tùy chọn)"
+              sublabel="Tải lên 1-3 ảnh để AI lấy cảm hứng về phong cách, màu sắc, nhân vật"
+            />
+            <div className="flex gap-3 flex-wrap">
+              {refPreviews.map((url, idx) => (
+                <div key={idx} className="relative group">
+                  <img
+                    src={url}
+                    alt={`ref-${idx}`}
+                    className="w-24 h-24 object-cover rounded-xl border border-slate-700 bg-slate-900"
+                  />
+                  <button
+                    onClick={() => removeRefImage(idx)}
+                    className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <X size={10} className="text-white" />
+                  </button>
+                </div>
+              ))}
+              {refPreviews.length < 3 && (
+                <button
+                  onClick={() => refInputRef.current?.click()}
+                  className="w-24 h-24 rounded-xl border-2 border-dashed border-slate-700 hover:border-rose-500/60 hover:bg-slate-800/40 transition-all flex flex-col items-center justify-center gap-1 text-slate-500 hover:text-slate-300"
+                >
+                  <input
+                    ref={refInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={e => handleRefImageAdd(e.target.files)}
+                  />
+                  <ImagePlus size={20} />
+                  <span className="text-[10px] text-center leading-tight">Thêm ảnh<br/>tham khảo</span>
+                </button>
+              )}
+            </div>
+            {refPreviews.length > 0 && (
+              <p className="text-[11px] text-slate-500 mt-3 flex items-center gap-1.5">
+                <Images size={11} /> AI sẽ phân tích {refPreviews.length} ảnh này và tích hợp phong cách vào ảnh tạo ra
+              </p>
+            )}
+            {refPreviews.length === 0 && (
+              <p className="text-[11px] text-slate-600 mt-2">
+                Không bắt buộc — bỏ qua nếu muốn AI tự sáng tạo hoàn toàn
+              </p>
+            )}
+          </div>
+
+          {/* STEP 4.5: Flow / Ribbon Type */}
+          <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6">
+            <SectionHeader step="5" label="Kiểu dải / luồng hình ảnh" sublabel="Yếu tố thị giác nối các cảnh lại với nhau" />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {FLOW_TYPE_OPTIONS.map(opt => (
+                <button
+                  key={opt.id}
+                  onClick={() => update('flowType', opt.id)}
+                  className={`p-3 rounded-xl border text-left transition-all hover:scale-[1.01] ${
+                    config.flowType === opt.id
+                      ? 'border-rose-500 bg-rose-500/15 text-rose-200 shadow-sm'
+                      : 'border-slate-700/60 bg-slate-800/30 text-slate-400 hover:border-slate-500'
+                  }`}
+                >
+                  <div className="text-xl mb-1.5">{opt.icon}</div>
+                  <div className="text-[11px] font-semibold leading-tight mb-1">{opt.label}</div>
+                  <div className="text-[10px] text-slate-500 leading-tight">{opt.description}</div>
+                  {config.flowType === opt.id && (
+                    <Check size={10} className="mt-1.5 text-rose-400" />
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* STEP 6: Characters */}
+          <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6">
+            <SectionHeader step="6" label="Nhân vật trong ảnh" sublabel="Chọn những nhân vật sẽ xuất hiện (tối đa 3-4)" />
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
               {CHARACTER_OPTIONS.map(char => (
                 <button
@@ -427,32 +558,79 @@ export function StoryStudio() {
             </div>
           </div>
 
-          {/* STEP 5: Symbols */}
-          <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6">
-            <SectionHeader step="5" label="Biểu tượng & Yếu tố trang trí" sublabel="Chọn những icon/vật thể xuất hiện trong ảnh (tối đa 5-6)" />
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2">
-              {SYMBOL_OPTIONS.map(sym => (
-                <button
-                  key={sym.id}
-                  onClick={() => toggleArrayItem('symbols', sym.id)}
-                  className={`p-2.5 rounded-xl border text-center transition-all hover:scale-[1.02] ${
-                    config.symbols.includes(sym.id)
-                      ? 'border-amber-500 bg-amber-500/15 text-amber-200'
-                      : 'border-slate-700/60 bg-slate-800/30 text-slate-400 hover:border-slate-500'
-                  }`}
-                >
-                  <div className="text-lg mb-1">{sym.emoji}</div>
-                  <div className="text-[10px] font-medium leading-tight">{sym.label}</div>
-                </button>
-              ))}
+          {/* STEP 7: Symbols + Background + Decorative */}
+          <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl p-6 space-y-6">
+            <SectionHeader step="7" label="Biểu tượng & Môi trường & Trang trí" sublabel="Click chọn để thêm vào ảnh — không cần suy nghĩ!" />
+
+            {/* Symbols */}
+            <div>
+              <p className="text-xs font-semibold text-amber-400/80 uppercase tracking-wider mb-2.5">✦ Biểu tượng nổi bật (tối đa 5-6)</p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-2">
+                {SYMBOL_OPTIONS.map(sym => (
+                  <button
+                    key={sym.id}
+                    onClick={() => toggleArrayItem('symbols', sym.id)}
+                    className={`p-2.5 rounded-xl border text-center transition-all hover:scale-[1.02] ${
+                      config.symbols.includes(sym.id)
+                        ? 'border-amber-500 bg-amber-500/15 text-amber-200'
+                        : 'border-slate-700/60 bg-slate-800/30 text-slate-400 hover:border-slate-500'
+                    }`}
+                  >
+                    <div className="text-lg mb-1">{sym.emoji}</div>
+                    <div className="text-[10px] font-medium leading-tight">{sym.label}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Background Elements */}
+            <div>
+              <p className="text-xs font-semibold text-sky-400/80 uppercase tracking-wider mb-2.5">🌄 Nền & Môi trường (chọn 1-3)</p>
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                {BACKGROUND_OPTIONS.map(bg => (
+                  <button
+                    key={bg.id}
+                    onClick={() => toggleArrayItem('backgroundElements', bg.id)}
+                    className={`p-2.5 rounded-xl border text-center transition-all hover:scale-[1.02] ${
+                      (config.backgroundElements || []).includes(bg.id)
+                        ? 'border-sky-500 bg-sky-500/15 text-sky-200'
+                        : 'border-slate-700/60 bg-slate-800/30 text-slate-400 hover:border-slate-500'
+                    }`}
+                  >
+                    <div className="text-lg mb-1">{bg.emoji}</div>
+                    <div className="text-[10px] font-medium leading-tight">{bg.label}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Decorative Details */}
+            <div>
+              <p className="text-xs font-semibold text-purple-400/80 uppercase tracking-wider mb-2.5">✨ Chi tiết trang trí không khí (chọn 3-6)</p>
+              <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                {DECORATIVE_OPTIONS.map(dec => (
+                  <button
+                    key={dec.id}
+                    onClick={() => toggleArrayItem('decorativeDetails', dec.id)}
+                    className={`p-2.5 rounded-xl border text-center transition-all hover:scale-[1.02] ${
+                      (config.decorativeDetails || []).includes(dec.id)
+                        ? 'border-purple-500 bg-purple-500/15 text-purple-200'
+                        : 'border-slate-700/60 bg-slate-800/30 text-slate-400 hover:border-slate-500'
+                    }`}
+                  >
+                    <div className="text-lg mb-1">{dec.emoji}</div>
+                    <div className="text-[10px] font-medium leading-tight">{dec.label}</div>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* STEP 6: Style & Color (collapsible) */}
+          {/* STEP 8: Style & Color (collapsible) */}
           <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl overflow-hidden">
             <button onClick={() => toggleExpand('style')} className="w-full px-6 py-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors">
               <div className="flex items-center gap-3">
-                <span className="bg-slate-700 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">6</span>
+                <span className="bg-slate-700 text-white text-xs font-bold w-7 h-7 rounded-full flex items-center justify-center shrink-0">8</span>
                 <div className="text-left">
                   <h3 className="font-semibold text-white text-sm">Phong cách & Bảng màu</h3>
                   <p className="text-slate-500 text-xs">{currentStyle.label} · {currentColor.label}</p>
@@ -574,6 +752,18 @@ export function StoryStudio() {
                     <span className="text-white">{config.symbols.length} đã chọn</span>
                   </div>
                 )}
+                {(config.backgroundElements || []).length > 0 && (
+                  <div className="flex justify-between text-slate-400">
+                    <span>Nền & Môi trường</span>
+                    <span className="text-white">{config.backgroundElements.length} đã chọn</span>
+                  </div>
+                )}
+                {(config.decorativeDetails || []).length > 0 && (
+                  <div className="flex justify-between text-slate-400">
+                    <span>Chi tiết trang trí</span>
+                    <span className="text-white">{config.decorativeDetails.length} đã chọn</span>
+                  </div>
+                )}
                 {config.headline && (
                   <div className="p-2 bg-slate-800/60 rounded-lg">
                     <p className="text-slate-500 text-[10px] mb-0.5">Tiêu đề chính:</p>
@@ -622,6 +812,9 @@ export function StoryStudio() {
                     quote: '"Hãy cứ là người leo núi chậm chạp, còn hơn là người bỏ cuộc đứng dưới chân đồi."',
                     characters: ['turtle', 'rabbit'],
                     symbols: ['mountain', 'seedling', 'hourglass'],
+                    flowType: 'golden_ribbon',
+                    backgroundElements: ['mountains', 'epic_sky'],
+                    decorativeDetails: ['light_rays', 'magic_sparkles', 'golden_particles'],
                     journeyStart: '', journeyEnd: '', journeyMilestones: [], sceneDescriptions: ['','',''],
                     subheadline: '', bodyText: '', additionalNotes: '',
                   })},
@@ -636,6 +829,9 @@ export function StoryStudio() {
                     journeyMilestones: ['overcome_fear', 'discipline'],
                     characters: ['runner_young', 'climber_elder'],
                     symbols: ['golden_path', 'mountain', 'wings_heart', 'hourglass', 'shield'],
+                    flowType: 'winding_path',
+                    backgroundElements: ['mountains', 'golden_dawn'],
+                    decorativeDetails: ['light_rays', 'gold_aura', 'golden_particles', 'magic_sparkles'],
                     quote: '', bodyText: '', subheadline: '', sceneDescriptions: ['','',''],
                     leftLabel: '', leftDescription: '', rightLabel: '', rightDescription: '',
                     additionalNotes: '',
@@ -650,6 +846,9 @@ export function StoryStudio() {
                     bodyText: 'Thứ Hai, 02.02.2025 - Năng lượng tích cực cho tuần mới thành công',
                     symbols: ['compass', 'scroll', 'seedling', 'sunrise'],
                     characters: [],
+                    flowType: 'golden_ribbon',
+                    backgroundElements: ['epic_sky', 'golden_dawn'],
+                    decorativeDetails: ['floating_lanterns', 'light_rays', 'gold_coins', 'golden_particles'],
                     journeyStart: '', journeyEnd: '', journeyMilestones: [],
                     sceneDescriptions: ['','',''],
                     subheadline: '', leftLabel: '', leftDescription: '', rightLabel: '', rightDescription: '',
@@ -665,6 +864,7 @@ export function StoryStudio() {
           </div>
         </div>
       </div>
+      )} {/* end !chatMode */}
     </div>
   );
 }

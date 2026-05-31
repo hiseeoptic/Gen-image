@@ -2,14 +2,29 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export const config = { maxDuration: 60 };
 
-async function geminiGenerateStory(apiKey: string, prompt: string): Promise<string> {
+interface ImageInput {
+  data: string;   // base64
+  mimeType: string;
+}
+
+async function geminiGenerateStory(apiKey: string, prompt: string, images?: ImageInput[]): Promise<string> {
+  const parts: any[] = [];
+
+  // Prepend reference images if provided
+  if (images && images.length > 0) {
+    images.forEach(img => {
+      parts.push({ inlineData: { mimeType: img.mimeType, data: img.data } });
+    });
+  }
+  parts.push({ text: prompt });
+
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent?key=${apiKey}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
+        contents: [{ role: 'user', parts }],
         generationConfig: { responseModalities: ['Text', 'Image'] },
       }),
     }
@@ -35,10 +50,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (!apiKey) return res.status(500).json({ error: 'GEMINI_API_KEY not configured' });
 
   try {
-    const { prompt } = req.body;
+    const { prompt, images } = req.body;
     if (!prompt) return res.status(400).json({ error: 'No prompt provided' });
 
-    const resultBase64 = await geminiGenerateStory(apiKey, prompt);
+    const resultBase64 = await geminiGenerateStory(apiKey, prompt, images);
     return res.status(200).json({ image: resultBase64 });
   } catch (error: any) {
     console.error('Story generation error:', error);

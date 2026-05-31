@@ -1,13 +1,24 @@
-import React, { useState } from 'react';
-import { Download, RefreshCw, Plus, X, Check, ChevronDown, Zap, Sparkles, Image } from 'lucide-react';
+import React, { useState, useRef, useCallback } from 'react';
+import { Download, RefreshCw, Plus, X, Check, ChevronDown, Zap, Sparkles, Image, ImagePlus, Camera } from 'lucide-react';
 import {
-  InfographicConfig, InfographicType, InfographicStyle, InfographicLayout,
+  InfographicConfig, InfographicType, InfographicStyle, InfographicLayout, InfographicFormat,
   InfographicIngredient, InfographicStep, InfographicBadge,
 } from '../types';
+
+const FORMAT_OPTIONS: { id: InfographicFormat; label: string; ratio: string; icon: string; platforms: string }[] = [
+  { id: 'landscape', label: 'Landscape', ratio: '16:9', icon: '▬', platforms: 'YouTube · LinkedIn · Facebook Cover' },
+  { id: 'square',    label: 'Vuông',     ratio: '1:1',  icon: '■', platforms: 'Instagram Post · Facebook Post' },
+  { id: 'portrait',  label: 'Dọc',       ratio: '4:5',  icon: '▮', platforms: 'Instagram Portrait · Reels Cover' },
+  { id: 'story',     label: 'Story',     ratio: '9:16', icon: '▯', platforms: 'Story · TikTok · Reels' },
+];
 import {
   TYPE_TEMPLATES, STYLE_TEMPLATES, LAYOUT_TEMPLATES,
-  getBadgePresets, generateInfographic,
+  getBadgePresets, buildHeroPrompt, fileToBase64,
+  generateHeroImage, generateAllIngredientIllustrations,
 } from '../services/infographicService';
+import { InfographicRenderer } from './InfographicRenderer';
+import { PromptBox } from './PromptBox';
+import { ChatAssistant } from './ChatAssistant';
 
 const BADGE_COLORS = ['pink', 'mint', 'peach', 'lavender', 'blue', 'green', 'orange', 'yellow'];
 const BADGE_COLOR_STYLES: Record<string, string> = {
@@ -79,6 +90,7 @@ const DEFAULT_CONFIG: InfographicConfig = {
   type: 'recipe',
   style: 'soft_pastel',
   layout: 'classic_recipe',
+  format: 'landscape',
   title: '',
   subtitle: '',
   heroDescription: '',
@@ -110,14 +122,41 @@ function StepBadge({ n }: { n: number }) {
 
 export function InfographicStudio() {
   const [config, setConfig] = useState<InfographicConfig>(DEFAULT_CONFIG);
-  const [resultUrl, setResultUrl] = useState<string | null>(null);
+  const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null);
+  const [lastPrompt, setLastPrompt] = useState<string | null>(null);
+  const [ingredientImages, setIngredientImages] = useState<(string | null)[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showStylePanel, setShowStylePanel] = useState(false);
+  const [chatMode, setChatMode] = useState(false);
+  const rendererRef = useRef<HTMLDivElement>(null);
+
+  // Product / food photo upload
+  const [productFile, setProductFile] = useState<File | null>(null);
+  const [productPreview, setProductPreview] = useState<string | null>(null);
+  const [isDraggingProduct, setIsDraggingProduct] = useState(false);
+  const productInputRef = useRef<HTMLInputElement>(null);
+
+  const handleProductFileSelect = useCallback((file: File) => {
+    if (!file.type.startsWith('image/')) return;
+    setProductFile(file);
+    setProductPreview(URL.createObjectURL(file));
+    setHeroImageUrl(null);
+    setIngredientImages([]);
+  }, []);
+
+  const clearProductFile = () => {
+    setProductFile(null);
+    setProductPreview(null);
+    setHeroImageUrl(null);
+    setIngredientImages([]);
+  };
 
   const update = <K extends keyof InfographicConfig>(key: K, val: InfographicConfig[K]) => {
     setConfig(p => ({ ...p, [key]: val }));
-    setResultUrl(null);
+    setHeroImageUrl(null);
+    setIngredientImages([]);
   };
 
   // Ingredient helpers
@@ -149,7 +188,8 @@ export function InfographicStudio() {
 
   const applyPreset = (preset: Partial<InfographicConfig>, type: InfographicType) => {
     setConfig({ ...DEFAULT_CONFIG, type, ...preset });
-    setResultUrl(null);
+    setHeroImageUrl(null);
+    setIngredientImages([]);
   };
 
   const applyTypeDefaults = (type: InfographicType) => {
@@ -166,9 +206,19 @@ export function InfographicStudio() {
     }
     setIsLoading(true);
     setError(null);
+    setIngredientImages([]);
+    setLastPrompt(buildHeroPrompt(config));
     try {
-      const url = await generateInfographic(config);
-      setResultUrl(url);
+      let uploadedImage: { data: string; mimeType: string } | null = null;
+      if (productFile) uploadedImage = await fileToBase64(productFile);
+
+      // Run hero + all ingredient illustrations in parallel
+      const [heroUrl, ingImages] = await Promise.all([
+        generateHeroImage(config, uploadedImage),
+        generateAllIngredientIllustrations(config),
+      ]);
+      setHeroImageUrl(heroUrl);
+      setIngredientImages(ingImages);
     } catch (err: any) {
       setError(err.message || 'Có lỗi xảy ra. Thử lại nhé!');
     } finally {
@@ -176,39 +226,95 @@ export function InfographicStudio() {
     }
   };
 
+  const handleDownload = useCallback(async () => {
+    if (!rendererRef.current) return;
+    setIsExporting(true);
+    setError(null);
+    try {
+      await document.fonts.ready;
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(rendererRef.current, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null,
+        logging: false,
+      });
+      const filename = `infographic-${config.title.replace(/\s+/g, '-')}-${Date.now()}.png`;
+      // Use Blob URL so the browser saves directly to device storage
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+      }, 'image/png', 1.0);
+    } catch (err: any) {
+      setError('Lỗi khi xuất ảnh: ' + (err.message || 'Thử lại nhé!'));
+    } finally {
+      setIsExporting(false);
+    }
+  }, [config.title]);
+
   const currentType = TYPE_TEMPLATES[config.type];
   const currentStyle = STYLE_TEMPLATES[config.style];
   const badgePresets = getBadgePresets();
 
   // ─── RESULT VIEW ───────────────────────────────────────────────────────────
-  if (resultUrl) {
+  if (heroImageUrl) {
     return (
       <div className="space-y-6">
+        {/* Action bar */}
         <div className="flex items-center justify-between flex-wrap gap-4">
           <div>
-            <h3 className="text-xl font-bold text-white">{currentType.icon} Infographic đã sẵn sàng!</h3>
-            <p className="text-slate-400 text-sm mt-1">{config.title} · {currentStyle.label}</p>
+            <h3 className="text-xl font-bold text-white">{currentType.icon} Infographic sẵn sàng!</h3>
+            <p className="text-slate-400 text-sm mt-1">{config.title} · {currentStyle.label} · {FORMAT_OPTIONS.find(f => f.id === config.format)?.label} {FORMAT_OPTIONS.find(f => f.id === config.format)?.ratio}</p>
           </div>
-          <div className="flex gap-3">
-            <button onClick={() => setResultUrl(null)} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white transition-colors text-sm">
-              <RefreshCw size={14} /> Tạo lại
+          <div className="flex gap-3 flex-wrap">
+            <button onClick={() => setHeroImageUrl(null)} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white transition-colors text-sm">
+              <RefreshCw size={14} /> Tạo lại ảnh hero
+            </button>
+            <button onClick={handleGenerate} disabled={isLoading} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-amber-700/60 text-amber-300 hover:border-amber-500 hover:bg-amber-900/20 transition-colors text-sm disabled:opacity-50">
+              <Zap size={14} /> {isLoading ? 'Đang tạo...' : 'Biến thể mới'}
             </button>
             <button
-              onClick={() => { const a = document.createElement('a'); a.href = resultUrl; a.download = `infographic-${Date.now()}.png`; a.click(); }}
-              className="flex items-center gap-2 px-5 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-white text-sm font-semibold shadow-lg transition-colors"
+              onClick={handleDownload}
+              disabled={isExporting}
+              className="flex items-center gap-2 px-5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-lg transition-colors disabled:opacity-60"
             >
-              <Download size={14} /> Tải xuống
+              <Download size={14} /> {isExporting ? 'Đang xuất...' : 'Tải về PNG'}
             </button>
           </div>
         </div>
-        <div className="rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/50 shadow-2xl">
-          <img src={resultUrl} alt="Infographic" className="w-full max-h-[85vh] object-contain" />
-        </div>
-        <div className="flex gap-3 justify-center pt-2">
-          <button onClick={handleGenerate} disabled={isLoading} className="flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold transition-all disabled:opacity-50 shadow-lg hover:-translate-y-0.5" style={{ background: 'linear-gradient(135deg, #d97706, #f59e0b)' }}>
-            <Zap size={16} /> Tạo biến thể mới
-          </button>
-          <button onClick={() => { setResultUrl(null); setConfig(DEFAULT_CONFIG); }} className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white transition-colors font-semibold">
+
+        {error && <div className="bg-red-500/10 border border-red-500/40 text-red-200 px-4 py-3 rounded-xl text-sm">⚠️ {error}</div>}
+
+        {/* Renderer — scaled to fit screen width */}
+        {(() => {
+          const fmtW = config.format !== 'landscape' ? 1080 : 1200;
+          return (
+            <div className="rounded-2xl overflow-auto border border-slate-700/60 bg-slate-900/30 shadow-2xl p-2">
+              <div style={{ minWidth: 320 }}>
+                <div style={{ transformOrigin: 'top left', transform: 'scale(var(--infographic-scale, 1))' }}>
+                  <style>{`:root { --infographic-scale: min(1, calc((100vw - 64px) / ${fmtW})) }`}</style>
+                  <InfographicRenderer ref={rendererRef} config={config} heroImageUrl={heroImageUrl} ingredientImages={ingredientImages} />
+                </div>
+              </div>
+            </div>
+          );
+        })()}
+
+        <PromptBox prompt={lastPrompt} label="Xem Hero Prompt · Copy sang Nano Banana / Midjourney" />
+
+        <div className="flex gap-3 justify-center pt-1">
+          <button
+            onClick={() => { setHeroImageUrl(null); setIngredientImages([]); setConfig(DEFAULT_CONFIG); }}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl border border-slate-700 text-slate-300 hover:border-slate-500 hover:text-white transition-colors font-semibold text-sm"
+          >
             Tạo infographic mới
           </button>
         </div>
@@ -228,8 +334,25 @@ export function InfographicStudio() {
         <p className="text-slate-400 max-w-2xl mx-auto">
           Nhập thành phần, quy trình và thông tin — AI tự động tạo ra infographic đẹp như tạp chí chuyên nghiệp.
         </p>
+        <div className="flex items-center justify-center gap-2 pt-1">
+          <button onClick={() => setChatMode(false)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${!chatMode ? 'bg-amber-600 border-amber-500 text-white' : 'border-slate-700 text-slate-400 hover:border-slate-500'}`}>
+            📋 Form thủ công
+          </button>
+          <button onClick={() => setChatMode(true)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${chatMode ? 'bg-amber-600 border-amber-500 text-white' : 'border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white'}`}>
+            ✨ Chat với AI
+          </button>
+        </div>
       </div>
 
+      {chatMode && (
+        <div className="bg-slate-900/50 border border-slate-800/60 rounded-2xl overflow-hidden">
+          <ChatAssistant mode="infographic" />
+        </div>
+      )}
+
+      {!chatMode && (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* ── Left ── */}
         <div className="lg:col-span-8 space-y-5">
@@ -304,11 +427,62 @@ export function InfographicStudio() {
             </div>
           </SectionCard>
 
+          {/* STEP 3.5: Product / Food Photo Upload */}
+          <SectionCard title={
+            <div className="flex items-center gap-3">
+              <StepBadge n={3} />
+              <div>
+                <h3 className="font-semibold text-white text-sm">Ảnh sản phẩm / món ăn thực tế</h3>
+                <p className="text-slate-500 text-xs">Tùy chọn — AI sẽ nâng cấp ảnh của bạn thành hình infographic đẹp</p>
+              </div>
+            </div>
+          }>
+            {!productPreview ? (
+              <div
+                onDrop={e => { e.preventDefault(); setIsDraggingProduct(false); const f = e.dataTransfer.files[0]; if (f) handleProductFileSelect(f); }}
+                onDragOver={e => { e.preventDefault(); setIsDraggingProduct(true); }}
+                onDragLeave={() => setIsDraggingProduct(false)}
+                onClick={() => productInputRef.current?.click()}
+                className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all ${
+                  isDraggingProduct
+                    ? 'border-amber-400 bg-amber-500/10 scale-[1.01]'
+                    : 'border-slate-700 hover:border-amber-500/50 hover:bg-slate-800/30'
+                }`}
+              >
+                <input ref={productInputRef} type="file" accept="image/*" className="hidden"
+                  onChange={e => e.target.files?.[0] && handleProductFileSelect(e.target.files[0])} />
+                <Camera size={32} className="mx-auto mb-2 text-slate-500" />
+                <p className="text-slate-300 font-medium text-sm">Kéo thả ảnh vào đây hoặc click để chọn</p>
+                <p className="text-slate-500 text-xs mt-1">Ảnh nền trắng hoặc sản phẩm rõ ràng → kết quả tốt nhất</p>
+                <p className="text-slate-600 text-[10px] mt-2">Không bắt buộc — bỏ qua nếu muốn AI tự tạo hình</p>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4 p-3 bg-slate-800/40 rounded-xl border border-slate-700/50">
+                <img src={productPreview} alt="product" className="h-20 w-20 object-contain rounded-lg border border-slate-700 bg-slate-900 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-medium text-sm truncate">{productFile?.name}</p>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    {productFile ? (productFile.size / 1024 < 1024
+                      ? Math.round(productFile.size / 1024) + ' KB'
+                      : (productFile.size / 1024 / 1024).toFixed(1) + ' MB') : ''}
+                  </p>
+                  <span className="inline-flex items-center gap-1 text-amber-400 text-xs mt-1 font-medium">
+                    <Check size={11} /> AI sẽ dùng ảnh này làm hero
+                  </span>
+                </div>
+                <button onClick={clearProductFile}
+                  className="text-xs text-red-400 hover:text-red-300 transition-colors px-3 py-1.5 rounded-lg border border-red-900/50 hover:border-red-700 shrink-0">
+                  Xóa
+                </button>
+              </div>
+            )}
+          </SectionCard>
+
           {/* STEP 4: Ingredients */}
           <SectionCard title={
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <StepBadge n={3} />
+                <StepBadge n={4} />
                 <div>
                   <h3 className="font-semibold text-white text-sm">{currentType.ingredientLabel}</h3>
                   <p className="text-slate-500 text-xs">Tên tiêu đề cột: <span className="text-slate-400">"{config.leftSectionTitle}"</span></p>
@@ -345,7 +519,7 @@ export function InfographicStudio() {
           <SectionCard title={
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <StepBadge n={4} />
+                <StepBadge n={5} />
                 <div>
                   <h3 className="font-semibold text-white text-sm">{currentType.stepLabel}</h3>
                   <p className="text-slate-500 text-xs">Tên tiêu đề cột: <span className="text-slate-400">"{config.rightSectionTitle}"</span></p>
@@ -383,7 +557,7 @@ export function InfographicStudio() {
           {/* STEP 6: Info Badges */}
           <SectionCard title={
             <div className="flex items-center gap-3">
-              <StepBadge n={5} />
+              <StepBadge n={6} />
               <div><h3 className="font-semibold text-white text-sm">Thẻ thông tin nhanh</h3><p className="text-slate-500 text-xs">Các badge hiển thị ngay cạnh hình chính</p></div>
             </div>
           }>
@@ -433,7 +607,7 @@ export function InfographicStudio() {
           <div className="bg-slate-900/40 border border-slate-800/60 rounded-2xl overflow-hidden">
             <button onClick={() => setShowStylePanel(!showStylePanel)} className="w-full px-5 py-4 flex items-center justify-between hover:bg-slate-800/30 transition-colors">
               <div className="flex items-center gap-3">
-                <StepBadge n={6} />
+                <StepBadge n={7} />
                 <div className="text-left">
                   <h3 className="font-semibold text-white text-sm">Bố cục & Phong cách</h3>
                   <p className="text-slate-500 text-xs">{LAYOUT_TEMPLATES[config.layout].label} · {currentStyle.label}</p>
@@ -444,10 +618,29 @@ export function InfographicStudio() {
 
             {showStylePanel && (
               <div className="px-5 pb-5 pt-2 border-t border-slate-800/60 space-y-5">
-                {/* Layout */}
+                {/* Format / Platform */}
                 <div>
-                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2.5">Bố cục</label>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2.5">Kích thước & Nền tảng</label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {FORMAT_OPTIONS.map(f => (
+                      <button key={f.id} onClick={() => update('format', f.id)}
+                        className={`p-3 rounded-xl border text-center transition-all ${config.format === f.id ? 'border-amber-500 bg-amber-500/10 text-amber-200' : 'border-slate-700/60 bg-slate-800/30 text-slate-400 hover:border-slate-500'}`}>
+                        <div className="text-lg mb-1 leading-none">{f.icon}</div>
+                        <div className="text-xs font-bold">{f.label}</div>
+                        <div className="text-[10px] opacity-70 font-mono">{f.ratio}</div>
+                        <div className="text-[9px] text-slate-500 mt-0.5 leading-tight">{f.platforms}</div>
+                        {config.format === f.id && <Check size={10} className="mx-auto mt-1 text-amber-400" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Layout — landscape only */}
+                <div>
+                  <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2.5">
+                    Bố cục {config.format !== 'landscape' && <span className="text-slate-600 font-normal">(chỉ dùng với Landscape)</span>}
+                  </label>
+                  <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 ${config.format !== 'landscape' ? 'opacity-40 pointer-events-none' : ''}`}>
                     {(Object.entries(LAYOUT_TEMPLATES) as [InfographicLayout, typeof LAYOUT_TEMPLATES[InfographicLayout]][]).map(([id, tmpl]) => (
                       <button key={id} onClick={() => update('layout', id)}
                         className={`p-3 rounded-xl border text-center transition-all text-xs ${config.layout === id ? 'border-amber-500 bg-amber-500/10 text-amber-200' : 'border-slate-700/60 bg-slate-800/30 text-slate-400 hover:border-slate-500'}`}>
@@ -549,7 +742,9 @@ export function InfographicStudio() {
               className="w-full py-4 rounded-xl text-base font-semibold text-white shadow-xl transition-all disabled:opacity-50 hover:-translate-y-0.5 disabled:cursor-not-allowed"
               style={{ background: (isLoading || !config.title.trim()) ? '#374151' : 'linear-gradient(135deg, #d97706, #f59e0b)' }}
             >
-              {isLoading ? 'Đang tạo infographic...' : '✦ Tạo Infographic'}
+              {isLoading
+                ? `Đang tạo ${config.ingredients.filter(i => i.name).length + 1} hình AI...`
+                : '✦ Tạo Infographic'}
             </button>
 
             {!config.title.trim() && <p className="text-center text-xs text-slate-600">Nhập tên sản phẩm/món ăn để bắt đầu</p>}
@@ -568,6 +763,7 @@ export function InfographicStudio() {
           </div>
         </div>
       </div>
+      )} {/* end !chatMode */}
     </div>
   );
 }
