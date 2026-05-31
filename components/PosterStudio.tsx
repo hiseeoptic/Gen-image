@@ -5,6 +5,7 @@ import { fileToGenerativePart } from '../services/openaiService';
 import { STYLE_TEMPLATES, FORMAT_INFO, buildPosterPrompt, generatePoster } from '../services/posterService';
 import { Button } from './Button';
 import { PromptBox } from './PromptBox';
+import { ChatAssistant } from './ChatAssistant';
 
 const DEFAULT_CONFIG: PosterConfig = {
   style: 'minimal_luxury',
@@ -38,6 +39,7 @@ export function PosterStudio() {
   const [error, setError] = useState<string | null>(null);
   const [showTextOptions, setShowTextOptions] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [chatMode, setChatMode] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = useCallback((file: File) => {
@@ -157,7 +159,28 @@ export function PosterStudio() {
         <p className="text-slate-400 max-w-2xl mx-auto">
           Upload ảnh sản phẩm → Chọn style → Tạo poster đẹp như agency thiết kế. Không cần Photoshop, không cần biết thiết kế.
         </p>
+        {/* Mode toggle */}
+        <div className="flex items-center justify-center gap-2 pt-1">
+          <button onClick={() => setChatMode(false)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${!chatMode ? 'bg-purple-600 border-purple-500 text-white' : 'border-slate-700 text-slate-400 hover:border-slate-500'}`}>
+            📋 Form thủ công
+          </button>
+          <button onClick={() => setChatMode(true)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${chatMode ? 'bg-purple-600 border-purple-500 text-white' : 'border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white'}`}>
+            ✨ Chat với AI
+          </button>
+        </div>
       </div>
+
+      {/* Chat Mode */}
+      {chatMode && (
+        <div className="bg-slate-900/50 border border-slate-800/60 rounded-2xl overflow-hidden">
+          <ChatAssistant mode="poster" />
+        </div>
+      )}
+
+      {/* Form Mode */}
+      {!chatMode && (
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left: Steps */}
@@ -460,6 +483,7 @@ export function PosterStudio() {
           </div>
         </div>
       </div>
+      )} {/* end !chatMode */}
     </div>
   );
 }

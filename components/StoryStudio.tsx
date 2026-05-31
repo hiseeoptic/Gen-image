@@ -8,6 +8,7 @@ import {
   buildStoryPrompt, generateStoryVisual, fileToStoryImageInput, StoryImageInput,
 } from '../services/storyService';
 import { PromptBox } from './PromptBox';
+import { ChatAssistant } from './ChatAssistant';
 
 const DEFAULT_CONFIG: StoryConfig = {
   layout: 'journey',
@@ -57,6 +58,7 @@ export function StoryStudio() {
     style: false,
     advanced: false,
   });
+  const [chatMode, setChatMode] = useState(false);
 
   // Reference image uploads
   const [refFiles, setRefFiles] = useState<File[]>([]);
@@ -176,8 +178,25 @@ export function StoryStudio() {
         <p className="text-slate-400 max-w-2xl mx-auto">
           Chọn bố cục → thêm nội dung → chọn nhân vật & biểu tượng → AI tạo ra ảnh chuyên nghiệp. Không cần thiết kế, không cần Photoshop.
         </p>
+        <div className="flex items-center justify-center gap-2 pt-1">
+          <button onClick={() => setChatMode(false)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${!chatMode ? 'bg-rose-600 border-rose-500 text-white' : 'border-slate-700 text-slate-400 hover:border-slate-500'}`}>
+            📋 Form thủ công
+          </button>
+          <button onClick={() => setChatMode(true)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${chatMode ? 'bg-rose-600 border-rose-500 text-white' : 'border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white'}`}>
+            ✨ Chat với AI
+          </button>
+        </div>
       </div>
 
+      {chatMode && (
+        <div className="bg-slate-900/50 border border-slate-800/60 rounded-2xl overflow-hidden">
+          <ChatAssistant mode="story" />
+        </div>
+      )}
+
+      {!chatMode && (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* ── Left Column: Steps ── */}
         <div className="lg:col-span-8 space-y-5">
@@ -845,6 +864,7 @@ export function StoryStudio() {
           </div>
         </div>
       </div>
+      )} {/* end !chatMode */}
     </div>
   );
 }

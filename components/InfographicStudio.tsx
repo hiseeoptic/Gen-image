@@ -18,6 +18,7 @@ import {
 } from '../services/infographicService';
 import { InfographicRenderer } from './InfographicRenderer';
 import { PromptBox } from './PromptBox';
+import { ChatAssistant } from './ChatAssistant';
 
 const BADGE_COLORS = ['pink', 'mint', 'peach', 'lavender', 'blue', 'green', 'orange', 'yellow'];
 const BADGE_COLOR_STYLES: Record<string, string> = {
@@ -128,6 +129,7 @@ export function InfographicStudio() {
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showStylePanel, setShowStylePanel] = useState(false);
+  const [chatMode, setChatMode] = useState(false);
   const rendererRef = useRef<HTMLDivElement>(null);
 
   // Product / food photo upload
@@ -332,8 +334,25 @@ export function InfographicStudio() {
         <p className="text-slate-400 max-w-2xl mx-auto">
           Nhập thành phần, quy trình và thông tin — AI tự động tạo ra infographic đẹp như tạp chí chuyên nghiệp.
         </p>
+        <div className="flex items-center justify-center gap-2 pt-1">
+          <button onClick={() => setChatMode(false)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${!chatMode ? 'bg-amber-600 border-amber-500 text-white' : 'border-slate-700 text-slate-400 hover:border-slate-500'}`}>
+            📋 Form thủ công
+          </button>
+          <button onClick={() => setChatMode(true)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all ${chatMode ? 'bg-amber-600 border-amber-500 text-white' : 'border-slate-700 text-slate-400 hover:border-slate-500 hover:text-white'}`}>
+            ✨ Chat với AI
+          </button>
+        </div>
       </div>
 
+      {chatMode && (
+        <div className="bg-slate-900/50 border border-slate-800/60 rounded-2xl overflow-hidden">
+          <ChatAssistant mode="infographic" />
+        </div>
+      )}
+
+      {!chatMode && (
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* ── Left ── */}
         <div className="lg:col-span-8 space-y-5">
@@ -744,6 +763,7 @@ export function InfographicStudio() {
           </div>
         </div>
       </div>
+      )} {/* end !chatMode */}
     </div>
   );
 }
